@@ -108,24 +108,12 @@ public class UiFrame
 
         // add sub items and their actions 
         jMenuFile.add(jMenuFileOpen);
-        jMenuFileOpen.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(ActionEvent e) {
-                jMenuFileOpen_actionPerformed(e);
-            }
-        });
+        jMenuFileOpen.addActionListener(e ->jMenuFileOpen_actionPerformed(e));
         jMenuFile.add(jMenuFileSave);
-        jMenuFileSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                jMenuFileSave_actionPerformed(e);
-            }
-        });
+        jMenuFileSave.addActionListener(e ->jMenuFileSave_actionPerformed(e));
         jMenuFile.addSeparator();
         jMenuFile.add(jMenuFileExit);
-        jMenuFileExit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                jMenuFileExit_actionPerformed(e);
-            }
-        });
+        jMenuFileExit.addActionListener(e -> SmartPower.getMain().stop());
         // add the menu to the menu bar
         jMenuBar1.add(jMenuFile);
     }
@@ -133,17 +121,9 @@ public class UiFrame
   
     private void createProcessMenu(){
         // add sub items and their actions      
-        jMenuProcessRecords.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                jMenuProcessRecords_actionPerformed(e);
-            }
-        });
+        jMenuProcessRecords.addActionListener(e -> SmartPower.getMain().change_state(SmartPower.RunState.PROCESS_EDGES));
         jMenuProcess.add(jMenuProcessDevices);
-        jMenuProcessDevices.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                jMenuProcessDevices_actionPerformed(e);
-            }
-        });
+        jMenuProcessDevices.addActionListener(e -> SmartPower.getMain().change_state(SmartPower.RunState.PROCESS_EVENTS));
         jMenuProcess.add(jMenuProcessRecords);
         jMenuProcess.add(jMenuProcessDevices);
         // add the menu to the menu bar
@@ -153,23 +133,11 @@ public class UiFrame
     private void createChartMenu(){
         // add sub items and their actions    
     	/*
-        jMenuChartPie.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                jMenuChartPie_actionPerformed(e);
-            }
-        });
+        jMenuChartPie.addActionListener(e-> jMenuChartPie_actionPerformed(e));
         jMenuChart.add(jMenuChartPie);*/
-        jMenuChartHistogram.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                jMenuChartHistogram_actionPerformed(e);
-            }
-        });
+        jMenuChartHistogram.addActionListener(e -> jMenuChartHistogram_actionPerformed(e));
         jMenuChart.add(jMenuChartHistogram);
-        jMenuChartScatter.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                jMenuChartScatter_actionPerformed(e);
-            }
-        });
+        jMenuChartScatter.addActionListener(e -> jMenuChartScatter_actionPerformed(e));
         jMenuChart.add(jMenuChartScatter);
        // add the menu to the menu bar
         jMenuBar1.add(jMenuChart);
@@ -177,11 +145,7 @@ public class UiFrame
     
     private void createHelpMenu(){
         // add sub items and their actions      
-        jMenuHelpAbout.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                jMenuHelpAbout_actionPerformed(e);
-            }
-        });
+        jMenuHelpAbout.addActionListener(e -> jMenuHelpAbout_actionPerformed(e));
         jMenuHelp.add(jMenuHelpAbout);
         // add the menu to the menu bar
         jMenuBar1.add(jMenuHelp);
@@ -227,27 +191,6 @@ public class UiFrame
         if(fileDialogue.getFile() != null ){
         	SmartPower.getMain().change_state(SmartPower.RunState.SAVE_FILE);  //trigger processing in main loop
         }
-    }
-    
-    //
-    //File | Exit action performed
-    //
-    public void jMenuFileExit_actionPerformed(ActionEvent e) {
-        SmartPower.getMain().stop();
-    }
-
-    //
-    //Process Records action performed
-    //
-    public void jMenuProcessRecords_actionPerformed(ActionEvent e) {
-        SmartPower.getMain().change_state(SmartPower.RunState.PROCESS_EDGES);  //trigger processing in main loop
-    }
-
-    //
-    //Process Devices action performed
-    //
-    public void jMenuProcessDevices_actionPerformed(ActionEvent e) {
-        SmartPower.getMain().change_state(SmartPower.RunState.PROCESS_EVENTS);  //trigger processing in main loop
     }
 
     //
