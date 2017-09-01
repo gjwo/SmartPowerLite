@@ -15,18 +15,18 @@ import org.ladbury.meterPkg.TimedRecord;
  * 
  * @author GJWood
  * @version 3.0
- * @see PersistentLink
+ *
  */
 public class PersistentData {
-	public static enum EntityType{	UNDEFINED, DEVICE, PARENT_DEVICE, READINGS, EVENTS, //phase1
+	public enum EntityType{	UNDEFINED, DEVICE, PARENT_DEVICE, READINGS, EVENTS, //phase1
 									ACTIVITY, CATALOGUE, PATTERN, ABODE, ROOM,			//phase1
 									MAKE, CATEGORY, WEEKDAYTYPE, TIMEPERIOD, CALENDARPERIOD, HABIT, CLUSTER, //phase2
-									METER,METRIC,TIMEDRECORD}; //phase 3
+									METER,METRIC,TIMEDRECORD} //phase 3
 
-	private PersistentList <DeviceActivity> activity = new PersistentList<DeviceActivity>(Collections.<DeviceActivity>emptyList());
-	private PersistentList <Meter> meters = new PersistentList<Meter>(Collections.<Meter>emptyList());
-	private PersistentList <Metric> metrics = new PersistentList<Metric>(Collections.<Metric>emptyList());
-	private PersistentList <TimedRecord> timedRecords= new PersistentList<TimedRecord>(Collections.<TimedRecord>emptyList());
+	private final PersistentList <DeviceActivity> activity = new PersistentList<>(Collections.emptyList());
+	private final PersistentList <Meter> meters = new PersistentList<>(Collections.emptyList());
+	private final PersistentList <Metric> metrics = new PersistentList<>(Collections.emptyList());
+	private final PersistentList <TimedRecord> timedRecords= new PersistentList<>(Collections.emptyList());
 	
 
 	public PersistentData(){	

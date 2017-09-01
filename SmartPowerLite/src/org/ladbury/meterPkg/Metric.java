@@ -35,8 +35,10 @@ public class Metric	implements	Serializable,
 	 */
 	private static final long serialVersionUID = -701995953205153989L;
 
-	public static enum MetricType {UNDEFINED, POWER_LOW_RES, ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD};
-	public static enum Granularity {UNDEFINED, SECOND, TENSECOND, MINUTE, TENMINUTE, HOUR, DAY};
+	public enum MetricType {UNDEFINED, POWER_LOW_RES, ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD}
+
+	public enum Granularity {UNDEFINED, SECOND, TEN_SECOND, MINUTE, TEN_MINUTE, HOUR, DAY}
+
 	public static final int[] GRAIN_INTERVALS =  {0,Timestamped.SECOND_IN_MS,
 													Timestamped.SECOND_IN_MS*10,
 													Timestamped.MINUTE_IN_MS,
@@ -64,7 +66,7 @@ public class Metric	implements	Serializable,
 	public Metric(){
 		this.name = UiStyle.UNNAMED;
 		this.type = MetricType.UNDEFINED;
-		this.readings = new ArrayList<TimedRecord>(Collections.<TimedRecord>emptyList());
+		this.readings = new ArrayList<>(Collections.emptyList());
 		this.grain = Granularity.UNDEFINED;
 		this.cumulative = false;
 		this.earliest = new Timestamp(0);
@@ -76,7 +78,7 @@ public class Metric	implements	Serializable,
 		//Onzo metrics ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD
 		
 		this.name = UiStyle.UNNAMED;
-		this.readings = new ArrayList<TimedRecord>(Collections.<TimedRecord>emptyList());
+		this.readings = new ArrayList<>(Collections.emptyList());
 		this.type = t;
 		this.grain = Granularity.UNDEFINED;
 		this.cumulative = false;
@@ -213,7 +215,7 @@ public class Metric	implements	Serializable,
 		int i;
 		Timestamp incrementalTs,recordedTs;
 		int recordedValue;
-		ArrayList<TimedRecord> results = new ArrayList<TimedRecord>();
+		ArrayList<TimedRecord> results = new ArrayList<>();
 		if (t1.before(earliest)||t1.after(latest)||(readings.size()<=1)) return null; // won't find a value for the timestamp t1
 		if (t2.before(earliest)||t2.after(latest)) return null; // won't find a value for the timestamp t2
 		if (g.ordinal()<grain.ordinal()) return null; // can't service the request at this granularity

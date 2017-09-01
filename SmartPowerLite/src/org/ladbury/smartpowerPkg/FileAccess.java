@@ -43,7 +43,7 @@ class FileAccess
     private BufferedReader m_br;
     private PrintWriter m_pw;
  
-    protected void SPfile() {
+    protected void SPFile() {
     	/*
     	 *  Constructor
     	 */
@@ -56,7 +56,7 @@ class FileAccess
         
     }
 
-    protected void openInput()
+    void openInput()
     //throws IOException
     // opens a file as a buffered stream
     {
@@ -73,7 +73,7 @@ class FileAccess
         }
     }
 
-    protected void closeInput()
+    void closeInput()
     //throws IOException
     {
         try {
@@ -88,7 +88,7 @@ class FileAccess
         }
     }
 
-    protected void closeOutput()
+    private void closeOutput()
     //throws IOException
     {
         try {
@@ -103,7 +103,7 @@ class FileAccess
             //throw ioe;
         }
     }
-    protected PrintWriter openOutput(String dirname, String filename)
+    private PrintWriter openOutput(String dirname, String filename)
     {
     	try{
         	SmartPower.getMain().getFrame().displayLog("Opening output file " + dirname +
@@ -125,7 +125,7 @@ class FileAccess
     }
  
     
-    protected String state() {
+    String state() {
         if (inputFile == null) {
             return ("Closed");
         }
@@ -140,7 +140,7 @@ class FileAccess
     // to turn each line of input tokens into readings tokens
     // then to group these into readings records for parsing
     //
-    protected void processFile(MetricType metricT) {
+    void processFile(MetricType metricT) {
  		String 	dataRow;
         Meter mtr = SmartPower.getMain().getData().getMeters().get(0);
         Metric mtc = mtr.getMetric(metricT);
@@ -161,8 +161,7 @@ class FileAccess
             	
             	break; // finished as EOF reached
  			default:
-				return; //nothing to process
-        	}
+            }
         }
         catch (IOException ioe) {
             ioe.printStackTrace();
@@ -180,7 +179,7 @@ class FileAccess
      * @param mt Meter type 
      * @param mtc Metric
      */
-    protected void OutputMetricAsCSVFile(MeterType mt, Metric mtc){
+    void OutputMetricAsCSVFile(MeterType mt, Metric mtc){
     	switch(mt){
     	case OWLCM160:
     		break;
@@ -209,9 +208,9 @@ class FileAccess
     /**
      * Output Activity as CSV file
      * @param activityName
-     * @param Persistent list<DeviceActivity>
+     * @param activity
      */
-    protected void OutputActivityAsCSVFile(String activityName, PersistentList<DeviceActivity> activity){
+    void OutputActivityAsCSVFile(String activityName, PersistentList<DeviceActivity> activity){
           
        outputFileName = activityName+"_DA.csv";
        m_pw = openOutput(outputPathName, outputFileName);
@@ -230,7 +229,7 @@ class FileAccess
     protected List<String> findCSVFilesForDate(String dirName, Timestamp t){
 		DateFormat df = new SimpleDateFormat(Timestamped.FILE_DATE_FORMAT); 
 
-    	List<String> selectedFiles = new ArrayList<String>();
+    	List<String> selectedFiles = new ArrayList<>();
     	File dir = new File(dirName);
     	String filename;
     	
@@ -243,7 +242,7 @@ class FileAccess
     	return selectedFiles;
    	}
     
-    protected MetricType identifyTypeFromFilename(String filename){
+    MetricType identifyTypeFromFilename(String filename){
     	MetricType mtcT = MetricType.UNDEFINED;
     	MetricType[] mtcTs = MetricType.values();
     	for (int i = 1; i < mtcTs.length; i++){
@@ -259,36 +258,36 @@ class FileAccess
     // Accessor methods
     //
 
-    protected void setInputFilename(String s){
+    void setInputFilename(String s){
     	inputFileName = s;
     }
 
-    protected String inputFilename(){
+    String inputFilename(){
     	return inputFileName;
     }
     
-    protected void setInputPathname(String s){
+    void setInputPathname(String s){
     	inputPathName = s;
     }
 
-    protected String inputPathname(){
+    String inputPathname(){
     	return inputPathName;
     }
     
 
-    protected void setOutputFilename(String s){
+    void setOutputFilename(String s){
     	outputFileName = s;
     }
 
-    protected String outputFilename(){
+    String outputFilename(){
     	return outputFileName;
     }
 
-    protected void setOutputPathname(String s){
+    void setOutputPathname(String s){
     	outputPathName = s;
     }
 
-    protected String outputPathname(){
+    String outputPathname(){
     	return outputPathName;
     }
     

@@ -49,8 +49,7 @@ public class TimedRecord implements 	Serializable,
 		DateFormat df = new SimpleDateFormat(Meter.ONZODATEFORMAT); 
 		
 		java.util.Date utilDate = df.parse(dataArray[0]);
-		java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp(utilDate.getTime());
-		timestamp = sqlTimestamp;
+		timestamp = new Timestamp(utilDate.getTime());
 		
 		value = new Integer(dataArray[1]);  //watts
 	}
@@ -99,7 +98,7 @@ public class TimedRecord implements 	Serializable,
 	}
 	@Override //Persistable
 	public String name() {
-		return new String(timestampString()+"("+value+")");
+		return timestampString() + "(" + value + ")";
 	}
 	@Override //Persistable
 	public String toCSV() {
@@ -114,7 +113,7 @@ public class TimedRecord implements 	Serializable,
 	}
 	@Override //Persistable
 	public String idString() {
-		return new String("["+this.id()+"] "+this.name());
+		return "[" + this.id() + "] " + this.name();
 	}
 	@Override //Comparator
 	public int compareTo(TimedRecord o) {

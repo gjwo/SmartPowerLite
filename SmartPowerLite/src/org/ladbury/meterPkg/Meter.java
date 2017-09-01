@@ -13,6 +13,7 @@ import org.ladbury.userInterfacePkg.UiStyle;
 //import org.ladbury.abodePkg.Abode;
 
 
+@SuppressWarnings("SpellCheckingInspection")
 public class Meter	implements	Serializable,
 								Persistable <Meter>,
 								Comparable<Meter>,
@@ -23,8 +24,9 @@ public class Meter	implements	Serializable,
 	 */
 	private static final long serialVersionUID = -5911387336252034382L;
 
-	public static enum MeterType {UNDEFINED, OWLCM160, ONZO};
-	
+	@SuppressWarnings("SpellCheckingInspection")
+	public enum MeterType {UNDEFINED, OWLCM160, ONZO}
+
 	private long meterId;			// persistence ID field
 	private String name;			// the name of the meter
 	private MeterType type;			// the meter type - which defines what metrics are stored
@@ -39,13 +41,13 @@ public class Meter	implements	Serializable,
 	public Meter(){
 		this.name = UiStyle.UNNAMED;
 		this.type = MeterType.UNDEFINED;
-		this.metrics = new ArrayList<Metric>(Collections.<Metric>emptyList());
+		this.metrics = new ArrayList<>(Collections.emptyList());
 //		this.abode = null;
 	}
 	public Meter(/*Abode a,*/MeterType t){
 		
 		this.name = UiStyle.UNNAMED;
-		this.metrics = new ArrayList<Metric>(Collections.<Metric>emptyList());
+		this.metrics = new ArrayList<>(Collections.emptyList());
 		this.type = t;
 //		this.abode = a;
 		switch (t){
@@ -96,8 +98,9 @@ public class Meter	implements	Serializable,
 	 * @return the first of the meter's recoded metrics which matches the metric type
 	 */
 	public Metric getMetric(MetricType metricT) {
-		for(int i=0; i<this.metrics.size();i++){
-			if (metrics.get(i).getType() == metricT) return metrics.get(i);
+		for (Metric metric : this.metrics)
+		{
+			if (metric.getType() == metricT) return metric;
 		}
 		return null;
 	}
@@ -127,10 +130,10 @@ public class Meter	implements	Serializable,
 	 * @param metric
 	 * @return True if the metric was successfully replaced
 	 */
-	public boolean setMetric(MetricType t, Metric metric) {
+	public boolean setMetric(MetricType t, Metric metric)
+	{
 		int index = getMetricIndex(t); // find the first metric of this type
-		if ( index == -1) return false;
-		return this.metrics.set(index, metric) != null;
+		return index != -1 && this.metrics.set(index, metric) != null;
 	}
 	/**
 	 * Get Metric index

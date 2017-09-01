@@ -37,12 +37,12 @@ public class SmartPower
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static enum RunState {
+	public enum RunState {
 		IDLE, OPEN_FILE, PROCESS_FILE, PROCESS_READINGS, SAVE_FILE, PROCESS_EDGES, PROCESS_EVENTS, STOP
-	};   
-	private static final String PARAM_measurementfile = "measurement file";
-	
-    private boolean		packFrame = false;
+	}
+
+    private static final String PARAM_MEASUREMENT_FILE = "measurement file";
+
     private boolean 	fStandAlone = true;    //	fStandAlone will be set to true if applet is run stand alone
     private	String 		displayString = null;
 	private Thread 		threadSmartPower = null; //Thread object for the applet
@@ -56,23 +56,7 @@ public class SmartPower
 //    private Meter				meter = null;
     
     //Application Specific data (persistent)
-	private PersistentData data ;
-    
-    // PARAMETER SUPPORT:
-    //Parameters allow an HTML author to pass information to the applet;
-    // the HTML author specifies them using the <PARAM> tag within the <APPLET>
-    // tag.  The following variables are used to store the values of the
-    // parameters.
-    //--------------------------------------------------------------------------
-    // Members for applet parameters
-    // <type>       <MemberVar>    = <Default Value>
-    //--------------------------------------------------------------------------
-    private String readingsFile = "";
-
-    // Parameter names.  To change a name of a parameter, you need only make
-    // a single change.  Simply modify the value of the parameter string below.
-    //--------------------------------------------------------------------------
-    private final String PARAM_readingsfile = "readingsfile";
+	private final PersistentData data ;
 
     // STANDALONE APPLICATION SUPPORT
     // The GetParameter() method is a replacement for the getParameter() method
@@ -81,7 +65,7 @@ public class SmartPower
     // is run as a stand alone application, as well as when run within an HTML page.
     // This method is called by GetParameters().
     //---------------------------------------------------------------------------
-    String GetParameter(String strName, String args[]) {
+    private String GetParameter(String strName, String args[]) {
         if (args == null) {
             // Running within an HTML page, so call original getParameter().
             //-------------------------------------------------------------------
@@ -134,17 +118,17 @@ public class SmartPower
     // When the applet is run within an HTML page, this method is called by the
     // init() method with args == null.
     //---------------------------------------------------------------------------
-    void GetParameters(String args[]) {
+    private void GetParameters(String args[]) {
         // Query values of all Parameters
         //--------------------------------------------------------------
         String param;
 
         // measurement file : Parameter description
         //--------------------------------------------------------------
-        param = GetParameter(PARAM_measurementfile, args);
+        param = GetParameter(PARAM_MEASUREMENT_FILE, args);
          if (param != null) {
-             readingsFile = param;
-             readingsFile = readingsFile+""; //Suppress warning
+             String readingsFile = param;
+             readingsFile = readingsFile +""; //Suppress warning
            
         }
     }
@@ -178,6 +162,7 @@ public class SmartPower
 
         //Pack frames that have useful preferred size info, e.g. from their layout
         //Validate frames that have preset sizes
+        boolean packFrame = false;
         if (packFrame) {
             frame.pack();
         }
@@ -198,7 +183,7 @@ public class SmartPower
                           (screenSize.height - frameSize.height) / 2);
         frame.setVisible(true);
 
-        displayString = new String("no line");
+        displayString = "no line";
 
         file = new FileAccess();
         
@@ -224,13 +209,13 @@ public class SmartPower
     //  { "Name", "Type", "Description" },
     //--------------------------------------------------------------------------
     public String[][] getParameterInfo() {
-        String[][] info = {
+        String paramReadingsFile = "readingsfile";
+        return new String[][]{
             {
-            PARAM_readingsfile, "String",
+                    paramReadingsFile, "String",
             "The name of the input file of meter readings"}
             ,
         };
-        return info;
     }
 
     // The init() method is called by the AWT when an applet is first loaded or
@@ -303,7 +288,7 @@ public class SmartPower
         g.drawString("Running: " + Math.random(), 10, 20);
         g.drawString("Filename: " + this.file.inputFilename(), 10, 40);
         g.drawString("Directory name: " +this.file.inputPathname(), 10, 60);
-        g.drawString("Filestate: " + this.file.state(), 10, 80);
+        g.drawString("File State: " + this.file.state(), 10, 80);
         g.drawString(displayString, 10, 90);
     }
 
@@ -340,7 +325,7 @@ public class SmartPower
     public void run() {
     	int j = 0;
      	Meter m;
-     	Metric tempMtc = null;
+     	Metric tempMtc;
      	m = this.data.getMeters().get(0);
         while (this.get_state() != RunState.STOP) {
             try {
@@ -426,8 +411,8 @@ public class SmartPower
                             		lastReadingsCount = readingsCount;
                             		this.frame.displayLog("Run: Squelching " + lastReadingsCount + " readings \n\r");                	
                             		m.getMetric(currentMetricType).squelchTransitions();
-                            		readingsCount = m.getMetric(currentMetricType).size();;
-                            	}
+                            		readingsCount = m.getMetric(currentMetricType).size();
+                                }
                             }else this.frame.displayLog("Run: ERROR Metric type not identified (Cannot Squelch)\n\r");
                         	break;
                         default:
@@ -507,11 +492,11 @@ public class SmartPower
     	this.state = new_state;
     	//this.threadSmartPower.interrupt(); // this caused persistence to fail
     }
-    public synchronized RunState get_state() {
+    private synchronized RunState get_state() {
         return (this.state);
     }
     public void display(String s) {
-        this.displayString = new String(s);
+        this.displayString = s;
         System.out.println(this.displayString);
         repaint();
     }
@@ -536,7 +521,7 @@ public class SmartPower
 	public PersistentData getData(){
 		return this.data;
 	}
-	public Meter getCurrentMeter(){
+	private Meter getCurrentMeter(){
 		return getData().getMeters().get(0);
 	}
 }

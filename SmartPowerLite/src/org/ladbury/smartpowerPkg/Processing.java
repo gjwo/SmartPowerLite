@@ -35,8 +35,7 @@ public class Processing {
 
     private static int recognitionThreshold = RECOGNITION_THRESHOLD;
     private static int squelchThreshold = SQUELCH_THRESHOLD;
-    private static int plateauThreshold = PLATEAU_THRESHOLD;
-    private static int MatchingPercentageTolerance = MATCHING_PERCENTAGE_TOLERANCE;
+	private static int MatchingPercentageTolerance = MATCHING_PERCENTAGE_TOLERANCE;
     
     
     //
@@ -56,7 +55,7 @@ public class Processing {
 		return squelchThreshold;
 	}
 	public static int getPlateauThreshold() {
-		return plateauThreshold;
+		return PLATEAU_THRESHOLD;
 	}
 
 	public static void setSquelchThreshold(int squelchThreshold) {
@@ -79,8 +78,8 @@ public class Processing {
 	/**
 	 * equal (Double)
 	 * determines if two numbers are equal within a default absolute tolerance
-	 * @param i1 first number
-	 * @param i2 second number
+	 * @param d1 first number
+	 * @param d2 second number
 	 * @return True if the numbers match
 	 */
 	public static boolean equal(double d1, double d2){ 
@@ -90,8 +89,8 @@ public class Processing {
 	/**
 	 * matches (Double)
 	 * determines if two numbers are matched within a default absolute tolerance
-	 * @param i1 first number
-	 * @param i2 second number
+	 * @param d1 first number
+	 * @param d2 second number
 	 * @return True if the numbers match
 	 */
 	public static boolean matches(double d1, double d2){ 
@@ -187,10 +186,9 @@ public class Processing {
     }
 	/**
 	 * Access method for persistent data
-	 * @return	the class holding the data in PeristentList form
+	 * @return	the class holding the data in PersistentList form
 	 * @see SmartPower
 	 * @see PersistentData
-	 * @see PersistentList
 	 */
 	private static PersistentData getData(){
 		return SmartPower.getMain().getData();

@@ -28,7 +28,7 @@ public class ScatterChart extends JFrame {
 	/**
      * Time based Histogram Constructor
      *
-     * @param title  the frame title.
+     * @param frameTitle  the frame title.
      */
     public ScatterChart(final String frameTitle) {
         super(frameTitle);

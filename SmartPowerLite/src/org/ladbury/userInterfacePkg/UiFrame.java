@@ -18,7 +18,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
-import org.jfree.ui.RefineryUtilities;
+//import org.jfree.ui.RefineryUtilities;
 import org.ladbury.chartingPkg.PieChart;
 import org.ladbury.chartingPkg.ScatterChart;
 import org.ladbury.chartingPkg.TimeHistogram;
@@ -32,28 +32,26 @@ public class UiFrame
 	 */
 	private static final long serialVersionUID = 1L;
 
-    // variables
-    private JPanel contentPane;
-    private BorderLayout borderLayout1 = new BorderLayout();
-    private JMenuBar jMenuBar1 = new JMenuBar();
+    private final BorderLayout borderLayout1 = new BorderLayout();
+    private final JMenuBar jMenuBar1 = new JMenuBar();
 
-    private JMenu jMenuFile = new JMenu("File");
-    private JMenuItem jMenuFileOpen = new JMenuItem("Open");
-    private JMenuItem jMenuFileSave = new JMenuItem("Save");
-    private JMenuItem jMenuFileExit = new JMenuItem("Exit");
+    private final JMenu jMenuFile = new JMenu("File");
+    private final JMenuItem jMenuFileOpen = new JMenuItem("Open");
+    private final JMenuItem jMenuFileSave = new JMenuItem("Save");
+    private final JMenuItem jMenuFileExit = new JMenuItem("Exit");
 
-    private JMenu jMenuProcess = new JMenu("Process");
-    private JMenuItem jMenuProcessRecords = new JMenuItem("Process Edges");
-    private JMenuItem jMenuProcessDevices = new JMenuItem("Process Devices");
+    private final JMenu jMenuProcess = new JMenu("Process");
+    private final JMenuItem jMenuProcessRecords = new JMenuItem("Process Edges");
+    private final JMenuItem jMenuProcessDevices = new JMenuItem("Process Devices");
     
-    private JMenu jMenuChart = new JMenu("Chart");
+    private final JMenu jMenuChart = new JMenu("Chart");
     //private JMenuItem jMenuChartPie = new JMenuItem("Pie 3D");
-    private JMenuItem jMenuChartHistogram = new JMenuItem("Histogram");
-    private JMenuItem jMenuChartScatter = new JMenuItem("Scatter");   
+    private final JMenuItem jMenuChartHistogram = new JMenuItem("Histogram");
+    private final JMenuItem jMenuChartScatter = new JMenuItem("Scatter");
 
-    private JMenu jMenuHelp = new JMenu("Help");
-    private JMenuItem jMenuHelpAbout = new JMenuItem("About..");
-    private TextArea textArea1 = new TextArea();
+    private final JMenu jMenuHelp = new JMenu("Help");
+    private final JMenuItem jMenuHelpAbout = new JMenuItem("About..");
+    private final TextArea textArea1 = new TextArea();
 
     private FileDialog fileDialogue = null;
 	private String 	windowTitle = null;
@@ -78,7 +76,7 @@ public class UiFrame
     //
     private void jbInit() throws Exception {
         // Create a content pane
-        contentPane = (JPanel)this.getContentPane();
+        JPanel contentPane = (JPanel) this.getContentPane();
         contentPane.setLayout(borderLayout1);
         this.setSize(new Dimension(800, 600));
         this.setTitle(windowTitle);
@@ -108,9 +106,9 @@ public class UiFrame
 
         // add sub items and their actions 
         jMenuFile.add(jMenuFileOpen);
-        jMenuFileOpen.addActionListener(e ->jMenuFileOpen_actionPerformed(e));
+        jMenuFileOpen.addActionListener(this::jMenuFileOpen_actionPerformed);
         jMenuFile.add(jMenuFileSave);
-        jMenuFileSave.addActionListener(e ->jMenuFileSave_actionPerformed(e));
+        jMenuFileSave.addActionListener(this::jMenuFileSave_actionPerformed);
         jMenuFile.addSeparator();
         jMenuFile.add(jMenuFileExit);
         jMenuFileExit.addActionListener(e -> SmartPower.getMain().stop());
@@ -135,9 +133,9 @@ public class UiFrame
     	/*
         jMenuChartPie.addActionListener(e-> jMenuChartPie_actionPerformed(e));
         jMenuChart.add(jMenuChartPie);*/
-        jMenuChartHistogram.addActionListener(e -> jMenuChartHistogram_actionPerformed(e));
+        jMenuChartHistogram.addActionListener(this::jMenuChartHistogram_actionPerformed);
         jMenuChart.add(jMenuChartHistogram);
-        jMenuChartScatter.addActionListener(e -> jMenuChartScatter_actionPerformed(e));
+        jMenuChartScatter.addActionListener(this::jMenuChartScatter_actionPerformed);
         jMenuChart.add(jMenuChartScatter);
        // add the menu to the menu bar
         jMenuBar1.add(jMenuChart);
@@ -145,7 +143,7 @@ public class UiFrame
     
     private void createHelpMenu(){
         // add sub items and their actions      
-        jMenuHelpAbout.addActionListener(e -> jMenuHelpAbout_actionPerformed(e));
+        jMenuHelpAbout.addActionListener(this::jMenuHelpAbout_actionPerformed);
         jMenuHelp.add(jMenuHelpAbout);
         // add the menu to the menu bar
         jMenuBar1.add(jMenuHelp);
@@ -207,7 +205,7 @@ public class UiFrame
     //
     public void jMenuChartHistogram_actionPerformed(ActionEvent e) {
     	Meter m = SmartPower.getMain().getData().getMeters().get(0);  
-    	ArrayList<TimeHistogram> histograms = new ArrayList<TimeHistogram>(Collections.<TimeHistogram>emptyList());
+    	ArrayList<TimeHistogram> histograms = new ArrayList<>(Collections.emptyList());
     	for (int i = 0; i<m.getMetricCount(); i++ ){
     		if (m.getMetric(i).getReadingsCount()>0){
     			histograms.add(new TimeHistogram("Power Histogram",m.getMetric(i),"Power (W)"));
@@ -227,7 +225,7 @@ public class UiFrame
 
         final ScatterChart plot = new ScatterChart("Device Scatter Chart");
         plot.pack();
-        RefineryUtilities.centerFrameOnScreen(plot);
+        //RefineryUtilities.centerFrameOnScreen(plot);
         plot.setVisible(true);
     }
     
@@ -255,7 +253,7 @@ public class UiFrame
     // write an integer to the log area
     //
     public void displayLog(int i) {
-        Integer intWrapper = new Integer(i);
+        Integer intWrapper = i;
         textArea1.append(intWrapper.toString());
         repaint();
     }

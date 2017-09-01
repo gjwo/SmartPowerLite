@@ -135,7 +135,7 @@ public class DeviceActivity implements 	Serializable,
 
 	@Override //Persistable
 	public String idString(){
-		return new String("["+this.id()+"] "+this.name());
+		return "[" + this.id() + "] " + this.name();
 	}
 	
     @Override //Persistable
@@ -153,12 +153,12 @@ public class DeviceActivity implements 	Serializable,
 
    @Override //Persistable
     public String toCSV(){
-    	return new String(	id()+","+
-    						startTimestampString()+","+
-    						endTimestampString()+ ","+
-    						(device!=null?device:"Unknown"+",")+
-    						consumption +"," +
-    						durationString());
+    	return id() + "," +
+				startTimestampString() + "," +
+				endTimestampString() + "," +
+				(device != null ? device : "Unknown" + ",") +
+				consumption + "," +
+				durationString();
     }
 
 	@Override //Comparator

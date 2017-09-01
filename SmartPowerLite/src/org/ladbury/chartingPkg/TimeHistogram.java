@@ -28,7 +28,9 @@ public class TimeHistogram extends JFrame {
 	/**
      * Time based Histogram Constructor
      *
-     * @param title  the frame title.
+     * @param frameTitle        the frame title.
+     * @param mtc               the metric to be plotted
+     * @param numberAxisTitle   The title of the plotted value
      */
     public TimeHistogram(final String frameTitle,Metric mtc, String numberAxisTitle) {
         super(frameTitle);

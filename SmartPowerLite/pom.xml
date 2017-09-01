@@ -40,12 +40,12 @@
     <dependency>
       <groupId>org.jfree</groupId>
       <artifactId>jcommon</artifactId>
-      <version>1.0.24</version>
+      <version>1.0.23</version>
       </dependency>
     <dependency>
       <groupId>org.jfree</groupId>
       <artifactId>jfreechart</artifactId>
-      <version>1.0.19</version>
+      <version>1.0.18</version>
       </dependency>
       <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
       <dependency>
@@ -53,13 +53,6 @@
           <artifactId>mysql-connector-java</artifactId>
           <version>8.0.7-dmr</version>
       </dependency>
-      <!-- https://mvnrepository.com/artifact/org.knowm.xchart/xchart -->
-      <dependency>
-          <groupId>org.knowm.xchart</groupId>
-          <artifactId>xchart</artifactId>
-          <version>3.5.0</version>
-      </dependency>
-
   </dependencies>
   
 </project>
