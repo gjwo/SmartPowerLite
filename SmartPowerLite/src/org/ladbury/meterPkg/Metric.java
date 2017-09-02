@@ -202,7 +202,7 @@ public class Metric	implements	Serializable,
 	}
 	
 	/**
-	 * getGraphdata
+	 * getGraphData
 	 * Gets data for graphing
 	 * @param t1 Starting timestamp
 	 * @param t2 Ending Timestamp
@@ -250,7 +250,7 @@ public class Metric	implements	Serializable,
 		return results;
 	}
 	/**
-	 * getGraphdata
+	 * getJfreeChartData
 	 * Gets data for graphing
 	 * @param t1 Starting timestamp
 	 * @param t2 Ending Timestamp
@@ -290,7 +290,7 @@ public class Metric	implements	Serializable,
 	}
 
 	/**
-	 * getEventdata
+	 * getEventData
 	 * Gets data for graphing
 	 * @param t1 Starting timestamp
 	 * @param t2 Ending Timestamp
@@ -617,9 +617,7 @@ public class Metric	implements	Serializable,
 	public void setType(MetricType type) {
 		this.type = type;
 	}
-	public void setreadings(ArrayList<TimedRecord> r) {
-		readings = r;
-	}
+	public void setReadings(ArrayList<TimedRecord> r) {readings = r;}
 	public Meter getMeter() {
 	    return meter;
 	}
@@ -629,9 +627,7 @@ public class Metric	implements	Serializable,
 	public Granularity getGrain() {
 		return grain;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+	public static long getSerialversionUID() {return serialVersionUID;}
 	public static int[] getGrainIntervals() {
 		return GRAIN_INTERVALS;
 	}
