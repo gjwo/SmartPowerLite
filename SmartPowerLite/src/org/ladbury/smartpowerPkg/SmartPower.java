@@ -7,12 +7,15 @@ import java.awt.Toolkit;
 
 import javax.swing.UIManager;
 
+import org.ladbury.dataServicePkg.DataService;
 import org.ladbury.meterPkg.Meter;
 import org.ladbury.meterPkg.Meter.MeterType;
 import org.ladbury.meterPkg.Metric;
 import org.ladbury.meterPkg.Metric.MetricType;
 import org.ladbury.persistentData.PersistentData;
 import org.ladbury.userInterfacePkg.UiFrame;
+
+import static org.ladbury.dataServicePkg.DataService.DEFAULT_API_URL;
 
 /**
  * SmartPower.java:	Applet
@@ -30,15 +33,11 @@ import org.ladbury.userInterfacePkg.UiFrame;
  * @version 1.1 2012/11/29 Incorporating handling of Owl meter
  * @version 1.2 2013/11/19 Incorporating handling of Onzo meter
  */
-public class SmartPower
-    extends Applet
-    implements Runnable {
-    /**
-	 * 
-	 */
+public class SmartPower extends Applet implements Runnable {
+
 	private static final long serialVersionUID = 1L;
 	public enum RunState {
-		IDLE, OPEN_FILE, PROCESS_FILE, PROCESS_READINGS, SAVE_FILE, PROCESS_EDGES, PROCESS_EVENTS, STOP
+		IDLE, LOAD_DATA, OPEN_FILE, PROCESS_FILE, PROCESS_READINGS, SAVE_FILE, PROCESS_EDGES, PROCESS_EVENTS, STOP
 	}
 
     private static final String PARAM_MEASUREMENT_FILE = "measurement file";
@@ -52,6 +51,7 @@ public class SmartPower
     private static	SmartPower	spMain = null; //This is the root access point for all data in the package, the only static.
     private	UiFrame 			frame = null;
     private	FileAccess 			file = null;
+    private DataService         dataService = null;
     private MetricType			currentMetricType = MetricType.UNDEFINED;
 //    private Meter				meter = null;
     
@@ -159,36 +159,27 @@ public class SmartPower
 	public SmartPower() {
 
         frame = new UiFrame("Graham's power analysis program");
+        dataService = new DataService(DEFAULT_API_URL);
+        // create persistent objects, data loaded in init()
+        data = new PersistentData(); // set up entity manager etc
 
         //Pack frames that have useful preferred size info, e.g. from their layout
         //Validate frames that have preset sizes
         boolean packFrame = false;
-        if (packFrame) {
-            frame.pack();
-        }
-        else {
-            frame.validate();
-
-            // Centre the frame
-        }
+        // Centre the frame
+        if (packFrame) frame.pack();
+        else frame.validate();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = frame.getSize();
-        if (frameSize.height > screenSize.height) {
-            frameSize.height = screenSize.height;
-        }
-        if (frameSize.width > screenSize.width) {
-            frameSize.width = screenSize.width;
-        }
+        if (frameSize.height > screenSize.height) frameSize.height = screenSize.height;
+        if (frameSize.width > screenSize.width) frameSize.width = screenSize.width;
         frame.setLocation( (screenSize.width - frameSize.width) / 2,
                           (screenSize.height - frameSize.height) / 2);
         frame.setVisible(true);
 
         displayString = "no line";
-
         file = new FileAccess();
-        
-        // create persistent objects, data loaded in init()
-        data = new PersistentData(); // set up entity manager etc
+
     }
 
     // APPLET INFO SUPPORT:
@@ -228,50 +219,79 @@ public class SmartPower
         if (!fStandAlone) {
             GetParameters(null);
         }
+        data.loadPersistentData(); // load the data using entity manager
+        currentMetricType = MetricType.UNDEFINED;
+        setupDefaultOnzoMeter();
+        setupDefaultPMon10Meter()
+    }
+
+    void setupDefaultOnzoMeter()
+    {
         Meter mtr;
         Metric mtc;
-        data.loadPersistentData(); // load the data using entity manager
-
         if(data.getMeters()==null ||data.getMeters().size()<=0){//add initial entry if none exist
-        	mtr = new Meter(MeterType.ONZO);
-         	data.getMeters().softAdd(mtr);
+            mtr = new Meter(MeterType.ONZO);
+            data.getMeters().softAdd(mtr);
         }
         if (data.getMetrics()==null ||data.getMetrics().size()<=0){//add initial entries if none exist
-    		//Onzo metrics ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD
-        	mtr = data.getMeters().get(0);
-        	
-        	mtc = new Metric(mtr,MetricType.ENERGY_LOW_RES);
-        	data.getMetrics().softAdd(mtc);
-        	mtr.setMetric(MetricType.ENERGY_LOW_RES, mtc);
-        	
-        	mtc = new Metric(mtr,MetricType.ENERGY_HIGH_RES);
-        	data.getMetrics().softAdd(mtc);
-        	mtr.setMetric(MetricType.ENERGY_HIGH_RES, mtc);
-        	
-        	mtc = new Metric(mtr,MetricType.POWER_REAL_STANDARD);
-        	data.getMetrics().softAdd(mtc);
-        	mtr.setMetric(MetricType.POWER_REAL_STANDARD, mtc);
-        	
-        	mtc = new Metric(mtr,MetricType.POWER_REAL_FINE);
-        	data.getMetrics().softAdd(mtc);
-        	mtr.setMetric(MetricType.POWER_REAL_FINE, mtc);
-        	
-        	mtc = new Metric(mtr,MetricType.POWER_REACTIVE_STANDARD);
-        	data.getMetrics().softAdd(mtc);
-        	mtr.setMetric(MetricType.POWER_REACTIVE_STANDARD, mtc);
-        	
-        }
-        currentMetricType = MetricType.UNDEFINED;
-        //
-        // If you use a ResourceWizard-generated "control creator" class to
-        // arrange controls in your applet, you may want to call its
-        // CreateControls() method from within this method. Remove the following
-        // call to resize() before adding the call to CreateControls();
-        // CreateControls() does its own resizing.
-        //----------------------------------------------------------------------
-        //resize(320, 240);
+            //Onzo metrics ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD
+            mtr = data.getMeters().get(0);
 
-        // Place additional initialisation code here
+            mtc = new Metric(mtr,MetricType.ENERGY_LOW_RES);
+            data.getMetrics().softAdd(mtc);
+            mtr.setMetric(MetricType.ENERGY_LOW_RES, mtc);
+
+            mtc = new Metric(mtr,MetricType.ENERGY_HIGH_RES);
+            data.getMetrics().softAdd(mtc);
+            mtr.setMetric(MetricType.ENERGY_HIGH_RES, mtc);
+
+            mtc = new Metric(mtr,MetricType.POWER_REAL_STANDARD);
+            data.getMetrics().softAdd(mtc);
+            mtr.setMetric(MetricType.POWER_REAL_STANDARD, mtc);
+
+            mtc = new Metric(mtr,MetricType.POWER_REAL_FINE);
+            data.getMetrics().softAdd(mtc);
+            mtr.setMetric(MetricType.POWER_REAL_FINE, mtc);
+
+            mtc = new Metric(mtr,MetricType.POWER_REACTIVE_STANDARD);
+            data.getMetrics().softAdd(mtc);
+            mtr.setMetric(MetricType.POWER_REACTIVE_STANDARD, mtc);
+        }
+    }
+
+    void setupDefaultPMon10Meter()
+    {
+        Meter mtr;
+        Metric mtc;
+        if(data.getMeters()==null ||data.getMeters().size()<=0){//add initial entry if none exist
+            mtr = new Meter(MeterType.PMON10);
+            data.getMeters().softAdd(mtr);
+        }
+        if (data.getMetrics()==null ||data.getMetrics().size()<=0){//add initial entries if none exist
+            //Onzo metrics ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD
+
+            mtr = data.getMeters().get(0);
+
+            mtc = new Metric(mtr,MetricType.POWER_REAL);
+            data.getMetrics().softAdd(mtc);
+            mtr.setMetric(MetricType.POWER_REAL, mtc);
+
+            mtc = new Metric(mtr,MetricType.POWER_APPERENT);
+            data.getMetrics().softAdd(mtc);
+            mtr.setMetric(MetricType.POWER_APPERENT, mtc);
+
+            mtc = new Metric(mtr,MetricType.POWER_REACTIVE);
+            data.getMetrics().softAdd(mtc);
+            mtr.setMetric(MetricType.POWER_REACTIVE, mtc);
+
+            mtc = new Metric(mtr,MetricType.VOLTAGE_RMS);
+            data.getMetrics().softAdd(mtc);
+            mtr.setMetric(MetricType.VOLTAGE_RMS, mtc);
+
+            mtc = new Metric(mtr,MetricType.CURRENT);
+            data.getMetrics().softAdd(mtc);
+            mtr.setMetric(MetricType.CURRENT, mtc);
+        }
     }
 
     // Place additional applet clean up code here.  destroy() is called when
@@ -474,8 +494,8 @@ public class SmartPower
                 // Place exception-handling code here in case an
                 //       InterruptedException is thrown by Thread.sleep(),
                 //		 meaning that another thread has interrupted this one
-                //this.frame.displayLog("!");
-                //e.printStackTrace();
+                this.frame.displayLog("!");
+                e.printStackTrace();
             	//System.out.println(e.toString());
             }
         }

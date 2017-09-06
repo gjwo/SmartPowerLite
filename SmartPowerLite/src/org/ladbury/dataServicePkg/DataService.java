@@ -22,7 +22,7 @@ public class DataService // copied from DBRestAPI in MQTTListener
     private ClientResponse clientResponse;
     private final String apiUrl;
 
-    DataService(String apiUrl)
+    public DataService(String apiUrl)
     {
         resources = new HashMap<>();
         webResource = null;
@@ -41,19 +41,19 @@ public class DataService // copied from DBRestAPI in MQTTListener
         return resources.get(resource);
     }
 
-    String[] listAvailableMeterNames()
+    public String[] listAvailableMeterNames()
     {
         return new String[]{"Whole House"};
     }
-    String[] listAvailableMetricNames(String meterName)
+    public String[] listAvailableMetricNames(String meterName)
     {
         return new String[]{"Voltage`"};
     }
-    Instant getEarliestMetric(String meterName, String metricName)
+    public Instant getEarliestMetric(String meterName, String metricName)
     {
         return Instant.now();
     }
-    Instant getLatestMetric(String meterName, String metricName)
+    public Instant getLatestMetric(String meterName, String metricName)
     {
         return Instant.now();
     }
