@@ -44,6 +44,10 @@ public class TimedRecord implements 	Serializable,
         timestamp = d;
         value = r;
     }
+    protected TimedRecord(TimestampedDouble td){
+    	value = (int)td.getValue();
+    	timestamp = Timestamp.from(td.getTimestamp());
+	}
 	
 	public TimedRecord(String[] dataArray) throws ParseException,ArrayIndexOutOfBoundsException{
 		DateFormat df = new SimpleDateFormat(Meter.ONZODATEFORMAT); 
