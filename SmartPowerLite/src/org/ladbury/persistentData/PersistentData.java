@@ -23,10 +23,10 @@ public class PersistentData {
 									MAKE, CATEGORY, WEEKDAYTYPE, TIMEPERIOD, CALENDARPERIOD, HABIT, CLUSTER, //phase2
 									METER,METRIC,TIMEDRECORD} //phase 3
 
-	private final PersistentList <DeviceActivity> activity = new PersistentList<DeviceActivity>(Collections.emptyList());
-	private final PersistentList <Meter> meters = new PersistentList<Meter>(Collections.emptyList());
-	private final PersistentList <Metric> metrics = new PersistentList<Metric>(Collections.emptyList());
-	private final PersistentList <TimedRecord> timedRecords= new PersistentList<TimedRecord>(Collections.emptyList());
+	private final PersistentList <DeviceActivity> activity = new PersistentList<>(Collections.emptyList());
+	private final PersistentList <Meter> meters = new PersistentList<>(Collections.emptyList());
+	private final PersistentList <Metric> metrics = new PersistentList<>(Collections.emptyList());
+	private final PersistentList <TimedRecord> timedRecords= new PersistentList<>(Collections.emptyList());
 	
 
 	public PersistentData(){	

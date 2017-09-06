@@ -222,7 +222,7 @@ public class SmartPower extends Applet implements Runnable {
         data.loadPersistentData(); // load the data using entity manager
         currentMetricType = MetricType.UNDEFINED;
         setupDefaultOnzoMeter();
-        setupDefaultPMon10Meter()
+        setupDefaultPMon10Meter();
     }
 
     void setupDefaultOnzoMeter()
@@ -276,9 +276,9 @@ public class SmartPower extends Applet implements Runnable {
             data.getMetrics().softAdd(mtc);
             mtr.setMetric(MetricType.POWER_REAL, mtc);
 
-            mtc = new Metric(mtr,MetricType.POWER_APPERENT);
+            mtc = new Metric(mtr,MetricType.POWER_APPARENT);
             data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.POWER_APPERENT, mtc);
+            mtr.setMetric(MetricType.POWER_APPARENT, mtc);
 
             mtc = new Metric(mtr,MetricType.POWER_REACTIVE);
             data.getMetrics().softAdd(mtc);

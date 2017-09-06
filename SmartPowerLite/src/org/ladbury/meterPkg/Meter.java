@@ -65,9 +65,10 @@ public class Meter	implements	Serializable,
 			addMetric(MetricType.POWER_REACTIVE_STANDARD);
 			break;
 		}
-		case PMON10: { //POWER_REAL, POWER_APPERENT, POWER_REACTIVE, VOLTAGE_RMS, CURRENT
+		case PMON10: { //POWER_REAL, POWER_APPARENT, POWER_REACTIVE, VOLTAGE_RMS, CURRENT
+			this.name = "PMon10";
 			addMetric(MetricType.POWER_REAL);
-			addMetric(MetricType.POWER_APPERENT);
+			addMetric(MetricType.POWER_APPARENT);
 			addMetric(MetricType.POWER_REACTIVE);
 			addMetric(MetricType.VOLTAGE_RMS);
 			addMetric(MetricType.CURRENT);

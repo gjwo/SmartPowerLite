@@ -8,7 +8,10 @@ import com.sun.jersey.api.client.WebResource;
 import org.json.JSONArray;
 import org.ladbury.meterPkg.TimestampedDouble;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class DataService // copied from DBRestAPI in MQTTListener
 {
@@ -41,14 +44,48 @@ public class DataService // copied from DBRestAPI in MQTTListener
         return resources.get(resource);
     }
 
-    public String[] listAvailableMeterNames()
+    public Collection<String> listAvailableMeterNames()
     {
-        return new String[]{"Whole House"};
+        clientResponse = getResource("location").get(ClientResponse.class);
+        lastRestError = clientResponse.getStatus();
+        if (lastRestError != REST_REQUEST_SUCCESSFUL)
+        {
+            printLastError();
+            return new ArrayList<>();
+        }
+
+        else
+        {
+            JSONArray data = new JSONArray(clientResponse.getEntity(String.class));
+            List <String> results = new ArrayList<>();
+            for (int i = 0; i < data.length(); i++)
+            {
+                results.add(data.getJSONObject(i).getString("name"));
+            }
+            return results;
+        }
     }
-    public String[] listAvailableMetricNames(String meterName)
+    public Collection<String> listAvailableMetricNames(String meterName)
     {
-        return new String[]{"Voltage`"};
+        clientResponse = getResource("datatype").get(ClientResponse.class);
+        lastRestError = clientResponse.getStatus();
+        if (lastRestError != REST_REQUEST_SUCCESSFUL)
+        {
+            printLastError();
+            return new ArrayList<>();
+        }
+        else
+        {
+            JSONArray data = new JSONArray(clientResponse.getEntity(String.class));
+            List <String> results = new ArrayList<>();
+            for (int i = 0; i < data.length(); i++)
+            {
+                results.add(data.getJSONObject(i).getString("name"));
+            }
+            return results;
+        }
     }
+
     public Instant getEarliestMetric(String meterName, String metricName)
     {
         return Instant.now();
@@ -77,7 +114,7 @@ public class DataService // copied from DBRestAPI in MQTTListener
             }
         }
     }
-    public TimestampedDouble[] getDBResourceForPeriod(String resource, String start, String end)
+    public Collection<TimestampedDouble> getDBResourceForPeriod(String resource, String start, String end)
     {
 
         clientResponse = getResource(resource)
@@ -88,16 +125,16 @@ public class DataService // copied from DBRestAPI in MQTTListener
         if (lastRestError != REST_REQUEST_SUCCESSFUL)
         {
             printLastError();
-            return null;
+            return new ArrayList<>();
         }
         else
         {
             JSONArray data = new JSONArray(clientResponse.getEntity(String.class));
-            TimestampedDouble[] results = new TimestampedDouble[data.length()];
+            List <TimestampedDouble> results = new ArrayList<>();
             for (int i = 0; i < data.length(); i++)
             {
-                results[i] = new TimestampedDouble(data.getJSONObject(i).getDouble("reading"),
-                        data.getJSONObject(i).getString("timestamp"));
+                results.add(new TimestampedDouble(data.getJSONObject(i).getDouble("reading"),
+                        data.getJSONObject(i).getString("timestamp")));
             }
             return results;
         }

@@ -21,9 +21,6 @@ import org.ladbury.smartpowerPkg.Processing;
 import org.ladbury.smartpowerPkg.SmartPower;
 import org.ladbury.smartpowerPkg.Timestamped;
 import org.ladbury.userInterfacePkg.UiStyle;
-import org.ladbury.meterPkg.TimedRecord;
-
-import static org.ladbury.meterPkg.Metric.MetricType.*;
 
 
 public class Metric	implements	Serializable,
@@ -38,7 +35,7 @@ public class Metric	implements	Serializable,
 	private static final long serialVersionUID = -701995953205153989L;
 
 	public enum MetricType {UNDEFINED, POWER_LOW_RES, ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD,
-		POWER_REAL_FINE, POWER_REACTIVE_STANDARD, POWER_REAL, POWER_APPERENT, POWER_REACTIVE, VOLTAGE_RMS, CURRENT}
+		POWER_REAL_FINE, POWER_REACTIVE_STANDARD, POWER_REAL, POWER_APPARENT, POWER_REACTIVE, VOLTAGE_RMS, CURRENT}
 
 	public enum Granularity {UNDEFINED, SECOND, TEN_SECOND, MINUTE, TEN_MINUTE, HOUR, DAY}
 
@@ -115,7 +112,7 @@ public class Metric	implements	Serializable,
 		case POWER_REAL:
 			this.setName("Power real");
 			break;
-		case POWER_APPERENT:
+		case POWER_APPARENT:
 			this.setName("Power apparent");
 			break;
 		case POWER_REACTIVE:
