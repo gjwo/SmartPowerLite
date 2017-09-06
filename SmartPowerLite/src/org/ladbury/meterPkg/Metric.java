@@ -23,6 +23,8 @@ import org.ladbury.smartpowerPkg.Timestamped;
 import org.ladbury.userInterfacePkg.UiStyle;
 import org.ladbury.meterPkg.TimedRecord;
 
+import static org.ladbury.meterPkg.Metric.MetricType.*;
+
 
 public class Metric	implements	Serializable,
 								Persistable <Metric>,
@@ -35,7 +37,8 @@ public class Metric	implements	Serializable,
 	 */
 	private static final long serialVersionUID = -701995953205153989L;
 
-	public enum MetricType {UNDEFINED, POWER_LOW_RES, ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD}
+	public enum MetricType {UNDEFINED, POWER_LOW_RES, ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD,
+		POWER_REAL_FINE, POWER_REACTIVE_STANDARD, POWER_REAL, POWER_APPERENT, POWER_REACTIVE, VOLTAGE_RMS, CURRENT}
 
 	public enum Granularity {UNDEFINED, SECOND, TEN_SECOND, MINUTE, TEN_MINUTE, HOUR, DAY}
 
@@ -85,40 +88,46 @@ public class Metric	implements	Serializable,
 		this.earliest = new Timestamp(0);
 		this.latest = new Timestamp(0);
 		this.meter = m;
+
+		this.setType(t);
+		this.setGrain(Granularity.SECOND);
 		switch (t){
 		case POWER_LOW_RES:
 			this.setName("Power");
 			this.setGrain(Granularity.MINUTE);
-			this.setType(MetricType.POWER_LOW_RES);
 			break;
-		case ENERGY_LOW_RES: 
-			this.setGrain(Granularity.SECOND);
+		case ENERGY_LOW_RES:
 			this.setCumulative(true);
-			this.setType(MetricType.ENERGY_LOW_RES);
 			break;
 		case ENERGY_HIGH_RES: 
 			this.setName("Energy high resolution");
-			this.setGrain(Granularity.SECOND);
 			this.setCumulative(true);
-			this.setType(MetricType.ENERGY_HIGH_RES);
 			break;
 		case POWER_REAL_STANDARD: 
 			this.setName("Power real standard");
-			this.setGrain(Granularity.SECOND);
-			this.setType(MetricType.POWER_REAL_STANDARD);
 			break;
 		case POWER_REAL_FINE: 
 			this.setName("Power real fine");
-			this.setGrain(Granularity.SECOND);
-			this.setType(MetricType.POWER_REAL_FINE);
 			break;
 		case POWER_REACTIVE_STANDARD: 
 			this.setName("Power reactive standard");
-			this.setGrain(Granularity.SECOND);
-			this.setType(MetricType.POWER_REACTIVE_STANDARD);
 			break;
-		
-		default: 
+		case POWER_REAL:
+			this.setName("Power real");
+			break;
+		case POWER_APPERENT:
+			this.setName("Power apparent");
+			break;
+		case POWER_REACTIVE:
+			this.setName("Power reactive");
+			break;
+		case VOLTAGE_RMS:
+			this.setName("Voltage RMS");
+			break;
+		case CURRENT:
+			this.setName("Current");
+			break;
+		default: this.setName("UNDEFINED");
 		}
 	}
 	

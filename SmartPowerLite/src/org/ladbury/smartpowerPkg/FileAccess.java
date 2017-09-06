@@ -43,7 +43,7 @@ class FileAccess
     private BufferedReader m_br;
     private PrintWriter m_pw;
  
-    protected void SPFile() {
+    protected FileAccess() {
     	/*
     	 *  Constructor
     	 */
@@ -207,8 +207,8 @@ class FileAccess
     
     /**
      * Output Activity as CSV file
-     * @param activityName
-     * @param activity
+     * @param activityName  Part of filename
+     * @param activity      list of activities
      */
     void OutputActivityAsCSVFile(String activityName, PersistentList<DeviceActivity> activity){
           
@@ -222,9 +222,9 @@ class FileAccess
    
     /**
      * Find CSV files for date
-     * @param dirName
-     * @param t
-     * @return
+     * @param dirName       Directory to be searched
+     * @param t             Timestamp
+     * @return              List of file names
      */
     protected List<String> findCSVFilesForDate(String dirName, Timestamp t){
 		DateFormat df = new SimpleDateFormat(Timestamped.FILE_DATE_FORMAT); 
@@ -232,7 +232,7 @@ class FileAccess
     	List<String> selectedFiles = new ArrayList<>();
     	File dir = new File(dirName);
     	String filename;
-    	
+    	if(dir.listFiles() == null) return null;
     	for (File file : dir.listFiles()) {
     		filename = file.getName();
     	    if (filename.toLowerCase().endsWith((".csv")) && filename.contains(df.format(t))) {
@@ -273,7 +273,6 @@ class FileAccess
     String inputPathname(){
     	return inputPathName;
     }
-    
 
     void setOutputFilename(String s){
     	outputFileName = s;

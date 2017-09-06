@@ -25,7 +25,7 @@ public class Meter	implements	Serializable,
 	private static final long serialVersionUID = -5911387336252034382L;
 
 	@SuppressWarnings("SpellCheckingInspection")
-	public enum MeterType {UNDEFINED, OWLCM160, ONZO}
+	public enum MeterType {UNDEFINED, OWLCM160, ONZO, PMON10}
 
 	private long meterId;			// persistence ID field
 	private String name;			// the name of the meter
@@ -54,6 +54,7 @@ public class Meter	implements	Serializable,
 		case OWLCM160:{ //POWER_LOW_RES
 			this.name = "OWL CM160";
 			addMetric(MetricType.POWER_LOW_RES);
+			break;
 		}
 		case ONZO: { //ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD
 			this.name = "ONZO";
@@ -62,7 +63,16 @@ public class Meter	implements	Serializable,
 			addMetric(MetricType.POWER_REAL_STANDARD);
 			addMetric(MetricType.POWER_REAL_FINE);
 			addMetric(MetricType.POWER_REACTIVE_STANDARD);
+			break;
 		}
+		case PMON10: { //POWER_REAL, POWER_APPERENT, POWER_REACTIVE, VOLTAGE_RMS, CURRENT
+			addMetric(MetricType.POWER_REAL);
+			addMetric(MetricType.POWER_APPERENT);
+			addMetric(MetricType.POWER_REACTIVE);
+			addMetric(MetricType.VOLTAGE_RMS);
+			addMetric(MetricType.CURRENT);
+			break;
+			}
 		default: 
 		}
 	}
