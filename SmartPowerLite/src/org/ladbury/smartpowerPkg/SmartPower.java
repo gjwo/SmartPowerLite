@@ -51,8 +51,9 @@ public class SmartPower extends Applet implements Runnable {
     private static	SmartPower	spMain = null; //This is the root access point for all data in the package, the only static.
     private	UiFrame 			frame = null;
     private	FileAccess 			file = null;
-    private DataService         dataService = null;
+   private DataService         dataService = null;
     private MetricType			currentMetricType = MetricType.UNDEFINED;
+
 //    private Meter				meter = null;
     
     //Application Specific data (persistent)
@@ -221,6 +222,7 @@ public class SmartPower extends Applet implements Runnable {
         }
         data.loadPersistentData(); // load the data using entity manager
         currentMetricType = MetricType.UNDEFINED;
+        dataService = new DataService();
         setupDefaultOnzoMeter();
         setupDefaultPMon10Meter();
     }
@@ -484,6 +486,7 @@ public class SmartPower extends Applet implements Runnable {
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
+                    case STOP: System.exit(0);
                     default:
                         repaint();
                         Thread.sleep(1000);
@@ -526,16 +529,23 @@ public class SmartPower extends Applet implements Runnable {
 	protected  FileAccess getFile() {
 		return this.file;
 	}
-	
 	public MetricType getMetricType() {
 		return currentMetricType;
 	}
-
 	public void setMetricType(MetricType mtcT) {
 		this.currentMetricType = mtcT;
 	}
+    public DataService getDataService()
+    {
+        return dataService;
+    }
+    public void setDataService(DataService dataService)
+    {
+        this.dataService = dataService;
+    }
 
-	//
+
+    //
 	// Access method for persistent data repository
 	//
 	public PersistentData getData(){

@@ -10,13 +10,17 @@ import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JList;
+import javax.swing.DefaultListModel;
 
 //import org.jfree.ui.RefineryUtilities;
 import org.ladbury.chartingPkg.PieChart;
@@ -24,6 +28,7 @@ import org.ladbury.chartingPkg.ScatterChart;
 import org.ladbury.chartingPkg.TimeHistogram;
 import org.ladbury.meterPkg.Meter;
 import org.ladbury.smartpowerPkg.SmartPower;
+import org.ladbury.dataServicePkg.DataService;
 
 public class UiFrame
     extends JFrame {
@@ -39,6 +44,10 @@ public class UiFrame
     private final JMenuItem jMenuFileOpen = new JMenuItem("Open");
     private final JMenuItem jMenuFileSave = new JMenuItem("Save");
     private final JMenuItem jMenuFileExit = new JMenuItem("Exit");
+
+    private final JMenu jMenuData = new JMenu("Data");
+    private final JMenuItem jMenuDataMeters = new JMenuItem("Meters");
+    private final JMenuItem jMenuDataMetrics = new JMenuItem("Metrics");
 
     private final JMenu jMenuProcess = new JMenu("Process");
     private final JMenuItem jMenuProcessRecords = new JMenuItem("Process Edges");
@@ -86,6 +95,7 @@ public class UiFrame
   
         // initialise the menus
         createFileMenu();
+        createDataMenu();
         createProcessMenu();
         createChartMenu();
         createHelpMenu();
@@ -116,7 +126,16 @@ public class UiFrame
         jMenuBar1.add(jMenuFile);
     }
 
-  
+    private void createDataMenu()
+    {
+        jMenuData.add(jMenuDataMeters);
+        jMenuDataMeters.addActionListener(this::jMenuDataMeters_actionPerformed);
+        jMenuData.add(jMenuDataMetrics);
+        jMenuDataMetrics.addActionListener(this::jMenuDataMetrics_actionPerformed);
+        // add the menu to the menu bar
+        jMenuBar1.add(jMenuData);
+    }
+
     private void createProcessMenu(){
         // add sub items and their actions      
         jMenuProcessRecords.addActionListener(e -> SmartPower.getMain().change_state(SmartPower.RunState.PROCESS_EDGES));
@@ -189,6 +208,32 @@ public class UiFrame
         if(fileDialogue.getFile() != null ){
         	SmartPower.getMain().change_state(SmartPower.RunState.SAVE_FILE);  //trigger processing in main loop
         }
+    }
+
+    //
+    //Data | Meters action performed
+    //
+    private void jMenuDataMetrics_actionPerformed(ActionEvent actionEvent)
+    {
+        Collection<String> meters = SmartPower.getMain().getDataService().getAvailableMeterNames();
+        UiListBox meterBox = new UiListBox("Meters");
+        for(String meter : meters) meterBox.add(meter);
+        meterBox.refreshContent();
+        meterBox.pack();
+        meterBox.setVisible(true);
+    }
+
+    //
+    //Data | Metrics action performed
+    //
+    private void jMenuDataMeters_actionPerformed(ActionEvent actionEvent)
+    {
+        Collection<String> metrics = SmartPower.getMain().getDataService().getAvailableMetricNames();
+        UiListBox metricBox = new UiListBox("Metrics");
+        for(String metric : metrics) metricBox.add(metric);
+        metricBox.refreshContent();
+        metricBox.pack();
+        metricBox.setVisible(true);
     }
 
     //

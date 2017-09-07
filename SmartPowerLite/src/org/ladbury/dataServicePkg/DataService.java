@@ -37,6 +37,11 @@ public class DataService // copied from DBRestAPI in MQTTListener
         else this.apiUrl = apiUrl;
     }
 
+    public DataService()
+    {
+        this(DEFAULT_API_URL);
+    }
+
     private synchronized WebResource getResource(String resource)
     {
         if(!resources.containsKey(resource))
@@ -44,7 +49,7 @@ public class DataService // copied from DBRestAPI in MQTTListener
         return resources.get(resource);
     }
 
-    public Collection<String> listAvailableMeterNames()
+    public Collection<String> getAvailableMeterNames()
     {
         clientResponse = getResource("location").get(ClientResponse.class);
         lastRestError = clientResponse.getStatus();
@@ -65,7 +70,7 @@ public class DataService // copied from DBRestAPI in MQTTListener
             return results;
         }
     }
-    public Collection<String> listAvailableMetricNames(String meterName)
+    public Collection<String> getAvailableMetricNames()
     {
         clientResponse = getResource("datatype").get(ClientResponse.class);
         lastRestError = clientResponse.getStatus();

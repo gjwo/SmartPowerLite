@@ -33,8 +33,8 @@ public class UiAboutBox
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final String product = "Smart Power";
-	private static final String version = "1.2";
-	private static final String copyright = "Copyright G.J.Wood (c) 2012,2013";
+	private static final String version = "1.3";
+	private static final String copyright = "Copyright G.J.Wood (c) 2012,2013,2017";
 	private static final String comments = "Power usage analysis program";
     
 	private final JPanel panel1 = new JPanel();
