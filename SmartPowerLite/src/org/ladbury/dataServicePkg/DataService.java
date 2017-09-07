@@ -150,25 +150,6 @@ public class DataService // copied from DBRestAPI in MQTTListener
         return Instant.now();
     }
 
-    public void printDBResourceForPeriod(String resource, String start, String end)
-    {
-
-        clientResponse = getResource(resource)
-                .queryParam("start", start)
-                .queryParam("end", end)
-                .get(ClientResponse.class);
-        lastRestError = clientResponse.getStatus();
-        if (lastRestError != REST_REQUEST_SUCCESSFUL) printLastError();
-        else
-        {
-            JSONArray data = new JSONArray(clientResponse.getEntity(String.class));
-            for (int i = 0; i < data.length(); i++)
-            {
-                System.out.println(data.getJSONObject(i).getDouble("reading") + " recorded at " +
-                        data.getJSONObject(i).getString("timestamp"));
-            }
-        }
-    }
     public Collection<TimestampedDouble> getDBResourceForPeriod(String resource, String start, String end)
     {
 
@@ -195,31 +176,24 @@ public class DataService // copied from DBRestAPI in MQTTListener
         }
     }
 
-    public Collection<String> getDBResourceForPeriodAsStrings(String resource, String start, String end)
+    public void printDBResourceForPeriod(String resource, String start, String end)
     {
-
-        clientResponse = getResource(resource)
-                .queryParam("start", start)
-                .queryParam("end", end)
-                .get(ClientResponse.class);
-        lastRestError = clientResponse.getStatus();
-        if (lastRestError != REST_REQUEST_SUCCESSFUL)
+        for(TimestampedDouble reading: getDBResourceForPeriod(resource,start,end))
         {
-            printLastError();
-            return new ArrayList<>();
-        }
-        else
-        {
-            JSONArray data = new JSONArray(clientResponse.getEntity(String.class));
-            List <String> results = new ArrayList<>();
-            for (int i = 0; i < data.length(); i++)
-            {
-                results.add(data.getJSONObject(i).getDouble("reading") + " " +
-                        data.getJSONObject(i).getString("timestamp"));
-            }
-            return results;
+            System.out.println(reading);
         }
     }
+
+    public Collection<String> getDBResourceForPeriodAsStrings(String resource, String start, String end)
+    {
+        List <String> results = new ArrayList<>();
+        for(TimestampedDouble reading: getDBResourceForPeriod(resource,start,end))
+        {
+            results.add(reading.toString());
+        }
+        return results;
+    }
+
     public Collection<String> getDBResourceAsStrings(String resource)
     {
 
