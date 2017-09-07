@@ -17,6 +17,7 @@ import org.ladbury.meterPkg.TimedRecord;
  * @version 3.0
  *
  */
+@SuppressWarnings("Convert2Diamond")
 public class PersistentData {
 	public enum EntityType{	UNDEFINED, DEVICE, PARENT_DEVICE, READINGS, EVENTS, //phase1
 									ACTIVITY, CATALOGUE, PATTERN, ABODE, ROOM,			//phase1

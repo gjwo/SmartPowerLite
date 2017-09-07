@@ -64,7 +64,8 @@ public class UiAboutBox
     }
 
     /**Component initialisation*/
-    private void jbInit() throws Exception {
+    private void jbInit()
+    {
     	//imageLabel.setIcon(new ImageIcon(UiAboutBox.class.getResource("[Your Image]")));
         this.setTitle("About");
         setResizable(false);

@@ -63,7 +63,8 @@ public class UiFrame extends JFrame {
     //
     // Component initialisation
     //
-    private void jbInit() throws Exception {
+    private void jbInit()
+    {
         // Create a content pane
         JPanel contentPane = (JPanel) this.getContentPane();
         contentPane.setLayout(borderLayout1);

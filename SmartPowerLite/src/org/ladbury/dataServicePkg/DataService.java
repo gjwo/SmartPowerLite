@@ -19,7 +19,6 @@ public class DataService // copied from DBRestAPI in MQTTListener
     public static final int REST_REQUEST_SUCCESSFUL = 200;
 
     private final HashMap<String, WebResource> resources;
-    private WebResource webResource;
     private final Client restClient;
     private int lastRestError;
     private ClientResponse clientResponse;
@@ -28,7 +27,6 @@ public class DataService // copied from DBRestAPI in MQTTListener
     public DataService(String apiUrl)
     {
         resources = new HashMap<>();
-        webResource = null;
         clientResponse = null;
         restClient = Client.create();
         lastRestError = REST_REQUEST_SUCCESSFUL;

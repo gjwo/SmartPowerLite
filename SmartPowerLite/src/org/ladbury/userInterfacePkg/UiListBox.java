@@ -4,15 +4,14 @@ import javax.swing.*;
 public class UiListBox extends JDialog
 {
 
-    private JList<String> elementList;
-    private JPanel panel1;
     private DefaultListModel<String> listModel;
 
     UiListBox(String title)
     {
         listModel = new DefaultListModel<>();
-        elementList = new JList<>(listModel);
-        panel1 = new JPanel();
+        JList<String> elementList = new JList<>(listModel);
+        JPanel panel1 = new JPanel();
+
         setTitle(title);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(200, 200);

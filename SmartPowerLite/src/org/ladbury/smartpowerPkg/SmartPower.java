@@ -119,6 +119,7 @@ public class SmartPower extends Applet implements Runnable {
     // When the applet is run within an HTML page, this method is called by the
     // init() method with args == null.
     //---------------------------------------------------------------------------
+    @SuppressWarnings("UnusedAssignment")
     private void GetParameters(String args[]) {
         // Query values of all Parameters
         //--------------------------------------------------------------
@@ -130,7 +131,6 @@ public class SmartPower extends Applet implements Runnable {
          if (param != null) {
              String readingsFile = param;
              readingsFile = readingsFile +""; //Suppress warning
-           
         }
     }
 
@@ -163,13 +163,7 @@ public class SmartPower extends Applet implements Runnable {
         dataService = new DataService(DEFAULT_API_URL);
         // create persistent objects, data loaded in init()
         data = new PersistentData(); // set up entity manager etc
-
-        //Pack frames that have useful preferred size info, e.g. from their layout
-        //Validate frames that have preset sizes
-        boolean packFrame = false;
-        // Centre the frame
-        if (packFrame) frame.pack();
-        else frame.validate();
+        frame.validate();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = frame.getSize();
         if (frameSize.height > screenSize.height) frameSize.height = screenSize.height;
@@ -200,6 +194,7 @@ public class SmartPower extends Applet implements Runnable {
     // SmartPower Parameter Information:
     //  { "Name", "Type", "Description" },
     //--------------------------------------------------------------------------
+    @SuppressWarnings("SpellCheckingInspection")
     public String[][] getParameterInfo() {
         String paramReadingsFile = "readingsfile";
         return new String[][]{

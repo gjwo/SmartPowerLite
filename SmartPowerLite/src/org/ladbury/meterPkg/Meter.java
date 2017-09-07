@@ -129,16 +129,16 @@ public class Meter	implements	Serializable,
 	}
 	/**
 	 * Add Metric - appends the metric to the meter's store of metrics
-	 * @param metricT
-	 * @return
+	 * @param metricT	The metric type to be added
+	 * @return	true if added succesfully
 	 */
 	public boolean addMetric(MetricType metricT){
 		return metrics.add(new Metric(this,metricT));
 	}
 	/**
 	 * Set Metric - replaces a metric already in the list of Metrics
-	 * @param t
-	 * @param metric
+	 * @param t 		Metric Type
+	 * @param metric	Metric value
 	 * @return True if the metric was successfully replaced
 	 */
 	public boolean setMetric(MetricType t, Metric metric)
@@ -148,7 +148,7 @@ public class Meter	implements	Serializable,
 	}
 	/**
 	 * Get Metric index
-	 * @param metricT
+	 * @param metricT 		Metric Type
 	 * @return the index of the first metric of the specified type or -1 if not found
 	 */
 	private int getMetricIndex(MetricType metricT) {

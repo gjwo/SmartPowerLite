@@ -33,7 +33,7 @@ public class ScatterChart extends JFrame {
     public ScatterChart(final String frameTitle) {
         super(frameTitle);
         String chartTitle;    
-        Timestamp t1 = new Timestamp(0);
+        Timestamp t1;
    	
         // get data
     	final XYDataset data1 = Processing.getDeviceActivityScatterData();

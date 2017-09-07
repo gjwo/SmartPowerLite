@@ -217,8 +217,7 @@ public class Metric	implements	Serializable,
 	 * 			these records may be real recordings or interpolated results
 	 */
 	public ArrayList<TimedRecord> getGraphData(Timestamp t1, Timestamp t2,Granularity g){
-		int i1=-1,i2=-1;
-		int i;
+		int i,i1=-1,i2;
 		Timestamp incrementalTs,recordedTs;
 		int recordedValue;
 		ArrayList<TimedRecord> results = new ArrayList<>();
@@ -304,8 +303,7 @@ public class Metric	implements	Serializable,
 	 * 			events between and including the timestamps
 	 */
 	public Metric getEventData(Timestamp t1, Timestamp t2){
-		int i1=-1,i2=-1;
-		int i;
+		int i,i1=-1,i2;
 		Metric result = new Metric(this.meter, this.type);
 		result.name = "Subset";
 		if (t1.before(earliest)||t1.after(latest)||(readings.size()<=1)) return null; // won't find a value for the timestamp t1
@@ -419,8 +417,8 @@ public class Metric	implements	Serializable,
 	/**
 	 * clearReadings
 	 * removes all readings between the two times and resets earliest and/or latest times as appropriate
-	 * @param t1
-	 * @param t2
+	 * @param t1	from start time
+	 * @param t2	to end time
 	 */
 	public void clearReadings(Timestamp t1, Timestamp t2){
 		if (t1==null || t2==null ) return; // bad parameters
@@ -633,7 +631,7 @@ public class Metric	implements	Serializable,
 	public Granularity getGrain() {
 		return grain;
 	}
-	public static long getSerialversionUID() {return serialVersionUID;}
+	public static long getSerialVersionUID() {return serialVersionUID;}
 	public static int[] getGrainIntervals() {
 		return GRAIN_INTERVALS;
 	}

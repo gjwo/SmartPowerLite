@@ -24,13 +24,13 @@ public class Histogram extends JFrame {
 
 	public Histogram(String title) {
 		    JFreeChart chart = createChart();
-		    
+		    /*
 		    try {
-		      //ChartUtilities.saveChartAsPNG(new File("test.png"), chart, 300, 300);
+		      ChartUtilities.saveChartAsPNG(new File("test.png"), chart, 300, 300);
 		    } catch (Exception e) {
 		      e.printStackTrace();
 		    }
-		    
+		    */
 		    ChartPanel chartPanel = new ChartPanel(chart);
 		    getContentPane().add(chartPanel, BorderLayout.CENTER);
 		    this.setBounds(10, 10, 500, 500);
