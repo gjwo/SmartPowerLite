@@ -225,14 +225,7 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataDisplay_actionPerformed(ActionEvent actionEvent)
     {
-        //Collection<String> meters = SmartPower.getMain().getDataService().getAvailableMeterNames();
-        //Collection<String> metrics = SmartPower.getMain().getDataService().getAvailableMetricNames();
-        Collection<String> readings = SmartPower.getMain().getDataService().getDBResourceForPeriodAsStrings(
-                "whole_house/voltage", "2017-09-03 11:02:00","2017-09-06 11:03:01");
-
-        Collection<DataServiceMeter> meters = SmartPower.getMain().getDataService().getAvailableMeters();
-        Collection<DataServiceMetric> metrics = SmartPower.getMain().getDataService().getAvailableMetrics();
-        UiDisplayReadingsDialogue readingsDialogue = new UiDisplayReadingsDialogue("Readings", meters,metrics );
+       UiDisplayReadingsDialogue readingsDialogue = new UiDisplayReadingsDialogue("Readings" );
         readingsDialogue.pack();
         readingsDialogue.setVisible(true);
     }

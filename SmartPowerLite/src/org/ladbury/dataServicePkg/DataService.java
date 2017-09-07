@@ -42,7 +42,6 @@ public class DataService // copied from DBRestAPI in MQTTListener
 
     private synchronized WebResource getResource(String resource)
     {
-        //resource = resource.replace(" ", "_").toLowerCase();
         System.out.println(resource);
         if(!resources.containsKey(resource))
             resources.put(resource, restClient.resource(this.apiUrl + resource));
