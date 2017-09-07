@@ -49,6 +49,31 @@ public class DataService // copied from DBRestAPI in MQTTListener
         return resources.get(resource);
     }
 
+    public Collection<DataServiceMeter> getAvailableMeters()
+    {
+        clientResponse = getResource("location").get(ClientResponse.class);
+        lastRestError = clientResponse.getStatus();
+        if (lastRestError != REST_REQUEST_SUCCESSFUL)
+        {
+            printLastError();
+            return new ArrayList<>();
+        }
+
+        else
+        {
+            JSONArray data = new JSONArray(clientResponse.getEntity(String.class));
+            List <DataServiceMeter> results = new ArrayList<>();
+            for (int i = 0; i < data.length(); i++)
+            {
+                results.add(new DataServiceMeter(
+                        data.getJSONObject(i).getString("name"),
+                        data.getJSONObject(i).getString("tag"),
+                        data.getJSONObject(i).getString("description")));
+            }
+            return results;
+        }
+    }
+
     public Collection<String> getAvailableMeterNames()
     {
         clientResponse = getResource("location").get(ClientResponse.class);
@@ -66,6 +91,32 @@ public class DataService // copied from DBRestAPI in MQTTListener
             for (int i = 0; i < data.length(); i++)
             {
                 results.add(data.getJSONObject(i).getString("name"));
+            }
+            return results;
+        }
+    }
+
+    public Collection<DataServiceMetric> getAvailableMetrics()
+    {
+        clientResponse = getResource("datatype").get(ClientResponse.class);
+        lastRestError = clientResponse.getStatus();
+        if (lastRestError != REST_REQUEST_SUCCESSFUL)
+        {
+            printLastError();
+            return new ArrayList<>();
+        }
+
+        else
+        {
+            JSONArray data = new JSONArray(clientResponse.getEntity(String.class));
+            List <DataServiceMetric> results = new ArrayList<>();
+            for (int i = 0; i < data.length(); i++)
+            {
+                results.add(new DataServiceMetric(
+                        data.getJSONObject(i).getString("name"),
+                        data.getJSONObject(i).getString("tag"),
+                        data.getJSONObject(i).getString("symbol"),
+                        data.getJSONObject(i).getString("description")));
             }
             return results;
         }

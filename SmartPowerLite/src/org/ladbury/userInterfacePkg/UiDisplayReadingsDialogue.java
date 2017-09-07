@@ -1,5 +1,7 @@
 package org.ladbury.userInterfacePkg;
 
+import org.ladbury.dataServicePkg.DataServiceMeter;
+import org.ladbury.dataServicePkg.DataServiceMetric;
 import org.ladbury.smartpowerPkg.SmartPower;
 
 import javax.swing.*;
@@ -18,56 +20,31 @@ public class UiDisplayReadingsDialogue extends JDialog
     private static final JLabel lblMetric    =   new JLabel("Metric:");
     private static final JLabel lblEarliest    =   new JLabel("Start time:");
     private static final JLabel lblLatest    =   new JLabel("End Time:");
-    private final JComboBox<String> comboMeter;
-    private final JComboBox<String> comboMetric;
+    private final JComboBox<DataServiceMeter> comboMeter;
+    private final JComboBox<DataServiceMetric> comboMetric;
     private final JComboBox<String> comboEarliest;
     private final JComboBox<String> comboLatest;
     private final Collection<String> earliestTimes = new ArrayList<String>(Arrays.asList("time1", "time2"));
     private final Collection<String> latestTimes = new ArrayList<String>(Arrays.asList("time3", "time4"));
     private Collection<String> readings;
     private final JButton btnOK = new JButton("OK");
-    private String meter;
-    private String metric;
+    private DataServiceMeter meter;
+    private DataServiceMetric metric;
     private String earliestTime;
     private String latestTime;
 
-    class ItemChangeListener implements ItemListener
-    {
-        @Override
-        public void itemStateChanged(ItemEvent event) {
-            if (event.getStateChange() == ItemEvent.SELECTED) {
-                Object item = event.getItem();
-                System.out.println(item.toString());
-                if (item.equals(comboMeter))
-                {
-                    meter = (String) comboMeter.getSelectedItem();
-                    return;
-                }
-                if (item.equals(comboMetric))
-                {
-                    metric = (String) comboMetric.getSelectedItem();
-                    return;
-                }
-                if (item.equals(comboEarliest)) earliestTime = (String)comboEarliest.getSelectedItem();
-                if (item.equals(comboLatest)) latestTime = (String)comboLatest.getSelectedItem();
-            }
-        }
-    }
-
-    private final ItemChangeListener comboListener = new ItemChangeListener();
-
-    UiDisplayReadingsDialogue(String title, Collection<String > meterNames,Collection<String > metricNames )
+    UiDisplayReadingsDialogue(String title, Collection<DataServiceMeter> meters, Collection<DataServiceMetric> metrics )
     {
         //Set up combo boxes and add a listener for changes
-        comboMeter  =   new JComboBox<>(meterNames.toArray(new String[meterNames.size()]));
+        comboMeter  =   new JComboBox<>(meters.toArray(new DataServiceMeter[meters.size()]));
         comboMeter.addActionListener(event -> {
-            meter = (String) comboMeter.getSelectedItem();
+            meter = (DataServiceMeter)comboMeter.getSelectedItem();
         });
         //comboMeter.addItemListener(comboListener);
 
-        comboMetric =   new JComboBox<>(metricNames.toArray(new String[metricNames.size()]));
+        comboMetric =   new JComboBox<>(metrics.toArray(new DataServiceMetric[metrics.size()]));
         comboMetric.addActionListener(event -> {
-            metric = (String) comboMetric.getSelectedItem();
+            metric = (DataServiceMetric)comboMetric.getSelectedItem();
         });
         //comboMetric.addItemListener(comboListener);
 
@@ -87,10 +64,8 @@ public class UiDisplayReadingsDialogue extends JDialog
                 "whole_house/voltage", "2017-09-03 11:02:00","2017-09-06 11:03:01");
 
                 //record the initially selected values in case they are not changed
-        if( meterNames.iterator().hasNext()) meter = meterNames.iterator().next();
-        if( metricNames.iterator().hasNext()) metric = metricNames.iterator().next();
-        readings = SmartPower.getMain().getDataService().getDBResourceAsStrings(meter.replace(" ", "_").toLowerCase()
-                +"/"+metric.replace(" ", "").toLowerCase());
+        if( meters.iterator().hasNext()) meter = meters.iterator().next();
+        if( metrics.iterator().hasNext()) metric = metrics.iterator().next();
         if( readings.iterator().hasNext()) earliestTime = readings.iterator().next();
         if( readings.iterator().hasNext()) latestTime = readings.iterator().next();
 
