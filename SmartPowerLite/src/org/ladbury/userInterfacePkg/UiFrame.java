@@ -1,40 +1,20 @@
 package org.ladbury.userInterfacePkg;
 
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FileDialog;
-import java.awt.Point;
-import java.awt.TextArea;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JList;
-import javax.swing.DefaultListModel;
-
-//import org.jfree.ui.RefineryUtilities;
 import org.ladbury.chartingPkg.PieChart;
 import org.ladbury.chartingPkg.ScatterChart;
 import org.ladbury.chartingPkg.TimeHistogram;
 import org.ladbury.meterPkg.Meter;
 import org.ladbury.smartpowerPkg.SmartPower;
-import org.ladbury.dataServicePkg.DataService;
 
-public class UiFrame
-    extends JFrame {
-    /**
-	 * 
-	 */
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+public class UiFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
     private final BorderLayout borderLayout1 = new BorderLayout();
@@ -180,7 +160,7 @@ public class UiFrame
     //
     //File | Open action performed
     //
-    public void jMenuFileOpen_actionPerformed(ActionEvent e) {
+    private void jMenuFileOpen_actionPerformed(ActionEvent e) {
         //FilenameFilter m_filter = "*.csv";
         // create a file dialogue
         fileDialogue = new FileDialog(this, "Open measurement readings (.csv) file");
@@ -197,7 +177,7 @@ public class UiFrame
     //
     //File | Save action performed
     //
-    public void jMenuFileSave_actionPerformed(ActionEvent e) {
+    private void jMenuFileSave_actionPerformed(ActionEvent e) {
         //FilenameFilter m_filter = "*.csv";
         // create a file dialogue
         fileDialogue = new FileDialog(this, "Open measurement readings (.csv) file");
@@ -213,12 +193,11 @@ public class UiFrame
     //
     //Data | Meters action performed
     //
-    private void jMenuDataMetrics_actionPerformed(ActionEvent actionEvent)
+    private void jMenuDataMeters_actionPerformed(ActionEvent actionEvent)
     {
         Collection<String> meters = SmartPower.getMain().getDataService().getAvailableMeterNames();
         UiListBox meterBox = new UiListBox("Meters");
-        for(String meter : meters) meterBox.add(meter);
-        meterBox.refreshContent();
+        for (String meter : meters) meterBox.add(meter);
         meterBox.pack();
         meterBox.setVisible(true);
     }
@@ -226,12 +205,11 @@ public class UiFrame
     //
     //Data | Metrics action performed
     //
-    private void jMenuDataMeters_actionPerformed(ActionEvent actionEvent)
+    private void jMenuDataMetrics_actionPerformed(ActionEvent actionEvent)
     {
         Collection<String> metrics = SmartPower.getMain().getDataService().getAvailableMetricNames();
         UiListBox metricBox = new UiListBox("Metrics");
-        for(String metric : metrics) metricBox.add(metric);
-        metricBox.refreshContent();
+        for (String metric : metrics) metricBox.add(metric);
         metricBox.pack();
         metricBox.setVisible(true);
     }
@@ -248,7 +226,7 @@ public class UiFrame
     //
     //Histogram action performed
     //
-    public void jMenuChartHistogram_actionPerformed(ActionEvent e) {
+    private void jMenuChartHistogram_actionPerformed(ActionEvent e) {
     	Meter m = SmartPower.getMain().getData().getMeters().get(0);  
     	ArrayList<TimeHistogram> histograms = new ArrayList<>(Collections.emptyList());
     	for (int i = 0; i<m.getMetricCount(); i++ ){
@@ -266,7 +244,7 @@ public class UiFrame
     //
     //Chart Scatter action performed
     //
-    public void jMenuChartScatter_actionPerformed(ActionEvent e) {
+    private void jMenuChartScatter_actionPerformed(ActionEvent e) {
 
         final ScatterChart plot = new ScatterChart("Device Scatter Chart");
         plot.pack();
@@ -282,7 +260,7 @@ public class UiFrame
       //
       //Help About action performed
       //
-      public void jMenuHelpAbout_actionPerformed(ActionEvent e) {
+      private void jMenuHelpAbout_actionPerformed(ActionEvent e) {
           UiAboutBox dlg = new UiAboutBox(this);
           Dimension dlgSize = dlg.getPreferredSize();
           Dimension frmSize = getSize();

@@ -42,7 +42,6 @@ public class UiAboutBox
     private final JPanel insetsPanel1 = new JPanel();
     private final JPanel insetsPanel3 = new JPanel();
     private final JButton button1 = new JButton();
-    JLabel imageLabel = new JLabel();
     private final JLabel label1 = new JLabel();
     private final JLabel label2 = new JLabel();
     private final JLabel label3 = new JLabel();
@@ -52,7 +51,7 @@ public class UiAboutBox
     private final FlowLayout flowLayout1 = new FlowLayout();
     private final GridLayout gridLayout1 = new GridLayout();
 
-    public UiAboutBox(Frame parent) {
+    UiAboutBox(Frame parent) {
         super(parent);
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         try {

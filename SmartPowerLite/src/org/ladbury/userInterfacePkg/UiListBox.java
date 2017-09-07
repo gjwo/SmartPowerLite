@@ -1,28 +1,27 @@
 package org.ladbury.userInterfacePkg;
-import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import java.awt.*;
+import javax.swing.*;
 
-public class UiListBox extends JFrame
+public class UiListBox extends JDialog
 {
 
-    private JList<String> ElementList;
+    private JList<String> elementList;
+    private JPanel panel1;
     private DefaultListModel<String> listModel;
-    public UiListBox(String Title)
+
+    UiListBox(String title)
     {
-        //create the model and add elements
         listModel = new DefaultListModel<>();
-        //create the list
-        ElementList = new JList<>(listModel);
-        add(ElementList);
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setTitle(Title);
-        this.setSize(200, 200);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
+        elementList = new JList<>(listModel);
+        panel1 = new JPanel();
+        setTitle(title);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(200, 200);
+        panel1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel1.add(elementList);
+        add(panel1);
+        setLocationRelativeTo(null);
+        pack();
+        setVisible(true);
     }
     public void add(String s){listModel.addElement(s);}
-    public void refreshContent(){ElementList = new JList<>(listModel);}
-    public void clearContent(){listModel = new DefaultListModel<>();}
 }
