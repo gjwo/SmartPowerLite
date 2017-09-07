@@ -42,6 +42,8 @@ public class DataService // copied from DBRestAPI in MQTTListener
 
     private synchronized WebResource getResource(String resource)
     {
+        //resource = resource.replace(" ", "_").toLowerCase();
+        System.out.println(resource);
         if(!resources.containsKey(resource))
             resources.put(resource, restClient.resource(this.apiUrl + resource));
         return resources.get(resource);
@@ -163,7 +165,30 @@ public class DataService // copied from DBRestAPI in MQTTListener
             for (int i = 0; i < data.length(); i++)
             {
                 results.add(data.getJSONObject(i).getDouble("reading") + " " +
-                            data.getJSONObject(i).getString("timestamp"));
+                        data.getJSONObject(i).getString("timestamp"));
+            }
+            return results;
+        }
+    }
+    public Collection<String> getDBResourceAsStrings(String resource)
+    {
+
+        clientResponse = getResource(resource)
+                 .get(ClientResponse.class);
+        lastRestError = clientResponse.getStatus();
+        if (lastRestError != REST_REQUEST_SUCCESSFUL)
+        {
+            printLastError();
+            return new ArrayList<>();
+        }
+        else
+        {
+            JSONArray data = new JSONArray(clientResponse.getEntity(String.class));
+            List <String> results = new ArrayList<>();
+            for (int i = 0; i < data.length(); i++)
+            {
+                results.add(data.getJSONObject(i).getDouble("reading") + " " +
+                        data.getJSONObject(i).getString("timestamp"));
             }
             return results;
         }

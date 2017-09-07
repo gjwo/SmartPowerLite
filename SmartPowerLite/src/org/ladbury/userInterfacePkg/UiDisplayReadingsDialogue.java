@@ -1,5 +1,7 @@
 package org.ladbury.userInterfacePkg;
 
+import org.ladbury.smartpowerPkg.SmartPower;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,6 +24,7 @@ public class UiDisplayReadingsDialogue extends JDialog implements ActionListener
     private final JComboBox<String> comboLatest;
     private final Collection<String> earliestTimes = new ArrayList<String>(Arrays.asList("time1", "time2"));
     private final Collection<String> latestTimes = new ArrayList<String>(Arrays.asList("time3", "time4"));
+    private Collection<String> readings;
     private final JButton btnOK = new JButton("OK");
     private String meter;
     private String metric;
@@ -35,16 +38,22 @@ public class UiDisplayReadingsDialogue extends JDialog implements ActionListener
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 Object item = event.getItem();
                 System.out.println(item.toString());
-                if (item.equals(comboMeter)) meter = (String)comboMeter.getSelectedItem();
-                if (item.equals(comboMetric)) metric = (String)comboMetric.getSelectedItem();
+                if (item.equals(comboMeter))
+                {
+                    meter = (String) comboMeter.getSelectedItem();
+                    return;
+                }
+                if (item.equals(comboMetric))
+                {
+                    metric = (String) comboMetric.getSelectedItem();
+                    return;
+                }
                 if (item.equals(comboEarliest)) earliestTime = (String)comboEarliest.getSelectedItem();
                 if (item.equals(comboLatest)) latestTime = (String)comboLatest.getSelectedItem();
             }
         }
     }
 
-    //private final ItemChangeListener metricListener = new ItemChangeListener();
-    //private final ItemChangeListener meterListener = new ItemChangeListener();
     private final ItemChangeListener comboListener = new ItemChangeListener();
 
     UiDisplayReadingsDialogue(String title, Collection<String > meterNames,Collection<String > metricNames )
@@ -59,11 +68,16 @@ public class UiDisplayReadingsDialogue extends JDialog implements ActionListener
         comboLatest =   new JComboBox<>(latestTimes.toArray(new String[earliestTimes.size()]));
         comboLatest .addItemListener(comboListener);
 
-        //record the initially selected values in case they are not changed
+        Collection<String> readings = SmartPower.getMain().getDataService().getDBResourceForPeriodAsStrings(
+                "whole_house/voltage", "2017-09-03 11:02:00","2017-09-06 11:03:01");
+
+                //record the initially selected values in case they are not changed
         if( meterNames.iterator().hasNext()) meter = meterNames.iterator().next();
-        if( metricNames.iterator().hasNext()) meter = metricNames.iterator().next();
-        if( earliestTimes.iterator().hasNext()) earliestTime = earliestTimes.iterator().next();
-        if( latestTimes.iterator().hasNext()) latestTime = latestTimes.iterator().next();
+        if( metricNames.iterator().hasNext()) metric = metricNames.iterator().next();
+        readings = SmartPower.getMain().getDataService().getDBResourceAsStrings(meter.replace(" ", "_").toLowerCase()
+                +"/"+metric.replace(" ", "").toLowerCase());
+        if( readings.iterator().hasNext()) earliestTime = readings.iterator().next();
+        if( readings.iterator().hasNext()) latestTime = readings.iterator().next();
 
 
         JPanel panel1 = new JPanel(new GridLayout(2,4));
@@ -85,6 +99,7 @@ public class UiDisplayReadingsDialogue extends JDialog implements ActionListener
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.add(panel1,BorderLayout.CENTER);
+        btnOK.addActionListener(this::actionPerformed);
         this.add(btnOK, BorderLayout.SOUTH);
         setLocationRelativeTo(null);
         pack();
@@ -94,5 +109,6 @@ public class UiDisplayReadingsDialogue extends JDialog implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         System.out.println("Button Pressed");
+        SmartPower.getMain().getDataService().printDBResourceForPeriod(meter+"/"+metric,earliestTime,latestTime);
     }
 }
