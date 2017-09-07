@@ -105,55 +105,55 @@ public class Meter	implements	Serializable,
 	
 	/**
 	 * get Metric
-	 * @param metricT the type of the metric to be returned
+	 * @param metricType the type of the metric to be returned
 	 * @return the first of the meter's recoded metrics which matches the metric type
 	 */
-	public Metric getMetric(MetricType metricT) {
+	public Metric getMetric(MetricType metricType) {
 		for (Metric metric : this.metrics)
 		{
-			if (metric.getType() == metricT) return metric;
+			if (metric.getType() == metricType) return metric;
 		}
 		return null;
 	}
 	/**
 	 * Remove Metric
-	 * @param metricT - the type of Metric
+	 * @param metricType - the type of Metric
 	 * @return True if a metric of the specified type was successfully removed
 	 */
-	public boolean removeMetric(MetricType metricT){
+	public boolean removeMetric(MetricType metricType){
 		for(int i=0; i<this.metrics.size();i++){
-			if (metrics.get(i).getType() == metricT)
+			if (metrics.get(i).getType() == metricType)
 				return (metrics.remove(i)!=null);
 		}
 		return false;
 	}
 	/**
 	 * Add Metric - appends the metric to the meter's store of metrics
-	 * @param metricT	The metric type to be added
+	 * @param metricType	The metric type to be added
 	 * @return	true if added succesfully
 	 */
-	public boolean addMetric(MetricType metricT){
-		return metrics.add(new Metric(this,metricT));
+	public boolean addMetric(MetricType metricType){
+		return metrics.add(new Metric(this,metricType));
 	}
 	/**
 	 * Set Metric - replaces a metric already in the list of Metrics
-	 * @param t 		Metric Type
+	 * @param metricType 		Metric Type
 	 * @param metric	Metric value
 	 * @return True if the metric was successfully replaced
 	 */
-	public boolean setMetric(MetricType t, Metric metric)
+	public boolean setMetric(MetricType metricType, Metric metric)
 	{
-		int index = getMetricIndex(t); // find the first metric of this type
+		int index = getMetricIndex(metricType); // find the first metric of this type
 		return index != -1 && this.metrics.set(index, metric) != null;
 	}
 	/**
 	 * Get Metric index
-	 * @param metricT 		Metric Type
+	 * @param metricType 		Metric Type
 	 * @return the index of the first metric of the specified type or -1 if not found
 	 */
-	private int getMetricIndex(MetricType metricT) {
+	private int getMetricIndex(MetricType metricType) {
 		for(int i=0; i<this.metrics.size();i++){
-			if (metrics.get(i).getType() == metricT) return i;
+			if (metrics.get(i).getType() == metricType) return i;
 		}
 		return -1;
 	}

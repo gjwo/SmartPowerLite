@@ -142,6 +142,33 @@ public class DataService // copied from DBRestAPI in MQTTListener
             return results;
         }
     }
+
+    public Collection<String> getDBResourceForPeriodAsStrings(String resource, String start, String end)
+    {
+
+        clientResponse = getResource(resource)
+                .queryParam("start", start)
+                .queryParam("end", end)
+                .get(ClientResponse.class);
+        lastRestError = clientResponse.getStatus();
+        if (lastRestError != REST_REQUEST_SUCCESSFUL)
+        {
+            printLastError();
+            return new ArrayList<>();
+        }
+        else
+        {
+            JSONArray data = new JSONArray(clientResponse.getEntity(String.class));
+            List <String> results = new ArrayList<>();
+            for (int i = 0; i < data.length(); i++)
+            {
+                results.add(data.getJSONObject(i).getDouble("reading") + " " +
+                            data.getJSONObject(i).getString("timestamp"));
+            }
+            return results;
+        }
+    }
+
     public void printLastError()
     {
         if (lastRestError == REST_REQUEST_SUCCESSFUL)

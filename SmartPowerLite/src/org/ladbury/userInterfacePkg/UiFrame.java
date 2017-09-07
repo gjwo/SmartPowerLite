@@ -26,8 +26,9 @@ public class UiFrame extends JFrame {
     private final JMenuItem jMenuFileExit = new JMenuItem("Exit");
 
     private final JMenu jMenuData = new JMenu("Data");
-    private final JMenuItem jMenuDataMeters = new JMenuItem("Meters");
-    private final JMenuItem jMenuDataMetrics = new JMenuItem("Metrics");
+    private final JMenuItem jMenuDataMeters = new JMenuItem("Meter options");
+    private final JMenuItem jMenuDataMetrics = new JMenuItem("Metric options");
+    private final JMenuItem jMenuDataDisplayMetrics = new JMenuItem(("Display metrics"));
 
     private final JMenu jMenuProcess = new JMenu("Process");
     private final JMenuItem jMenuProcessRecords = new JMenuItem("Process Edges");
@@ -113,6 +114,8 @@ public class UiFrame extends JFrame {
         jMenuDataMeters.addActionListener(this::jMenuDataMeters_actionPerformed);
         jMenuData.add(jMenuDataMetrics);
         jMenuDataMetrics.addActionListener(this::jMenuDataMetrics_actionPerformed);
+        jMenuData.add(jMenuDataDisplayMetrics);
+        jMenuDataDisplayMetrics.addActionListener(this::jMenuDataDisplay_actionPerformed);
         // add the menu to the menu bar
         jMenuBar1.add(jMenuData);
     }
@@ -210,6 +213,19 @@ public class UiFrame extends JFrame {
     {
         Collection<String> metrics = SmartPower.getMain().getDataService().getAvailableMetricNames();
         UiListBox metricBox = new UiListBox("Metrics");
+        for (String metric : metrics) metricBox.add(metric);
+        metricBox.pack();
+        metricBox.setVisible(true);
+    }
+
+    //
+    //Data | Metrics display action performed
+    //
+    private void jMenuDataDisplay_actionPerformed(ActionEvent actionEvent)
+    {
+        Collection<String> metrics = SmartPower.getMain().getDataService().getDBResourceForPeriodAsStrings(
+                "whole_house/voltage", "2017-09-03 11:02:00","2017-09-06 11:03:01");
+        UiListBox metricBox = new UiListBox("Readings");
         for (String metric : metrics) metricBox.add(metric);
         metricBox.pack();
         metricBox.setVisible(true);

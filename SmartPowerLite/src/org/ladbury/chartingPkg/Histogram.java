@@ -35,7 +35,6 @@ public class Histogram extends JFrame {
 		    getContentPane().add(chartPanel, BorderLayout.CENTER);
 		    this.setBounds(10, 10, 500, 500);
 		    this.setTitle(title);
-
 		  }
 		  
 		  @SuppressWarnings("SpellCheckingInspection")
