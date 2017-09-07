@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class UiDisplayReadingsDialogue extends JDialog implements ActionListener
+public class UiDisplayReadingsDialogue extends JDialog
 {
     private static final JLabel lblMeter    =   new JLabel("Meter:");
     private static final JLabel lblMetric    =   new JLabel("Metric:");
@@ -60,13 +60,28 @@ public class UiDisplayReadingsDialogue extends JDialog implements ActionListener
     {
         //Set up combo boxes and add a listener for changes
         comboMeter  =   new JComboBox<>(meterNames.toArray(new String[meterNames.size()]));
-        comboMeter.addItemListener(comboListener);
+        comboMeter.addActionListener(event -> {
+            meter = (String) comboMeter.getSelectedItem();
+        });
+        //comboMeter.addItemListener(comboListener);
+
         comboMetric =   new JComboBox<>(metricNames.toArray(new String[metricNames.size()]));
-        comboMetric.addItemListener(comboListener);
+        comboMetric.addActionListener(event -> {
+            metric = (String) comboMetric.getSelectedItem();
+        });
+        //comboMetric.addItemListener(comboListener);
+
         comboEarliest = new JComboBox<>(earliestTimes.toArray(new String[earliestTimes.size()]));
-        comboEarliest.addItemListener(comboListener);
+        comboEarliest.addActionListener(event -> {
+            earliestTime = (String)comboEarliest.getSelectedItem();
+        });
+        //comboEarliest.addItemListener(comboListener);
+
         comboLatest =   new JComboBox<>(latestTimes.toArray(new String[earliestTimes.size()]));
-        comboLatest .addItemListener(comboListener);
+        comboLatest.addActionListener(event -> {
+            latestTime = (String)comboLatest.getSelectedItem();
+        });
+        //comboLatest .addItemListener(comboListener);
 
         Collection<String> readings = SmartPower.getMain().getDataService().getDBResourceForPeriodAsStrings(
                 "whole_house/voltage", "2017-09-03 11:02:00","2017-09-06 11:03:01");
@@ -99,16 +114,16 @@ public class UiDisplayReadingsDialogue extends JDialog implements ActionListener
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.add(panel1,BorderLayout.CENTER);
-        btnOK.addActionListener(this::actionPerformed);
+
+        btnOK.addActionListener(event ->
+        {
+            System.out.println("Button Pressed");
+            SmartPower.getMain().getDataService().printDBResourceForPeriod(meter+"/"+metric,earliestTime,latestTime);
+        });
+
         this.add(btnOK, BorderLayout.SOUTH);
         setLocationRelativeTo(null);
         pack();
         setVisible(true);
-    }
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
-        System.out.println("Button Pressed");
-        SmartPower.getMain().getDataService().printDBResourceForPeriod(meter+"/"+metric,earliestTime,latestTime);
     }
 }
