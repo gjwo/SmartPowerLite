@@ -243,19 +243,24 @@ public class UiFrame extends JFrame {
     //Histogram action performed
     //
     private void jMenuChartHistogram_actionPerformed(ActionEvent e) {
-    	Meter m = SmartPower.getMain().getData().getMeters().get(0);  
-    	ArrayList<TimeHistogram> histograms = new ArrayList<>(Collections.emptyList());
-    	for (int i = 0; i<m.getMetricCount(); i++ ){
-    		if (m.getMetric(i).getReadingsCount()>0){
-    			histograms.add(new TimeHistogram("Power Histogram",m.getMetric(i),"Power (W)"));
-    		}
-    	}
-		for (int i = 0; i<histograms.size();i++){
-			histograms.get(i).setLocation(i*20, i*20);  //cascade windows
-			histograms.get(i).pack();
-			//RefineryUtilities.centerFrameOnScreen(histograms.get(i));
-			histograms.get(i).setVisible(true);	
-		}
+     	for (Meter m: SmartPower.getMain().getData().getMeters())
+        {
+            ArrayList<TimeHistogram> histograms = new ArrayList<>(Collections.emptyList());
+            for (int i = 0; i < m.getMetricCount(); i++)
+            {
+                if (m.getMetric(i).getReadingsCount() > 0)
+                {
+                    histograms.add(new TimeHistogram("Power Histogram", m.getMetric(i), "Power (W)"));
+                }
+            }
+            for (int i = 0; i < histograms.size(); i++)
+            {
+                histograms.get(i).setLocation(i * 20, i * 20);  //cascade windows
+                histograms.get(i).pack();
+                //RefineryUtilities.centerFrameOnScreen(histograms.get(i));
+                histograms.get(i).setVisible(true);
+            }
+        }
     }
     //
     //Chart Scatter action performed

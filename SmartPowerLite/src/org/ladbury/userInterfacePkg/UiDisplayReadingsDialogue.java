@@ -111,6 +111,7 @@ public class UiDisplayReadingsDialogue extends JDialog
                             for (TimestampedDouble reading : results)
                             {
                                 meter.getMetric(metricType).appendRecord(new TimedRecord(reading));
+                                //TODO might want to sort metric by timestamp?
                             }
                             break;
                         }
