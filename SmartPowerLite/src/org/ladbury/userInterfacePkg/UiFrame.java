@@ -250,7 +250,7 @@ public class UiFrame extends JFrame {
             {
                 if (m.getMetric(i).getReadingsCount() > 0)
                 {
-                    System.out.println("meter type: "+ m.getType()+" meter name: "+ m.name()+ " metric name: "+ m.getMetric(i));
+                    System.out.println("meter type: "+ m.getType()+" meter name: "+ m.name()+ " metric name: "+ m.getMetric(i).getName());
                     histograms.add(new TimeHistogram("Power Histogram", m.getMetric(i), "Power (W)"));
                 }
             }

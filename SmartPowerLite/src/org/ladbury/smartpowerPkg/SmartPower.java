@@ -550,5 +550,6 @@ public class SmartPower extends Applet implements Runnable {
 	// Access method for persistent data repository
 	//
 	public PersistentData getData(){return this.data;}
-	private Meter getCurrentMeter(){return currentMeter;}
+	public Meter getCurrentMeter(){return currentMeter;}
+	public MetricType getCurrentMetricType(){return this.currentMetricType;}
 }

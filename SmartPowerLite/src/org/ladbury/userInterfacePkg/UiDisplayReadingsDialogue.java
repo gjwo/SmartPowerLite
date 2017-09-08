@@ -14,6 +14,7 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import static org.ladbury.meterPkg.Metric.*;
 
@@ -99,6 +100,7 @@ public class UiDisplayReadingsDialogue extends JDialog
         {
             //System.out.println("Button Pressed");
             processReadings();
+            displayCurrentReadings();
             this.dispose();
         });
 
@@ -152,5 +154,19 @@ public class UiDisplayReadingsDialogue extends JDialog
             }
         }
         return null;
+    }
+    void displayCurrentReadings()
+    {
+        UiFrame frame = SmartPower.getMain().getFrame();
+        Meter currentMeter = SmartPower.getMain().getCurrentMeter();
+        frame.displayLog("Meter: "+ currentMeter.getType()+ " "+ currentMeter.name()+"\n");
+        MetricType currentMetricType = SmartPower.getMain().getCurrentMetricType();
+        frame.displayLog("Metric: "+ currentMetricType+"\n");
+        Metric metric = currentMeter.getMetric(currentMetricType);
+        List<TimedRecord> readings = metric.getReadings();
+        for (TimedRecord timedRecord:readings)
+        {
+            frame.displayLog(timedRecord.toCSV()+"\n");
+        }
     }
 }
