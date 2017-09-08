@@ -66,7 +66,7 @@ public class Meter	implements	Serializable,
 			break;
 		}
 		case PMON10: { //POWER_REAL, POWER_APPARENT, POWER_REACTIVE, VOLTAGE_RMS, CURRENT
-			this.name = "PMon10";
+			this.name = "PMon10"; //overwridden later with circuit each circuit is treated as a meter
 			addMetric(MetricType.POWER_REAL);
 			addMetric(MetricType.POWER_APPARENT);
 			addMetric(MetricType.POWER_REACTIVE);

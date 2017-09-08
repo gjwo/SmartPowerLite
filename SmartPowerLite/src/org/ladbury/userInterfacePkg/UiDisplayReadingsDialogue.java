@@ -1,5 +1,6 @@
 package org.ladbury.userInterfacePkg;
 
+import org.ladbury.dataServicePkg.DataService;
 import org.ladbury.dataServicePkg.DataServiceMeter;
 import org.ladbury.dataServicePkg.DataServiceMetric;
 import org.ladbury.meterPkg.Meter;
@@ -97,34 +98,59 @@ public class UiDisplayReadingsDialogue extends JDialog
         btnOK.addActionListener(event ->
         {
             //System.out.println("Button Pressed");
-            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            final Collection<TimestampedDouble> results = SmartPower.getMain().getDataService().getDBResourceForPeriod(
-                    DataServiceMeter.getTag()+"/"+ dataServiceMetric.getTag(),sdf.format(earliestTime),sdf.format(latestTime));
-            for(Meter meter:SmartPower.getMain().getData().getMeters())
-            {
-                if (meter.getType() == Meter.MeterType.PMON10)
-                {
-                    for (MetricType metricType: MetricType.values())
-                    {
-                        if (metricType.getTag().equalsIgnoreCase(dataServiceMetric.getTag()))
-                        {
-                            for (TimestampedDouble reading : results)
-                            {
-                                meter.getMetric(metricType).appendRecord(new TimedRecord(reading));
-                                //TODO might want to sort metric by timestamp?
-                            }
-                            break;
-                        }
-                    }
-
-                }
-            }
+            processReadings();
             this.dispose();
         });
 
         this.add(btnOK, BorderLayout.SOUTH);
-        setLocationRelativeTo(null);
+        //setLocationRelativeTo(null);
         pack();
         setVisible(true);
+    }
+    void processReadings()
+    {
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        final Collection<TimestampedDouble> results = SmartPower.getMain().getDataService().getDBResourceForPeriod(
+                DataServiceMeter.getTag()+"/"+ dataServiceMetric.getTag(),sdf.format(earliestTime),sdf.format(latestTime));
+        Meter meter = getMeter(Meter.MeterType.PMON10,DataServiceMeter.getDisplayName());
+        MetricType metricType = getMetricTypeFromTag(dataServiceMetric.getTag());
+        if (metricType == null) return; //problem
+        SmartPower.getMain().setMetricType(metricType);
+        SmartPower.getMain().setCurrentMeter(meter);
+        for (TimestampedDouble reading : results)
+        {
+            meter.getMetric(metricType).appendRecord(new TimedRecord(reading));
+            //TODO might want to sort metric by timestamp?
+        }
+     }
+    Meter getMeter(Meter.MeterType meterType, String meterName)
+    {
+        boolean foundMeter = false;
+        for(Meter meter:SmartPower.getMain().getData().getMeters())
+        {
+            if (meter.getType() == Meter.MeterType.PMON10)
+            {
+                if (meter.name().equalsIgnoreCase(meterName))
+                {
+                    return meter;
+                }
+            }
+        }
+        //no meter found, add one
+        Meter newMeter = new Meter(Meter.MeterType.PMON10); // sets up all possible metrics
+        newMeter.setName(meterName);
+        SmartPower.getMain().getData().getMeters().softAdd(newMeter);
+        return newMeter;
+    }
+    MetricType getMetricTypeFromTag(String tag)
+    {
+        for (MetricType metricType : MetricType.values())
+        {
+            if (metricType.getTag().equalsIgnoreCase(dataServiceMetric.getTag()))
+            {
+                return metricType;
+            }
+        }
+        return null;
     }
 }

@@ -49,13 +49,12 @@ public class SmartPower extends Applet implements Runnable {
     
     // Application Specific data (not persistent)
     private static	SmartPower	spMain = null; //This is the root access point for all data in the package, the only static.
-    private	UiFrame 			frame = null;
-    private	FileAccess 			file = null;
-    private DataService         dataService = null;
-    private MetricType			currentMetricType = MetricType.UNDEFINED;
+    private	UiFrame 			frame;
+    private	FileAccess 			file;
+    private DataService         dataService;
+    private volatile MetricType	currentMetricType;
+    private volatile Meter      currentMeter;
 
-//    private Meter				meter = null;
-    
     //Application Specific data (persistent)
 	private final PersistentData data ;
 
@@ -158,7 +157,8 @@ public class SmartPower extends Applet implements Runnable {
     // SmartPower Class Constructor
     //----------------------------------------------------------------------
 	public SmartPower() {
-
+        currentMetricType = MetricType.UNDEFINED;
+        currentMeter = null;
         frame = new UiFrame("Graham's power analysis program");
         dataService = new DataService(DEFAULT_API_URL);
         // create persistent objects, data loaded in init()
@@ -184,7 +184,7 @@ public class SmartPower extends Applet implements Runnable {
     public String getAppletInfo() {
         return "Name: SmartPower\r\n" +
             "Author: G.J.Wood Copyright 2012,2013\r\n" +
-            "Created with Eclipse Indigo & Juno";
+            "Created with Eclipse Indigo & Juno, & IntelliJ Idea";
     }
 
     // PARAMETER SUPPORT
@@ -217,9 +217,10 @@ public class SmartPower extends Applet implements Runnable {
         }
         data.loadPersistentData(); // load the data using entity manager
         currentMetricType = MetricType.UNDEFINED;
+        currentMeter = null;
         dataService = new DataService();
         setupDefaultOnzoMeter();
-        setupDefaultPMon10Meter();
+        //setupDefaultPMon10Meter();
     }
 
     void setupDefaultOnzoMeter()
@@ -341,9 +342,8 @@ public class SmartPower extends Applet implements Runnable {
     //--------------------------------------------------------------------------
     public void run() {
     	int j = 0;
-     	Meter m;
      	Metric tempMtc;
-     	m = this.data.getMeters().get(0);
+     	currentMeter = this.data.getMeters().get(0); //TODO add meter selection or loop
         while (this.get_state() != RunState.STOP) {
             try {
                 switch (this.get_state()) {
@@ -362,9 +362,11 @@ public class SmartPower extends Applet implements Runnable {
                         if ( !(this.file.inputFilename() == null | this.file.inputPathname() == null)) {
                             this.file.openInput();
                             //frame.displayLog("Run: back from open\n");
-                            switch(m.getType()){
+                            switch(currentMeter.getType()){ //TODO not sure what this was intended for, find out!
                             case OWLCM160:
                             	break;
+                            case PMON10:
+                                break;
                             case ONZO:
                             	break;
                             default:	
@@ -380,13 +382,13 @@ public class SmartPower extends Applet implements Runnable {
                         this.currentMetricType = this.file.identifyTypeFromFilename( this.file.inputFilename());
                         if (this.currentMetricType != MetricType.UNDEFINED){
                         	// Reinitialise this type of metric in the meter
-                        	tempMtc = m.getMetric(currentMetricType);
-                        	m.removeMetric(currentMetricType);//clear out any old data
+                        	tempMtc = currentMeter.getMetric(currentMetricType);
+                        	currentMeter.removeMetric(currentMetricType);//clear out any old data
                         	data.getMetrics().remove(tempMtc);
-                        	tempMtc = new Metric(m,currentMetricType); //create and save new data
+                        	tempMtc = new Metric(currentMeter,currentMetricType); //create and save new data
                         	data.getMetrics().softAdd(tempMtc);
-                        	m.addMetric(currentMetricType);
-                        	m.setMetric(currentMetricType, tempMtc);
+                        	currentMeter.addMetric(currentMetricType);
+                        	currentMeter.setMetric(currentMetricType, tempMtc);
                         	// read the new file into the newly initialised metric
                         	this.file.processFile(currentMetricType);
                         	this.file.closeInput();
@@ -399,12 +401,13 @@ public class SmartPower extends Applet implements Runnable {
                     case PROCESS_READINGS:
                         this.frame.displayLog("Run: Processing readings\n\r");                	
                         repaint();
-                        switch(m.getType()){
+                        switch(currentMeter.getType()){
                         case OWLCM160:
                         	break;
+                        case PMON10:
                         case ONZO:
                             if (this.currentMetricType != MetricType.UNDEFINED){
-                            	m.getMetric(currentMetricType).removeRedundantData();
+                            	currentMeter.getMetric(currentMetricType).removeRedundantData();
                             } else this.frame.displayLog("Run: ERROR Metric type not identified (Cannot Process)\n\r");                	
                         	break;
                         default:
@@ -417,18 +420,19 @@ public class SmartPower extends Applet implements Runnable {
                         break;
                     case PROCESS_EDGES:
                         this.frame.displayLog("Run: Processing edges\n\r");                	
-                        switch(m.getType()){
+                        switch(currentMeter.getType()){
                         case OWLCM160:
                         	break;
+                        case PMON10:
                         case ONZO:
                             if (this.currentMetricType != MetricType.UNDEFINED){
-                            	int lastReadingsCount = m.getMetric(currentMetricType).size();
+                            	int lastReadingsCount = currentMeter.getMetric(currentMetricType).size();
                             	int readingsCount = lastReadingsCount-1; //force first run
                             	while (lastReadingsCount > readingsCount){
                             		lastReadingsCount = readingsCount;
                             		this.frame.displayLog("Run: Squelching " + lastReadingsCount + " readings \n\r");                	
-                            		m.getMetric(currentMetricType).squelchTransitions();
-                            		readingsCount = m.getMetric(currentMetricType).size();
+                            		currentMeter.getMetric(currentMetricType).squelchTransitions();
+                            		readingsCount = currentMeter.getMetric(currentMetricType).size();
                                 }
                             }else this.frame.displayLog("Run: ERROR Metric type not identified (Cannot Squelch)\n\r");
                         	break;
@@ -442,9 +446,10 @@ public class SmartPower extends Applet implements Runnable {
                     case PROCESS_EVENTS:
                         this.frame.displayLog("Run: Processing Events\n\r");
                         repaint();
-                        switch(m.getType()){
+                        switch(currentMeter.getType()){
                         case OWLCM160:
                         	break;
+                        case PMON10:
                         case ONZO:
                             if (this.currentMetricType != MetricType.UNDEFINED){
                             	Processing.matchAndSaveActivity(getCurrentMeter().getMetric(MetricType.POWER_REAL_FINE));
@@ -459,10 +464,11 @@ public class SmartPower extends Applet implements Runnable {
                     case SAVE_FILE: //this state triggered by user selecting save file
                         this.frame.displayLog("\n\rRun: Saving files\n\r");
                         repaint();
-                        switch(m.getType()){
+                        switch(currentMeter.getType()){
                         case OWLCM160:
                             //this.file.OutputCSVFiles();
                           	break;
+                        case PMON10:
                         case ONZO:
                         	if (this.currentMetricType != MetricType.UNDEFINED){                  	
                         		this.file.setOutputFilename(this.frame.getFileDialog().getFile());
@@ -527,8 +533,8 @@ public class SmartPower extends Applet implements Runnable {
 	public MetricType getMetricType() {
 		return currentMetricType;
 	}
-	public void setMetricType(MetricType mtcT) {
-		this.currentMetricType = mtcT;
+	public void setMetricType(MetricType metricType) {
+		this.currentMetricType = metricType;
 	}
     public DataService getDataService()
     {
@@ -538,15 +544,11 @@ public class SmartPower extends Applet implements Runnable {
     {
         this.dataService = dataService;
     }
-
+    public void setCurrentMeter(Meter meter){currentMeter = meter;}
 
     //
 	// Access method for persistent data repository
 	//
-	public PersistentData getData(){
-		return this.data;
-	}
-	private Meter getCurrentMeter(){
-		return getData().getMeters().get(0);
-	}
+	public PersistentData getData(){return this.data;}
+	private Meter getCurrentMeter(){return currentMeter;}
 }
