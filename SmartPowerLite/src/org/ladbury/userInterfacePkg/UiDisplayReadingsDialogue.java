@@ -2,19 +2,19 @@ package org.ladbury.userInterfacePkg;
 
 import org.ladbury.dataServicePkg.DataServiceMeter;
 import org.ladbury.dataServicePkg.DataServiceMetric;
+import org.ladbury.meterPkg.Meter;
+import org.ladbury.meterPkg.Metric;
+import org.ladbury.meterPkg.TimedRecord;
+import org.ladbury.meterPkg.TimestampedDouble;
 import org.ladbury.smartpowerPkg.SmartPower;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+
+import static org.ladbury.meterPkg.Metric.*;
 
 public class UiDisplayReadingsDialogue extends JDialog
 {
@@ -26,8 +26,8 @@ public class UiDisplayReadingsDialogue extends JDialog
     private final JComboBox<DataServiceMetric> comboMetric;
     private Collection<String> readings;
     private final JButton btnOK = new JButton("OK");
-    private DataServiceMeter meter;
-    private DataServiceMetric metric;
+    private DataServiceMeter DataServiceMeter;
+    private DataServiceMetric dataServiceMetric;
     private Date earliestTime;
     private Date latestTime;
 
@@ -39,22 +39,22 @@ public class UiDisplayReadingsDialogue extends JDialog
 
                 //record the initially selected values in case they are not changed
 
-        if( meters.iterator().hasNext()) meter = meters.iterator().next();
-        if( metrics.iterator().hasNext()) metric = metrics.iterator().next();
+        if( meters.iterator().hasNext()) DataServiceMeter = meters.iterator().next();
+        if( metrics.iterator().hasNext()) dataServiceMetric = metrics.iterator().next();
         Collection<String> readings = SmartPower.getMain().getDataService().getDBResourceForPeriodAsStrings(
-                meter.getTag()+"/"+metric.getTag(), "2017-09-03 11:02:00","2017-09-06 11:03:01");
+                DataServiceMeter.getTag()+"/"+ dataServiceMetric.getTag(), "2017-09-03 11:02:00","2017-09-06 11:03:01");
 
 
         //Set up combo boxes and add a listener for changes
         comboMeter  =   new JComboBox<>(meters.toArray(new DataServiceMeter[meters.size()]));
         comboMeter.addActionListener(event -> {
-            meter = (DataServiceMeter)comboMeter.getSelectedItem();
+            DataServiceMeter = (DataServiceMeter)comboMeter.getSelectedItem();
         });
         //comboMeter.addItemListener(comboListener);
 
         comboMetric =   new JComboBox<>(metrics.toArray(new DataServiceMetric[metrics.size()]));
         comboMetric.addActionListener(event -> {
-            metric = (DataServiceMetric)comboMetric.getSelectedItem();
+            dataServiceMetric = (DataServiceMetric)comboMetric.getSelectedItem();
         });
         //comboMetric.addItemListener(comboListener);
 
@@ -98,7 +98,27 @@ public class UiDisplayReadingsDialogue extends JDialog
         {
             //System.out.println("Button Pressed");
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            SmartPower.getMain().getDataService().printDBResourceForPeriod(meter.getTag()+"/"+metric.getTag(),sdf.format(earliestTime),sdf.format(latestTime));
+            final Collection<TimestampedDouble> results = SmartPower.getMain().getDataService().getDBResourceForPeriod(
+                    DataServiceMeter.getTag()+"/"+ dataServiceMetric.getTag(),sdf.format(earliestTime),sdf.format(latestTime));
+            for(Meter meter:SmartPower.getMain().getData().getMeters())
+            {
+                if (meter.getType() == Meter.MeterType.PMON10)
+                {
+                    for (MetricType metricType: MetricType.values())
+                    {
+                        if (metricType.getTag().equalsIgnoreCase(dataServiceMetric.getTag()))
+                        {
+                            for (TimestampedDouble reading : results)
+                            {
+                                meter.getMetric(metricType).appendRecord(new TimedRecord(reading));
+                            }
+                            break;
+                        }
+                    }
+
+                }
+            }
+            this.dispose();
         });
 
         this.add(btnOK, BorderLayout.SOUTH);

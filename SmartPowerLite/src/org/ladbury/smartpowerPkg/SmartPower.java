@@ -51,7 +51,7 @@ public class SmartPower extends Applet implements Runnable {
     private static	SmartPower	spMain = null; //This is the root access point for all data in the package, the only static.
     private	UiFrame 			frame = null;
     private	FileAccess 			file = null;
-   private DataService         dataService = null;
+    private DataService         dataService = null;
     private MetricType			currentMetricType = MetricType.UNDEFINED;
 
 //    private Meter				meter = null;

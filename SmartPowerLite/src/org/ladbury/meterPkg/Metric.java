@@ -34,8 +34,14 @@ public class Metric	implements	Serializable,
 	 */
 	private static final long serialVersionUID = -701995953205153989L;
 
-	public enum MetricType {UNDEFINED, POWER_LOW_RES, ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD,
-		POWER_REAL_FINE, POWER_REACTIVE_STANDARD, POWER_REAL, POWER_APPARENT, POWER_REACTIVE, VOLTAGE_RMS, CURRENT}
+	public enum MetricType {UNDEFINED (""), POWER_LOW_RES (""), ENERGY_LOW_RES (""), ENERGY_HIGH_RES (""), POWER_REAL_STANDARD (""),
+		POWER_REAL_FINE (""), POWER_REACTIVE_STANDARD (""),
+		//PMon10 types have a tag for accessing the API
+		POWER_REAL ("realpower"), POWER_APPARENT ("apparentpower"), POWER_REACTIVE ("reactivepower"), VOLTAGE_RMS ("voltage"), CURRENT ("current");
+	private String tag;
+	MetricType(String tag){this.tag = tag;}
+	public String getTag(){return this.tag;}
+	}
 
 	public enum Granularity {UNDEFINED, SECOND, TEN_SECOND, MINUTE, TEN_MINUTE, HOUR, DAY}
 

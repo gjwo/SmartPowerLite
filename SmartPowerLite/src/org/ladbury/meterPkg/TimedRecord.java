@@ -44,7 +44,7 @@ public class TimedRecord implements 	Serializable,
         timestamp = d;
         value = r;
     }
-    protected TimedRecord(TimestampedDouble td){
+    public TimedRecord(TimestampedDouble td){
     	value = (int)td.getValue();
     	timestamp = Timestamp.from(td.getTimestamp());
 	}
