@@ -34,15 +34,6 @@ public class Metric	implements	Serializable,
 	 */
 	private static final long serialVersionUID = -701995953205153989L;
 
-	public enum MetricType {UNDEFINED (""), POWER_LOW_RES (""), ENERGY_LOW_RES (""), ENERGY_HIGH_RES (""), POWER_REAL_STANDARD (""),
-		POWER_REAL_FINE (""), POWER_REACTIVE_STANDARD (""),
-		//PMon10 types have a tag for accessing the API
-		POWER_REAL ("realpower"), POWER_APPARENT ("apparentpower"), POWER_REACTIVE ("reactivepower"), VOLTAGE_RMS ("voltage"), CURRENT ("current");
-	private String tag;
-	MetricType(String tag){this.tag = tag;}
-	public String getTag(){return this.tag;}
-	}
-
 	public enum Granularity {UNDEFINED, SECOND, TEN_SECOND, MINUTE, TEN_MINUTE, HOUR, DAY}
 
 	public static final int[] GRAIN_INTERVALS =  {0,Timestamped.SECOND_IN_MS,
@@ -93,44 +84,19 @@ public class Metric	implements	Serializable,
 		this.meter = m;
 
 		this.setType(t);
+		this.setName(t.getName());
 		this.setGrain(Granularity.SECOND);
 		switch (t){
 		case POWER_LOW_RES:
-			this.setName("Power");
 			this.setGrain(Granularity.MINUTE);
 			break;
 		case ENERGY_LOW_RES:
 			this.setCumulative(true);
 			break;
 		case ENERGY_HIGH_RES: 
-			this.setName("Energy high resolution");
 			this.setCumulative(true);
 			break;
-		case POWER_REAL_STANDARD: 
-			this.setName("Power real standard");
-			break;
-		case POWER_REAL_FINE: 
-			this.setName("Power real fine");
-			break;
-		case POWER_REACTIVE_STANDARD: 
-			this.setName("Power reactive standard");
-			break;
-		case POWER_REAL:
-			this.setName("Power real");
-			break;
-		case POWER_APPARENT:
-			this.setName("Power apparent");
-			break;
-		case POWER_REACTIVE:
-			this.setName("Power reactive");
-			break;
-		case VOLTAGE_RMS:
-			this.setName("Voltage RMS");
-			break;
-		case CURRENT:
-			this.setName("Current");
-			break;
-		default: this.setName("UNDEFINED");
+		default:;
 		}
 	}
 	

@@ -1,12 +1,8 @@
 package org.ladbury.userInterfacePkg;
 
-import org.ladbury.dataServicePkg.DataService;
 import org.ladbury.dataServicePkg.DataServiceMeter;
 import org.ladbury.dataServicePkg.DataServiceMetric;
-import org.ladbury.meterPkg.Meter;
-import org.ladbury.meterPkg.Metric;
-import org.ladbury.meterPkg.TimedRecord;
-import org.ladbury.meterPkg.TimestampedDouble;
+import org.ladbury.meterPkg.*;
 import org.ladbury.smartpowerPkg.SmartPower;
 
 import javax.swing.*;
@@ -15,8 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import static org.ladbury.meterPkg.Metric.*;
 
 public class UiDisplayReadingsDialogue extends JDialog
 {
@@ -130,7 +124,7 @@ public class UiDisplayReadingsDialogue extends JDialog
         boolean foundMeter = false;
         for(Meter meter:SmartPower.getMain().getData().getMeters())
         {
-            if (meter.getType() == Meter.MeterType.PMON10)
+            if (meter.getType() == meterType)
             {
                 if (meter.name().equalsIgnoreCase(meterName))
                 {

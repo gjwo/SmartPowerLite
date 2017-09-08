@@ -11,7 +11,7 @@ import org.ladbury.dataServicePkg.DataService;
 import org.ladbury.meterPkg.Meter;
 import org.ladbury.meterPkg.Meter.MeterType;
 import org.ladbury.meterPkg.Metric;
-import org.ladbury.meterPkg.Metric.MetricType;
+import org.ladbury.meterPkg.MetricType;
 import org.ladbury.persistentData.PersistentData;
 import org.ladbury.userInterfacePkg.UiFrame;
 
@@ -254,41 +254,6 @@ public class SmartPower extends Applet implements Runnable {
             mtc = new Metric(mtr,MetricType.POWER_REACTIVE_STANDARD);
             data.getMetrics().softAdd(mtc);
             mtr.setMetric(MetricType.POWER_REACTIVE_STANDARD, mtc);
-        }
-    }
-
-    void setupDefaultPMon10Meter()
-    {
-        Meter mtr;
-        Metric mtc;
-        if(data.getMeters()==null ||data.getMeters().size()<=0){//add initial entry if none exist
-            mtr = new Meter(MeterType.PMON10);
-            data.getMeters().softAdd(mtr);
-        }
-        if (data.getMetrics()==null ||data.getMetrics().size()<=0){//add initial entries if none exist
-            //Onzo metrics ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD
-
-            mtr = data.getMeters().get(0);
-
-            mtc = new Metric(mtr,MetricType.POWER_REAL);
-            data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.POWER_REAL, mtc);
-
-            mtc = new Metric(mtr,MetricType.POWER_APPARENT);
-            data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.POWER_APPARENT, mtc);
-
-            mtc = new Metric(mtr,MetricType.POWER_REACTIVE);
-            data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.POWER_REACTIVE, mtc);
-
-            mtc = new Metric(mtr,MetricType.VOLTAGE_RMS);
-            data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.VOLTAGE_RMS, mtc);
-
-            mtc = new Metric(mtr,MetricType.CURRENT);
-            data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.CURRENT, mtc);
         }
     }
 

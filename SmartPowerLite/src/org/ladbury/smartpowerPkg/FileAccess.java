@@ -18,7 +18,7 @@ import org.ladbury.deviceActivityPkg.DeviceActivity;
 import org.ladbury.meterPkg.Meter;
 import org.ladbury.meterPkg.Meter.MeterType;
 import org.ladbury.meterPkg.Metric;
-import org.ladbury.meterPkg.Metric.MetricType;
+import org.ladbury.meterPkg.MetricType;
 import org.ladbury.meterPkg.TimedRecord;
 import org.ladbury.persistentData.PersistentList;
 

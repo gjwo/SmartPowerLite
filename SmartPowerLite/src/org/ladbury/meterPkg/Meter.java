@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 
 
-import org.ladbury.meterPkg.Metric.MetricType;
 import org.ladbury.persistentData.Persistable;
 import org.ladbury.userInterfacePkg.UiStyle;
 //import org.ladbury.abodePkg.Abode;
