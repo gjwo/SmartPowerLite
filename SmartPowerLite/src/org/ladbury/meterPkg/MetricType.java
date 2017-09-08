@@ -27,4 +27,16 @@ MetricType(String tag, String name, String units)
 public String getTag(){return this.tag;}
 public String getName(){return this.name;}
 public String getUnits(){return this.units;}
+public static MetricType getMetricTypeFromTag(String tag)
+    {
+        for (MetricType metricType : values())
+        {
+            if (metricType.getTag().equalsIgnoreCase(tag))
+            {
+                return metricType;
+            }
+        }
+        return null;
+    }
+
 }

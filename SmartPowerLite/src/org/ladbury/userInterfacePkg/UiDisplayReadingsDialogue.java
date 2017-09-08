@@ -109,7 +109,7 @@ public class UiDisplayReadingsDialogue extends JDialog
         final Collection<TimestampedDouble> results = SmartPower.getMain().getDataService().getDBResourceForPeriod(
                 DataServiceMeter.getTag()+"/"+ dataServiceMetric.getTag(),sdf.format(earliestTime),sdf.format(latestTime));
         Meter meter = getMeter(Meter.MeterType.PMON10,DataServiceMeter.getDisplayName());
-        MetricType metricType = getMetricTypeFromTag(dataServiceMetric.getTag());
+        MetricType metricType = MetricType.getMetricTypeFromTag(dataServiceMetric.getTag());
         if (metricType == null) return; //problem
         SmartPower.getMain().setMetricType(metricType);
         SmartPower.getMain().setCurrentMeter(meter);
@@ -121,7 +121,6 @@ public class UiDisplayReadingsDialogue extends JDialog
      }
     Meter getMeter(Meter.MeterType meterType, String meterName)
     {
-        boolean foundMeter = false;
         for(Meter meter:SmartPower.getMain().getData().getMeters())
         {
             if (meter.getType() == meterType)
@@ -137,17 +136,6 @@ public class UiDisplayReadingsDialogue extends JDialog
         newMeter.setName(meterName);
         SmartPower.getMain().getData().getMeters().softAdd(newMeter);
         return newMeter;
-    }
-    MetricType getMetricTypeFromTag(String tag)
-    {
-        for (MetricType metricType : MetricType.values())
-        {
-            if (metricType.getTag().equalsIgnoreCase(dataServiceMetric.getTag()))
-            {
-                return metricType;
-            }
-        }
-        return null;
     }
     void displayCurrentReadings()
     {
