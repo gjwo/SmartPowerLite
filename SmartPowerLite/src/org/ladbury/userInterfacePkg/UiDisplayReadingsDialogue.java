@@ -94,7 +94,7 @@ public class UiDisplayReadingsDialogue extends JDialog
         {
             //System.out.println("Button Pressed");
             processReadings();
-            displayCurrentReadings();
+            SmartPower.getMain().displayCurrentReadings();
             this.dispose();
         });
 
@@ -108,7 +108,7 @@ public class UiDisplayReadingsDialogue extends JDialog
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         final Collection<TimestampedDouble> results = SmartPower.getMain().getDataService().getDBResourceForPeriod(
                 DataServiceMeter.getTag()+"/"+ dataServiceMetric.getTag(),sdf.format(earliestTime),sdf.format(latestTime));
-        Meter meter = getMeter(Meter.MeterType.PMON10,DataServiceMeter.getDisplayName());
+        Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10,DataServiceMeter.getDisplayName());
         MetricType metricType = MetricType.getMetricTypeFromTag(dataServiceMetric.getTag());
         if (metricType == null) return; //problem
         SmartPower.getMain().setMetricType(metricType);
@@ -119,36 +119,4 @@ public class UiDisplayReadingsDialogue extends JDialog
             //TODO might want to sort metric by timestamp?
         }
      }
-    Meter getMeter(Meter.MeterType meterType, String meterName)
-    {
-        for(Meter meter:SmartPower.getMain().getData().getMeters())
-        {
-            if (meter.getType() == meterType)
-            {
-                if (meter.name().equalsIgnoreCase(meterName))
-                {
-                    return meter;
-                }
-            }
-        }
-        //no meter found, add one
-        Meter newMeter = new Meter(Meter.MeterType.PMON10); // sets up all possible metrics
-        newMeter.setName(meterName);
-        SmartPower.getMain().getData().getMeters().softAdd(newMeter);
-        return newMeter;
-    }
-    void displayCurrentReadings()
-    {
-        UiFrame frame = SmartPower.getMain().getFrame();
-        Meter currentMeter = SmartPower.getMain().getCurrentMeter();
-        frame.displayLog("Meter: "+ currentMeter.getType()+ " "+ currentMeter.name()+"\n");
-        MetricType currentMetricType = SmartPower.getMain().getCurrentMetricType();
-        frame.displayLog("Metric: "+ currentMetricType+"\n");
-        Metric metric = currentMeter.getMetric(currentMetricType);
-        List<TimedRecord> readings = metric.getReadings();
-        for (TimedRecord timedRecord:readings)
-        {
-            frame.displayLog(timedRecord.toCSV()+"\n");
-        }
-    }
 }

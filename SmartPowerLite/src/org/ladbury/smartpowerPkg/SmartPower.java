@@ -4,6 +4,7 @@ import java.applet.Applet;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Toolkit;
+import java.util.List;
 
 import javax.swing.UIManager;
 
@@ -12,6 +13,7 @@ import org.ladbury.meterPkg.Meter;
 import org.ladbury.meterPkg.Meter.MeterType;
 import org.ladbury.meterPkg.Metric;
 import org.ladbury.meterPkg.MetricType;
+import org.ladbury.meterPkg.TimedRecord;
 import org.ladbury.persistentData.PersistentData;
 import org.ladbury.userInterfacePkg.UiFrame;
 
@@ -510,6 +512,38 @@ public class SmartPower extends Applet implements Runnable {
         this.dataService = dataService;
     }
     public void setCurrentMeter(Meter meter){currentMeter = meter;}
+    public Meter getOrCreateMeter(Meter.MeterType meterType, String meterName)
+    {
+        for(Meter meter:data.getMeters())
+        {
+            if (meter.getType() == meterType)
+            {
+                if (meter.name().equalsIgnoreCase(meterName))
+                {
+                    return meter;
+                }
+            }
+        }
+        //no meter found, add one
+        Meter newMeter = new Meter(meterType); // sets up all possible metrics
+        newMeter.setName(meterName);
+        data.getMeters().softAdd(newMeter);
+        return newMeter;
+    }
+    public void displayCurrentReadings()
+    {
+        UiFrame frame = SmartPower.getMain().getFrame();
+        Meter currentMeter = SmartPower.getMain().getCurrentMeter();
+        frame.displayLog("Meter: "+ currentMeter.getType()+ " "+ currentMeter.name()+"\n");
+        MetricType currentMetricType = SmartPower.getMain().getCurrentMetricType();
+        frame.displayLog("Metric: "+ currentMetricType+"\n");
+        Metric metric = currentMeter.getMetric(currentMetricType);
+        List<TimedRecord> readings = metric.getReadings();
+        for (TimedRecord timedRecord:readings)
+        {
+            frame.displayLog(timedRecord.toCSV()+"\n");
+        }
+    }
 
     //
 	// Access method for persistent data repository
