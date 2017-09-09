@@ -10,9 +10,8 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
-public class UiDisplayReadingsDialogue extends JDialog
+class UiDisplayReadingsDialogue extends JDialog
 {
     private static final JLabel lblMeter    =   new JLabel("  Meter:");
     private static final JLabel lblMetric    =   new JLabel("  Metric:");
@@ -20,8 +19,6 @@ public class UiDisplayReadingsDialogue extends JDialog
     private static final JLabel lblLatest    =   new JLabel("  End Time:");
     private final JComboBox<DataServiceMeter> comboMeter;
     private final JComboBox<DataServiceMetric> comboMetric;
-    private Collection<String> readings;
-    private final JButton btnOK = new JButton("OK");
     private DataServiceMeter DataServiceMeter;
     private DataServiceMetric dataServiceMetric;
     private Date earliestTime;
@@ -37,21 +34,14 @@ public class UiDisplayReadingsDialogue extends JDialog
 
         if( meters.iterator().hasNext()) DataServiceMeter = meters.iterator().next();
         if( metrics.iterator().hasNext()) dataServiceMetric = metrics.iterator().next();
-        Collection<String> readings = SmartPower.getMain().getDataService().getDBResourceForPeriodAsStrings(
-                DataServiceMeter.getTag()+"/"+ dataServiceMetric.getTag(), "2017-09-03 11:02:00","2017-09-06 11:03:01");
-
 
         //Set up combo boxes and add a listener for changes
         comboMeter  =   new JComboBox<>(meters.toArray(new DataServiceMeter[meters.size()]));
-        comboMeter.addActionListener(event -> {
-            DataServiceMeter = (DataServiceMeter)comboMeter.getSelectedItem();
-        });
+        comboMeter.addActionListener(event -> DataServiceMeter = (DataServiceMeter)comboMeter.getSelectedItem());
         //comboMeter.addItemListener(comboListener);
 
         comboMetric =   new JComboBox<>(metrics.toArray(new DataServiceMetric[metrics.size()]));
-        comboMetric.addActionListener(event -> {
-            dataServiceMetric = (DataServiceMetric)comboMetric.getSelectedItem();
-        });
+        comboMetric.addActionListener(event -> dataServiceMetric = (DataServiceMetric)comboMetric.getSelectedItem());
         //comboMetric.addItemListener(comboListener);
 
         JPanel panel1 = new JPanel(new GridLayout(2,4));
@@ -90,6 +80,7 @@ public class UiDisplayReadingsDialogue extends JDialog
         this.setLayout(new BorderLayout());
         this.add(panel1,BorderLayout.CENTER);
 
+        JButton btnOK = new JButton("OK");
         btnOK.addActionListener(event ->
         {
             //System.out.println("Button Pressed");
@@ -103,7 +94,7 @@ public class UiDisplayReadingsDialogue extends JDialog
         pack();
         setVisible(true);
     }
-    void processReadings()
+    private void processReadings()
     {
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         final Collection<TimestampedDouble> results = SmartPower.getMain().getDataService().getDBResourceForPeriod(
