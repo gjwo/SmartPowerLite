@@ -21,34 +21,34 @@ import static org.ladbury.dataServicePkg.DataService.DEFAULT_API_URL;
 
 /**
  * SmartPower.java:	Applet
- * 
+ *
  * This Applet processes readings from a domestic energy monitor in order to better
  * understand domestic power consumption by turning raw readings into a more understandable form.
  * Ultimately the readings are associated with devices defined by the user so that the behaviour
  * that causes power consumption in the home can be understood and modified if desired.
- * 
+ *
  * The intention is to recognise devices and their usage patterns to give a comprehensive understanding
  * with minimal manual intervention. Given the lack of uniqueness of device power signatures, some
  * intervention will almost always be required to work out what is happening
- * 
+ *
  * @author GJWood
  * @version 1.1 2012/11/29 Incorporating handling of Owl meter
  * @version 1.2 2013/11/19 Incorporating handling of Onzo meter
  */
 public class SmartPower extends Applet implements Runnable {
 
-	private static final long serialVersionUID = 1L;
-	public enum RunState {
-		IDLE, LOAD_DATA, OPEN_FILE, PROCESS_FILE, PROCESS_READINGS, SAVE_FILE, PROCESS_EDGES, PROCESS_EVENTS, STOP
-	}
+    private static final long serialVersionUID = 1L;
+    public enum RunState {
+        IDLE, OPEN_FILE, PROCESS_FILE, PROCESS_READINGS, SAVE_FILE, PROCESS_EDGES, PROCESS_EVENTS, STOP
+    }
 
     private static final String PARAM_MEASUREMENT_FILE = "measurement file";
 
     private boolean 	fStandAlone = true;    //	fStandAlone will be set to true if applet is run stand alone
     private	String 		displayString = null;
-	private Thread 		threadSmartPower = null; //Thread object for the applet
-	private RunState	state = RunState.IDLE;
-    
+    private Thread 		threadSmartPower = null; //Thread object for the applet
+    private RunState	state = RunState.IDLE;
+
     // Application Specific data (not persistent)
     private static	SmartPower	spMain = null; //This is the root access point for all data in the package, the only static.
     private	UiFrame 			frame;
@@ -58,7 +58,7 @@ public class SmartPower extends Applet implements Runnable {
     private volatile Meter      currentMeter;
 
     //Application Specific data (persistent)
-	private final PersistentData data ;
+    private final PersistentData data ;
 
     // STANDALONE APPLICATION SUPPORT
     // The GetParameter() method is a replacement for the getParameter() method
@@ -97,7 +97,7 @@ public class SmartPower extends Applet implements Runnable {
                         strValue = strValue.substring(1);
                         if (strValue.endsWith("\"")) {
                             strValue = strValue.substring(0,
-                                strValue.length() - 1);
+                                    strValue.length() - 1);
                         }
                     }
                     break;
@@ -107,7 +107,6 @@ public class SmartPower extends Applet implements Runnable {
         catch (Exception e) {
             e.printStackTrace();
         }
-
         return strValue;
     }
 
@@ -129,9 +128,9 @@ public class SmartPower extends Applet implements Runnable {
         // measurement file : Parameter description
         //--------------------------------------------------------------
         param = GetParameter(PARAM_MEASUREMENT_FILE, args);
-         if (param != null) {
-             String readingsFile = param;
-             readingsFile = readingsFile +""; //Suppress warning
+        if (param != null) {
+            String readingsFile = param;
+            readingsFile = readingsFile +""; //Suppress warning
         }
     }
 
@@ -158,7 +157,7 @@ public class SmartPower extends Applet implements Runnable {
 
     // SmartPower Class Constructor
     //----------------------------------------------------------------------
-	public SmartPower() {
+    private SmartPower() {
         currentMetricType = MetricType.UNDEFINED;
         currentMeter = null;
         frame = new UiFrame("Graham's power analysis program");
@@ -171,7 +170,7 @@ public class SmartPower extends Applet implements Runnable {
         if (frameSize.height > screenSize.height) frameSize.height = screenSize.height;
         if (frameSize.width > screenSize.width) frameSize.width = screenSize.width;
         frame.setLocation( (screenSize.width - frameSize.width) / 2,
-                          (screenSize.height - frameSize.height) / 2);
+                (screenSize.height - frameSize.height) / 2);
         frame.setVisible(true);
 
         displayString = "no line";
@@ -185,8 +184,8 @@ public class SmartPower extends Applet implements Runnable {
     //--------------------------------------------------------------------------
     public String getAppletInfo() {
         return "Name: SmartPower\r\n" +
-            "Author: G.J.Wood Copyright 2012,2013\r\n" +
-            "Created with Eclipse Indigo & Juno, & IntelliJ Idea";
+                "Author: G.J.Wood Copyright 2012,2013\r\n" +
+                "Created with Eclipse Indigo & Juno, & IntelliJ Idea";
     }
 
     // PARAMETER SUPPORT
@@ -200,10 +199,10 @@ public class SmartPower extends Applet implements Runnable {
     public String[][] getParameterInfo() {
         String paramReadingsFile = "readingsfile";
         return new String[][]{
-            {
-                    paramReadingsFile, "String",
-            "The name of the input file of meter readings"}
-            ,
+                {
+                        paramReadingsFile, "String",
+                        "The name of the input file of meter readings"}
+                ,
         };
     }
 
@@ -225,7 +224,7 @@ public class SmartPower extends Applet implements Runnable {
         //setupDefaultPMon10Meter();
     }
 
-    void setupDefaultOnzoMeter()
+    private void setupDefaultOnzoMeter()
     {
         Meter mtr;
         Metric mtc;
@@ -308,9 +307,8 @@ public class SmartPower extends Applet implements Runnable {
     // the display of images.
     //--------------------------------------------------------------------------
     public void run() {
-    	int j = 0;
-     	Metric tempMtc;
-     	currentMeter = this.data.getMeters().get(0); //TODO add meter selection or loop
+        int j = 0;
+        Metric tempMtc;
         while (this.get_state() != RunState.STOP) {
             try {
                 switch (this.get_state()) {
@@ -328,128 +326,130 @@ public class SmartPower extends Applet implements Runnable {
                         this.file.setInputPathname(this.frame.getFileDialog().getDirectory());
                         if ( !(this.file.inputFilename() == null | this.file.inputPathname() == null)) {
                             this.file.openInput();
-                            //frame.displayLog("Run: back from open\n");
-                            switch(currentMeter.getType()){ //TODO not sure what this was intended for, find out!
-                            case OWLCM160:
-                            	break;
-                            case PMON10:
-                                break;
-                            case ONZO:
-                            	break;
-                            default:	
-                            }	
                             this.change_state(RunState.PROCESS_FILE);
                         } else {
-                        	this.change_state(RunState.STOP);
+                            this.change_state(RunState.STOP);
                         }
                         break;
-                    case PROCESS_FILE: 
+                    case PROCESS_FILE:
                         this.frame.displayLog("Run: Processing file\n\r");
                         repaint();
                         this.currentMetricType = this.file.identifyTypeFromFilename( this.file.inputFilename());
+
+                        String meterName;
+                        MeterType meterType = Meter.getMeterTypeFromMetricType(currentMetricType);
+                        switch (meterType)
+                        {
+                            case OWLCM160: meterName = "Owl whole house"; break;
+                            case ONZO: meterName = "Onzo whole house"; break;
+                            default: meterName = ""; // shouldn't get PMon10 here
+                        }
+                        currentMeter = getOrCreateMeter(meterType,meterName);
+
                         if (this.currentMetricType != MetricType.UNDEFINED){
-                        	// Reinitialise this type of metric in the meter
-                        	tempMtc = currentMeter.getMetric(currentMetricType);
-                        	currentMeter.removeMetric(currentMetricType);//clear out any old data
-                        	data.getMetrics().remove(tempMtc);
-                        	tempMtc = new Metric(currentMeter,currentMetricType); //create and save new data
-                        	data.getMetrics().softAdd(tempMtc);
-                        	currentMeter.addMetric(currentMetricType);
-                        	currentMeter.setMetric(currentMetricType, tempMtc);
-                        	// read the new file into the newly initialised metric
-                        	this.file.processFile(currentMetricType);
-                        	this.file.closeInput();
-                        	this.change_state(RunState.PROCESS_READINGS);
-                        } else{ 
-                            this.frame.displayLog("Run: ERROR Metric type not identified (ignoring file)\n\r");                	
+                            // Reinitialise this type of metric in the meter
+                            tempMtc = currentMeter.getMetric(currentMetricType);
+                            currentMeter.removeMetric(currentMetricType);//clear out any old data
+                            data.getMetrics().remove(tempMtc);
+                            tempMtc = new Metric(currentMeter,currentMetricType); //create and save new data
+                            data.getMetrics().softAdd(tempMtc);
+                            currentMeter.addMetric(currentMetricType);
+                            currentMeter.setMetric(currentMetricType, tempMtc);
+                            // read the new file into the newly initialised metric
+
+                            this.file.processFile(currentMeter, currentMeter.getMetric(currentMetricType));
+                            this.file.closeInput();
+                            this.change_state(RunState.PROCESS_READINGS);
+                        } else{
+                            this.frame.displayLog("Run: ERROR Metric type not identified (ignoring file)\n\r");
                             this.change_state(RunState.IDLE);
                         }
                         break;
                     case PROCESS_READINGS:
-                        this.frame.displayLog("Run: Processing readings\n\r");                	
+                        this.frame.displayLog("Run: Processing readings\n\r");
                         repaint();
                         switch(currentMeter.getType()){
-                        case OWLCM160:
-                        	break;
-                        case PMON10:
-                        case ONZO:
-                            if (this.currentMetricType != MetricType.UNDEFINED){
-                            	currentMeter.getMetric(currentMetricType).removeRedundantData();
-                            } else this.frame.displayLog("Run: ERROR Metric type not identified (Cannot Process)\n\r");                	
-                        	break;
-                        default:
-                        	break;
+                            case OWLCM160:
+                                break;
+                            case PMON10:
+                            case ONZO:
+                                if (this.currentMetricType != MetricType.UNDEFINED){
+                                    currentMeter.getMetric(currentMetricType).removeRedundantData();
+                                } else this.frame.displayLog("Run: ERROR Metric type not identified (Cannot Process)\n\r");
+                                break;
+                            default:
+                                break;
                         }
-                        this.frame.displayLog("Run: Completed processing readings\n\r");                	
+                        this.frame.displayLog("Run: Completed processing readings\n\r");
                         repaint();
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
                     case PROCESS_EDGES:
-                        this.frame.displayLog("Run: Processing edges\n\r");                	
+                        this.frame.displayLog("Run: Processing edges\n\r");
                         switch(currentMeter.getType()){
-                        case OWLCM160:
-                        	break;
-                        case PMON10:
-                        case ONZO:
-                            if (this.currentMetricType != MetricType.UNDEFINED){
-                            	int lastReadingsCount = currentMeter.getMetric(currentMetricType).size();
-                            	int readingsCount = lastReadingsCount-1; //force first run
-                            	while (lastReadingsCount > readingsCount){
-                            		lastReadingsCount = readingsCount;
-                            		this.frame.displayLog("Run: Squelching " + lastReadingsCount + " readings \n\r");                	
-                            		currentMeter.getMetric(currentMetricType).squelchTransitions();
-                            		readingsCount = currentMeter.getMetric(currentMetricType).size();
-                                }
-                            }else this.frame.displayLog("Run: ERROR Metric type not identified (Cannot Squelch)\n\r");
-                        	break;
-                        default:
-                        	break;
+                            case OWLCM160:
+                                break;
+                            case PMON10:
+                            case ONZO:
+                                if (this.currentMetricType != MetricType.UNDEFINED){
+                                    int lastReadingsCount = currentMeter.getMetric(currentMetricType).size();
+                                    int readingsCount = lastReadingsCount-1; //force first run
+                                    while (lastReadingsCount > readingsCount){
+                                        lastReadingsCount = readingsCount;
+                                        this.frame.displayLog("Run: Squelching " + lastReadingsCount + " readings \n\r");
+                                        currentMeter.getMetric(currentMetricType).squelchTransitions();
+                                        readingsCount = currentMeter.getMetric(currentMetricType).size();
+                                    }
+                                }else this.frame.displayLog("Run: ERROR Metric type not identified (Cannot Squelch)\n\r");
+                                break;
+                            default:
+                                break;
                         }
-                        this.frame.displayLog("Run: Completed processing edges\n\r");                	
-                    	this.change_state(RunState.IDLE);
-                    	//System.gc(); // kick off the garbage collector
-                    	break;
+                        this.frame.displayLog("Run: Completed processing edges\n\r");
+                        this.change_state(RunState.IDLE);
+                        //System.gc(); // kick off the garbage collector
+                        break;
                     case PROCESS_EVENTS:
                         this.frame.displayLog("Run: Processing Events\n\r");
                         repaint();
                         switch(currentMeter.getType()){
-                        case OWLCM160:
-                        	break;
-                        case PMON10:
-                        case ONZO:
-                            if (this.currentMetricType != MetricType.UNDEFINED){
-                            	Processing.matchAndSaveActivity(getCurrentMeter().getMetric(MetricType.POWER_REAL_FINE));
-                            } else this.frame.displayLog("Run: ERROR Metric type not identified (Cannot process device activity)\n\r");
-                        	break;
-                        default:
-                        	break;
+                            case OWLCM160:
+                                break;
+                            case PMON10:
+                            case ONZO:
+                                if (this.currentMetricType != MetricType.UNDEFINED){
+                                    Processing.matchAndSaveActivity(getCurrentMeter().getMetric(MetricType.POWER_REAL_FINE));
+                                } else this.frame.displayLog("Run: ERROR Metric type not identified (Cannot process device activity)\n\r");
+                                break;
+                            default:
+                                break;
                         }
-                     	this.change_state(RunState.IDLE);
-                    	//System.gc(); // kick off the garbage collector
-                    	break;
+                        this.change_state(RunState.IDLE);
+                        //System.gc(); // kick off the garbage collector
+                        break;
                     case SAVE_FILE: //this state triggered by user selecting save file
                         this.frame.displayLog("\n\rRun: Saving files\n\r");
                         repaint();
                         switch(currentMeter.getType()){
-                        case OWLCM160:
-                            //this.file.OutputCSVFiles();
-                          	break;
-                        case PMON10:
-                        case ONZO:
-                        	if (this.currentMetricType != MetricType.UNDEFINED){                  	
-                        		this.file.setOutputFilename(this.frame.getFileDialog().getFile());
-                        		this.file.setOutputPathname(this.frame.getFileDialog().getDirectory());
-                        		if ( !(this.file.outputFilename() == null | this.file.outputPathname() == null)) {
-                        			this.file.OutputMetricAsCSVFile(MeterType.ONZO, 
-                        					getCurrentMeter().getMetric(currentMetricType));
-                        			this.file.OutputActivityAsCSVFile(	getCurrentMeter().getMetric(currentMetricType).getName(),
-                                										getData().getActivity());
-                        		}
-                            } else {this.frame.displayLog("Run: ERROR Metric type not identified (Cannot output files)\n\r");}
-                            break;
-                        default:	
-                        }	
+                            case OWLCM160:
+                                //this.file.OutputCSVFiles();
+                                break;
+                            case PMON10:
+                            case ONZO:
+                                if (this.currentMetricType != MetricType.UNDEFINED){
+                                    this.file.setOutputFilename(this.frame.getFileDialog().getFile());
+                                    this.file.setOutputPathname(this.frame.getFileDialog().getDirectory());
+                                    if ( !(this.file.outputFilename() == null | this.file.outputPathname() == null)) {
+                                        this.file.OutputMetricAsCSVFile(MeterType.ONZO,
+                                                getCurrentMeter().getMetric(currentMetricType));
+                                        this.file.OutputActivityAsCSVFile(	getCurrentMeter().getMetric(currentMetricType).getName(),
+                                                getData().getActivity());
+                                    }
+                                } else {this.frame.displayLog("Run: ERROR Metric type not identified (Cannot output files)\n\r");}
+                                break;
+                            default:
+                        }
                         //frame.displayLog("Run: back from open\n");
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
@@ -459,7 +459,6 @@ public class SmartPower extends Applet implements Runnable {
                         repaint();
                         Thread.sleep(1000);
                 }
-
             }
             catch (InterruptedException e) {
                 // Place exception-handling code here in case an
@@ -467,21 +466,21 @@ public class SmartPower extends Applet implements Runnable {
                 //		 meaning that another thread has interrupted this one
                 this.frame.displayLog("!");
                 e.printStackTrace();
-            	//System.out.println(e.toString());
+                //System.out.println(e.toString());
             }
         }
         System.exit(0);
     }
-    
+
     //
     // Access Methods
     //
-	public static SmartPower getMain() {
-		return SmartPower.spMain; //needed to access all other dynamic data without specific access methods
-	}
+    public static SmartPower getMain() {
+        return SmartPower.spMain; //needed to access all other dynamic data without specific access methods
+    }
     public synchronized void change_state(RunState new_state) {
-    	this.state = new_state;
-    	//this.threadSmartPower.interrupt(); // this caused persistence to fail
+        this.state = new_state;
+        //this.threadSmartPower.interrupt(); // this caused persistence to fail
     }
     private synchronized RunState get_state() {
         return (this.state);
@@ -491,18 +490,16 @@ public class SmartPower extends Applet implements Runnable {
         System.out.println(this.displayString);
         repaint();
     }
-	public  UiFrame getFrame() {
-		return this.frame;
-	}
-	protected  FileAccess getFile() {
-		return this.file;
-	}
-	public MetricType getMetricType() {
-		return currentMetricType;
-	}
-	public void setMetricType(MetricType metricType) {
-		this.currentMetricType = metricType;
-	}
+    public  UiFrame getFrame() {
+        return this.frame;
+    }
+    protected  FileAccess getFile() {
+        return this.file;
+    }
+    public MetricType getCurrentMetricType(){return this.currentMetricType;}
+    public void setCurrentMetricType(MetricType metricType) {
+        this.currentMetricType = metricType;
+    }
     public DataService getDataService()
     {
         return dataService;
@@ -546,9 +543,8 @@ public class SmartPower extends Applet implements Runnable {
     }
 
     //
-	// Access method for persistent data repository
-	//
-	public PersistentData getData(){return this.data;}
-	public Meter getCurrentMeter(){return currentMeter;}
-	public MetricType getCurrentMetricType(){return this.currentMetricType;}
+    // Access method for persistent data repository
+    //
+    public PersistentData getData(){return this.data;}
+    public Meter getCurrentMeter(){return currentMeter;}
 }

@@ -102,7 +102,7 @@ class UiDisplayReadingsDialogue extends JDialog
         Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10,DataServiceMeter.getDisplayName());
         MetricType metricType = MetricType.getMetricTypeFromTag(dataServiceMetric.getTag());
         if (metricType == null) return; //problem
-        SmartPower.getMain().setMetricType(metricType);
+        SmartPower.getMain().setCurrentMetricType(metricType);
         SmartPower.getMain().setCurrentMeter(meter);
         for (TimestampedDouble reading : results)
         {

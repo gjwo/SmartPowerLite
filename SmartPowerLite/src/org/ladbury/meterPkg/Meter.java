@@ -165,6 +165,24 @@ public class Meter	implements	Serializable,
 		
 		return null;
 	}
+	public static MeterType getMeterTypeFromMetricType(MetricType metricType)
+	{
+		switch (metricType)
+		{
+			case ENERGY_LOW_RES: return MeterType.OWLCM160;
+			case ENERGY_HIGH_RES :
+			case POWER_REAL_FINE:
+			case POWER_REAL_STANDARD:
+			case POWER_REACTIVE_STANDARD:
+			case POWER_LOW_RES: return MeterType.ONZO;
+			case POWER_REAL:
+			case CURRENT:
+			case VOLTAGE_RMS:
+			case POWER_APPARENT:
+			case POWER_REACTIVE: return MeterType.PMON10;
+			default: return MeterType.UNDEFINED;
+		}
+	}
 	//
 	// Methods to implement interfaces
 	//

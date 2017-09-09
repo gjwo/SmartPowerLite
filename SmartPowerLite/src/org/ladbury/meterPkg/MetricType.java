@@ -38,5 +38,4 @@ public static MetricType getMetricTypeFromTag(String tag)
         }
         return null;
     }
-
 }
