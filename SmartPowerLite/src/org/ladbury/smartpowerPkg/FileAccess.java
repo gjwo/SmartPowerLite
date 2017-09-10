@@ -43,7 +43,7 @@ class FileAccess
     private BufferedReader m_br;
     private PrintWriter m_pw;
 
-    protected FileAccess() {
+    FileAccess() {
     	/*
     	 *  Constructor
     	 */
@@ -119,11 +119,6 @@ class FileAccess
         return m_pw;
     }
 
-    protected PrintWriter outputWriter()
-    {
-        return m_pw;
-    }
-
 
     String state() {
         if (inputFile == null) {
@@ -173,32 +168,26 @@ class FileAccess
 
     /**
      * Output metric as a CSV file
-     * @param mt Meter type 
-     * @param mtc Metric
+     *
+      * @param mtc Metric
      */
-    void OutputMetricAsCSVFile(MeterType mt, Metric mtc){
-        switch(mt){
-            case OWLCM160:
-                break;
-            case ONZO:
-                // construct output filename and open file
-                outputFileName = mtc.readingsName()+"_R.csv";
-                m_pw = openOutput(outputPathName, outputFileName);
-                //save Reading events
-                mtc.outputReadingsCSV(m_pw);
-                closeOutput();
-                //save device Activity
+    void OutputMetricAsCSVFile(Metric mtc)
+    {
+        // construct output filename and open file
+        outputFileName = mtc.readingsName() + "_R.csv";
+        m_pw = openOutput(outputPathName, outputFileName);
+        //save Reading events
+        mtc.outputReadingsCSV(m_pw);
+        closeOutput();
+        //save device Activity
 
-                outputFileName = mtc.readingsName()+"_DA.csv";
-                m_pw = openOutput(outputPathName, outputFileName);
-                for(int i=0; i<SmartPower.getMain().getData().getActivity().size();i++){
-                    m_pw.println(SmartPower.getMain().getData().getActivity().get(i).toCSV());
-                }
-                closeOutput();
-                break;
-            default:
-                break;
+        outputFileName = mtc.readingsName() + "_DA.csv";
+        m_pw = openOutput(outputPathName, outputFileName);
+        for (int i = 0; i < SmartPower.getMain().getData().getActivity().size(); i++)
+        {
+            m_pw.println(SmartPower.getMain().getData().getActivity().get(i).toCSV());
         }
+        closeOutput();
         //m_main.frame.displayLog("Run: back from events save\n");
     }
 
@@ -223,19 +212,20 @@ class FileAccess
      * @param t             Timestamp
      * @return              List of file names
      */
+    @SuppressWarnings("unused")
     protected List<String> findCSVFilesForDate(String dirName, Timestamp t){
         DateFormat df = new SimpleDateFormat(Timestamped.FILE_DATE_FORMAT);
 
         List<String> selectedFiles = new ArrayList<>();
         File dir = new File(dirName);
         String filename;
-        if(dir.listFiles() == null) return null;
-        for (File file : dir.listFiles()) {
-            filename = file.getName();
-            if (filename.toLowerCase().endsWith((".csv")) && filename.contains(df.format(t))) {
-                selectedFiles.add(filename);
+        if(dir.listFiles() != null)
+            for (File file : dir.listFiles()) {
+                filename = file.getName();
+                if (filename.toLowerCase().endsWith((".csv")) && filename.contains(df.format(t))) {
+                    selectedFiles.add(filename);
+                }
             }
-        }
         return selectedFiles;
     }
 
@@ -287,7 +277,4 @@ class FileAccess
         return outputPathName;
     }
 
-    protected PrintWriter pw(){
-        return m_pw;
-    }
 }

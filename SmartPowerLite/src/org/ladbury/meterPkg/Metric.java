@@ -23,6 +23,7 @@ import org.ladbury.smartpowerPkg.Timestamped;
 import org.ladbury.userInterfacePkg.UiStyle;
 
 
+@SuppressWarnings("WeakerAccess")
 public class Metric	implements	Serializable,
 								Persistable <Metric>,
 								Comparable<Metric>,
@@ -86,7 +87,7 @@ public class Metric	implements	Serializable,
 		case ENERGY_HIGH_RES: 
 			this.setCumulative(true);
 			break;
-		default:;
+		default:
 		}
 	}
 	
@@ -537,6 +538,7 @@ public class Metric	implements	Serializable,
     //
     // output a record to the log
     //
+	@SuppressWarnings("SameParameterValue")
 	private void traceRecord(String s, int row){
 		SmartPower.getMain().getFrame().displayLog(
 				s+" Row ["+row+

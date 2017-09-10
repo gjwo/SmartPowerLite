@@ -52,9 +52,9 @@ public class SmartPower extends Applet implements Runnable {
 
     // Application Specific data (not persistent)
     private static	SmartPower	spMain = null; //This is the root access point for all data in the package, the only static.
-    private	UiFrame 			frame;
-    private	FileAccess 			file;
-    private DataService         dataService;
+    private final   UiFrame 			frame;
+    private final   FileAccess 			file;
+    private         DataService         dataService;
     private volatile MetricType	currentMetricType;
     private volatile Meter      currentMeter;
 
@@ -68,6 +68,7 @@ public class SmartPower extends Applet implements Runnable {
     // is run as a stand alone application, as well as when run within an HTML page.
     // This method is called by GetParameters().
     //---------------------------------------------------------------------------
+    @SuppressWarnings("SameParameterValue")
     private String GetParameter(String strName, String args[]) {
         if (args == null) {
             // Running within an HTML page, so call original getParameter().
@@ -419,7 +420,7 @@ public class SmartPower extends Applet implements Runnable {
                             case PMON10:
                             case ONZO:
                                 if (this.currentMetricType != MetricType.UNDEFINED){
-                                    Processing.matchAndSaveActivity(getCurrentMeter().getMetric(MetricType.POWER_REAL_FINE));
+                                    Processing.matchAndSaveActivity(currentMeter.getMetric(MetricType.POWER_REAL_FINE));
                                 } else this.frame.displayLog("Run: ERROR Metric type not identified (Cannot process device activity)\n\r");
                                 break;
                             default:
@@ -441,10 +442,9 @@ public class SmartPower extends Applet implements Runnable {
                                     this.file.setOutputFilename(this.frame.getFileDialog().getFile());
                                     this.file.setOutputPathname(this.frame.getFileDialog().getDirectory());
                                     if ( !(this.file.outputFilename() == null | this.file.outputPathname() == null)) {
-                                        this.file.OutputMetricAsCSVFile(MeterType.ONZO,
-                                                getCurrentMeter().getMetric(currentMetricType));
-                                        this.file.OutputActivityAsCSVFile(	getCurrentMeter().getMetric(currentMetricType).getName(),
-                                                getData().getActivity());
+                                        this.file.OutputMetricAsCSVFile(currentMeter.getMetric(currentMetricType));
+                                        this.file.OutputActivityAsCSVFile(  currentMeter.getMetric(currentMetricType).getName(),
+                                                                            getData().getActivity());
                                     }
                                 } else {this.frame.displayLog("Run: ERROR Metric type not identified (Cannot output files)\n\r");}
                                 break;
@@ -496,7 +496,6 @@ public class SmartPower extends Applet implements Runnable {
     protected  FileAccess getFile() {
         return this.file;
     }
-    public MetricType getCurrentMetricType(){return this.currentMetricType;}
     public void setCurrentMetricType(MetricType metricType) {
         this.currentMetricType = metricType;
     }
@@ -529,10 +528,7 @@ public class SmartPower extends Applet implements Runnable {
     }
     public void displayCurrentReadings()
     {
-        UiFrame frame = SmartPower.getMain().getFrame();
-        Meter currentMeter = SmartPower.getMain().getCurrentMeter();
         frame.displayLog("Meter: "+ currentMeter.getType()+ " "+ currentMeter.name()+"\n");
-        MetricType currentMetricType = SmartPower.getMain().getCurrentMetricType();
         frame.displayLog("Metric: "+ currentMetricType+"\n");
         Metric metric = currentMeter.getMetric(currentMetricType);
         List<TimedRecord> readings = metric.getReadings();
@@ -546,5 +542,4 @@ public class SmartPower extends Applet implements Runnable {
     // Access method for persistent data repository
     //
     public PersistentData getData(){return this.data;}
-    public Meter getCurrentMeter(){return currentMeter;}
-}
+ }
