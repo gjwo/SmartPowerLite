@@ -206,12 +206,13 @@ public class SmartPower extends Applet implements Runnable {
         };
     }
 
-    // The init() method is called by the AWT when an applet is first loaded or
-    // reloaded.  Override this method to perform whatever initialisation your
-    // applet needs, such as initialising data structures, loading images or
-    // fonts, creating frame windows, setting the layout manager, or adding UI
-    // components.
-    //--------------------------------------------------------------------------
+    /**
+     * The init() method is called by the AWT when an applet is first loaded or
+     * reloaded.  Override this method to perform whatever initialisation your
+     * applet needs, such as initialising data structures, loading images or
+     * fonts, creating frame windows, setting the layout manager, or adding UI
+     * components.
+     */
     public void init() {
         if (!fStandAlone) {
             GetParameters(null);
@@ -220,47 +221,12 @@ public class SmartPower extends Applet implements Runnable {
         currentMetricType = MetricType.UNDEFINED;
         currentMeter = null;
         dataService = new DataService();
-        setupDefaultOnzoMeter();
-        //setupDefaultPMon10Meter();
     }
 
-    private void setupDefaultOnzoMeter()
-    {
-        Meter mtr;
-        Metric mtc;
-        if(data.getMeters()==null ||data.getMeters().size()<=0){//add initial entry if none exist
-            mtr = new Meter(MeterType.ONZO);
-            data.getMeters().softAdd(mtr);
-        }
-        if (data.getMetrics()==null ||data.getMetrics().size()<=0){//add initial entries if none exist
-            //Onzo metrics ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD
-            mtr = data.getMeters().get(0);
-
-            mtc = new Metric(mtr,MetricType.ENERGY_LOW_RES);
-            data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.ENERGY_LOW_RES, mtc);
-
-            mtc = new Metric(mtr,MetricType.ENERGY_HIGH_RES);
-            data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.ENERGY_HIGH_RES, mtc);
-
-            mtc = new Metric(mtr,MetricType.POWER_REAL_STANDARD);
-            data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.POWER_REAL_STANDARD, mtc);
-
-            mtc = new Metric(mtr,MetricType.POWER_REAL_FINE);
-            data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.POWER_REAL_FINE, mtc);
-
-            mtc = new Metric(mtr,MetricType.POWER_REACTIVE_STANDARD);
-            data.getMetrics().softAdd(mtc);
-            mtr.setMetric(MetricType.POWER_REACTIVE_STANDARD, mtc);
-        }
-    }
-
-    // Place additional applet clean up code here.  destroy() is called when
-    // when you applet is terminating and being unloaded.
-    //-------------------------------------------------------------------------
+    /*
+     * Place additional applet clean up code here.  destroy() is called when
+     * when you applet is terminating and being unloaded.
+     */
     public void destroy() {
         // Place applet cleanup code here
     }
@@ -276,10 +242,11 @@ public class SmartPower extends Applet implements Runnable {
         g.drawString(displayString, 10, 90);
     }
 
-    //		The start() method is called when the page containing the applet
-    // first appears on the screen. The AppletWizard's initial implementation
-    // of this method starts execution of the applet's thread.
-    //--------------------------------------------------------------------------
+    /**
+     * The start() method is called when the page containing the applet
+     * first appears on the screen. The AppletWizard's initial implementation
+     * of this method starts execution of the applet's thread.
+     */
     public void start() {
         if (this.threadSmartPower == null) {
             this.threadSmartPower = new Thread(this);
@@ -288,10 +255,11 @@ public class SmartPower extends Applet implements Runnable {
         //Place additional applet start code here
     }
 
-    //		The stop() method is called when the page containing the applet is
-    // no longer on the screen. The AppletWizard's initial implementation of
-    // this method stops execution of the applet's thread.
-    //--------------------------------------------------------------------------
+    /**
+     * The stop() method is called when the page containing the applet is
+     * no longer on the screen. The AppletWizard's initial implementation of
+     * this method stops execution of the applet's thread.
+     */
     public void stop() {
         if (this.threadSmartPower != null) {
             this.change_state(RunState.STOP);
@@ -299,18 +267,17 @@ public class SmartPower extends Applet implements Runnable {
         }
     }
 
-    // THREAD SUPPORT
-    //		The run() method is called when the applet's thread is started. If
-    // your applet performs any ongoing activities without waiting for user
-    // input, the code for implementing that behaviour typically goes here. For
-    // example, for an applet that performs animation, the run() method controls
-    // the display of images.
-    //--------------------------------------------------------------------------
+    /**
+     * THREAD SUPPORT
+     * The run() method is called when the applet's thread is started. If
+     * your applet performs any ongoing activities without waiting for user
+     * input, the code for implementing that behaviour typically goes here.
+     */
     public void run() {
         int j = 0;
         Metric tempMtc;
-        while (this.get_state() != RunState.STOP) {
-            try {
+        try {
+            while (this.get_state() != RunState.STOP) {
                 switch (this.get_state()) {
                     case IDLE:
                         this.frame.displayLog(".");
@@ -324,11 +291,14 @@ public class SmartPower extends Applet implements Runnable {
                         repaint();
                         this.file.setInputFilename(this.frame.getFileDialog().getFile());
                         this.file.setInputPathname(this.frame.getFileDialog().getDirectory());
-                        if ( !(this.file.inputFilename() == null | this.file.inputPathname() == null)) {
+                        if ( !((this.file.inputFilename() == null) | (this.file.inputPathname() == null)))
+                        {
                             this.file.openInput();
                             this.change_state(RunState.PROCESS_FILE);
-                        } else {
-                            this.change_state(RunState.STOP);
+                        } else
+                        {
+                            this.frame.displayLog("Run: Couldn't open file\n\r");
+                            this.change_state(RunState.IDLE);
                         }
                         break;
                     case PROCESS_FILE:
@@ -444,7 +414,7 @@ public class SmartPower extends Applet implements Runnable {
                                     if ( !(this.file.outputFilename() == null | this.file.outputPathname() == null)) {
                                         this.file.OutputMetricAsCSVFile(currentMeter.getMetric(currentMetricType));
                                         this.file.OutputActivityAsCSVFile(  currentMeter.getMetric(currentMetricType).getName(),
-                                                                            getData().getActivity());
+                                                getData().getActivity());
                                     }
                                 } else {this.frame.displayLog("Run: ERROR Metric type not identified (Cannot output files)\n\r");}
                                 break;
@@ -454,22 +424,70 @@ public class SmartPower extends Applet implements Runnable {
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
-                    case STOP: System.exit(0);
+                    case STOP: break; //do nothing the loop will exit
                     default:
                         repaint();
                         Thread.sleep(1000);
                 }
             }
-            catch (InterruptedException e) {
-                // Place exception-handling code here in case an
-                //       InterruptedException is thrown by Thread.sleep(),
-                //		 meaning that another thread has interrupted this one
-                this.frame.displayLog("!");
-                e.printStackTrace();
-                //System.out.println(e.toString());
-            }
+        }
+        catch (InterruptedException e) {
+            // Place exception-handling code here in case an
+            //       InterruptedException is thrown by Thread.sleep(),
+            //		 meaning that another thread has interrupted this one
+            this.frame.displayLog("!");
+            e.printStackTrace();
+            System.exit(1);
+            //System.out.println(e.toString());
         }
         System.exit(0);
+    }
+
+    /**
+     * getOrCreateMeter     Looks for the named meter of the the specified type, if it isn't found
+     *                      it is created and stored before being returned
+     * @param meterType     What sort of meter to look for / create
+     * @param meterName     The Meter's name (found or created)
+     * @return              A reference to the Meter
+     */
+    public Meter getOrCreateMeter(Meter.MeterType meterType, String meterName)
+    {
+        for(Meter meter:data.getMeters())
+        {
+            if (meter.getType() == meterType)
+            {
+                if (meter.name().equalsIgnoreCase(meterName))
+                {
+                    return meter;
+                }
+            }
+        }
+        //no meter found, add one
+        Meter newMeter = new Meter(meterType); // sets up all possible metrics
+        newMeter.setName(meterName);
+        data.getMeters().softAdd(newMeter);
+        return newMeter;
+    }
+
+    /**
+     * displayCurrentReadings   puts the set of readings for the current metric on the log window
+     */
+    public void displayCurrentReadings()
+    {
+        frame.displayLog("Meter: "+ currentMeter.getType()+ " "+ currentMeter.name()+"\n");
+        frame.displayLog("Metric: "+ currentMetricType+"\n");
+        Metric metric = currentMeter.getMetric(currentMetricType);
+        List<TimedRecord> readings = metric.getReadings();
+        for (TimedRecord timedRecord:readings)
+        {
+            frame.displayLog(timedRecord.toCSV()+"\n");
+        }
+    }
+
+    public void display(String s) {
+        this.displayString = s;
+        System.out.println(this.displayString);
+        repaint();
     }
 
     //
@@ -483,12 +501,7 @@ public class SmartPower extends Applet implements Runnable {
         //this.threadSmartPower.interrupt(); // this caused persistence to fail
     }
     private synchronized RunState get_state() {
-        return (this.state);
-    }
-    public void display(String s) {
-        this.displayString = s;
-        System.out.println(this.displayString);
-        repaint();
+        return this.state;
     }
     public  UiFrame getFrame() {
         return this.frame;
@@ -508,38 +521,8 @@ public class SmartPower extends Applet implements Runnable {
         this.dataService = dataService;
     }
     public void setCurrentMeter(Meter meter){currentMeter = meter;}
-    public Meter getOrCreateMeter(Meter.MeterType meterType, String meterName)
-    {
-        for(Meter meter:data.getMeters())
-        {
-            if (meter.getType() == meterType)
-            {
-                if (meter.name().equalsIgnoreCase(meterName))
-                {
-                    return meter;
-                }
-            }
-        }
-        //no meter found, add one
-        Meter newMeter = new Meter(meterType); // sets up all possible metrics
-        newMeter.setName(meterName);
-        data.getMeters().softAdd(newMeter);
-        return newMeter;
-    }
-    public void displayCurrentReadings()
-    {
-        frame.displayLog("Meter: "+ currentMeter.getType()+ " "+ currentMeter.name()+"\n");
-        frame.displayLog("Metric: "+ currentMetricType+"\n");
-        Metric metric = currentMeter.getMetric(currentMetricType);
-        List<TimedRecord> readings = metric.getReadings();
-        for (TimedRecord timedRecord:readings)
-        {
-            frame.displayLog(timedRecord.toCSV()+"\n");
-        }
-    }
-
     //
     // Access method for persistent data repository
     //
     public PersistentData getData(){return this.data;}
- }
+}
