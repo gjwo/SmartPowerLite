@@ -34,6 +34,7 @@ import static org.ladbury.dataServicePkg.DataService.DEFAULT_API_URL;
  * @author GJWood
  * @version 1.1 2012/11/29 Incorporating handling of Owl meter
  * @version 1.2 2013/11/19 Incorporating handling of Onzo meter
+ * @version 1.3 2017/09/10 Incorporating handling of PMon10 meter
  */
 public class SmartPower extends Applet implements Runnable {
 
@@ -146,13 +147,11 @@ public class SmartPower extends Applet implements Runnable {
         catch (Exception e) {
             e.printStackTrace();
         }
-        SmartPower applet_SmartPower = new SmartPower();
-        SmartPower.spMain = applet_SmartPower;
-        //frame.add("Center", applet_SmartPower);
-        applet_SmartPower.fStandAlone = true;
-        applet_SmartPower.GetParameters(args);
-        applet_SmartPower.init();
-        applet_SmartPower.start();
+        SmartPower.spMain = new SmartPower();
+        SmartPower.spMain.fStandAlone = true;
+        SmartPower.spMain.GetParameters(args);
+        SmartPower.spMain.init();
+        SmartPower.spMain.start();
     }
 
     // SmartPower Class Constructor
@@ -334,19 +333,20 @@ public class SmartPower extends Applet implements Runnable {
                     case PROCESS_FILE:
                         this.frame.displayLog("Run: Processing file\n\r");
                         repaint();
+                        //The file name defines the type of metric to be processed
                         this.currentMetricType = this.file.identifyTypeFromFilename( this.file.inputFilename());
-
+                        //Metric types are unique to a meter type, therefor identify the meter and its name(cludge)
                         String meterName;
                         MeterType meterType = Meter.getMeterTypeFromMetricType(currentMetricType);
                         switch (meterType)
                         {
                             case OWLCM160: meterName = "Owl whole house"; break;
                             case ONZO: meterName = "Onzo whole house"; break;
-                            default: meterName = ""; // shouldn't get PMon10 here
+                            default: meterName = ""; // shouldn't get PMon10 here, as input comes from DataService
                         }
                         currentMeter = getOrCreateMeter(meterType,meterName);
 
-                        if (this.currentMetricType != MetricType.UNDEFINED){
+                        if (this.currentMetricType != MetricType.UNDEFINED){ //we have a valid input file name
                             // Reinitialise this type of metric in the meter
                             tempMtc = currentMeter.getMetric(currentMetricType);
                             currentMeter.removeMetric(currentMetricType);//clear out any old data

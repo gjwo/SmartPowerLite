@@ -34,16 +34,6 @@ public class Metric	implements	Serializable,
 	 */
 	private static final long serialVersionUID = -701995953205153989L;
 
-	public enum Granularity {UNDEFINED, SECOND, TEN_SECOND, MINUTE, TEN_MINUTE, HOUR, DAY}
-
-	public static final int[] GRAIN_INTERVALS =  {0,Timestamped.SECOND_IN_MS,
-													Timestamped.SECOND_IN_MS*10,
-													Timestamped.MINUTE_IN_MS,
-													Timestamped.MINUTE_IN_MS*10,
-													Timestamped.HOUR_IN_MS,
-													Timestamped.DAY_IN_MS,}; //in milliseconds
-
-	
 	private long metricId;				// persistence ID field
 	private String name;			// the name of the metric
 	private MetricType type;			// the metric type - which defines what readings are stored
@@ -215,7 +205,7 @@ public class Metric	implements	Serializable,
 			recordedTs=readings.get(i2).timestamp();
 			if(recordedTs.after(t2)) return results;
 			while(incrementalTs.before(recordedTs)){
-				incrementalTs.setTime(incrementalTs.getTime() + Metric.GRAIN_INTERVALS[g.ordinal()]);
+				incrementalTs.setTime(incrementalTs.getTime() + g.getGrainInterval());
 				if(cumulative){
 					results.add(new TimedRecord(incrementalTs,recordedValue));
 					//TODO need to work out slope etc here	
@@ -427,7 +417,7 @@ public class Metric	implements	Serializable,
     */
     public  void squelchTransitions() {
     	
-     	int intervalInMs = Metric.getGrainIntervals()[grain.ordinal()];
+     	int intervalInMs = grain.getGrainInterval();
 		//SmartPower.getMain().getFrame().displayLog("interval = "+ interval+ "ms\n\r");
      	for (int i = this.size()-2; i>0; i--){
 			//traceRecord("Loop",i);
@@ -459,7 +449,8 @@ public class Metric	implements	Serializable,
      	}
     }
 	/**
-	 * Remove redundant data
+	 * Remove redundant data	if adjacent records have the same value all but the first are removed
+	 * 							so the file contains deltas only, values are assumed to continue between deltas.
 	 */
 	public void removeRedundantData(){
 		for(int i = this.size()-1; i>1; i--){
@@ -477,8 +468,8 @@ public class Metric	implements	Serializable,
 	
 	/**
 	 * getDelta
-	 * @param row the row to earliest from
-	 * @return a difference in values between this row and the previous one
+	 * @param row 	the row to earliest from
+	 * @return 		a difference in values between this row and the previous one
 	 */
 	public int getDelta(int row){
 		if (row<0 || row>= readings.size()) return 0;
@@ -488,34 +479,34 @@ public class Metric	implements	Serializable,
 	
 	/**
 	 * isOn
-	 * @param row the row to earliest from
-	 * @return true if this reading represents a device turning on
+	 * @param row 	the row to earliest from
+	 * @return 		true if this reading represents a device turning on
 	 */
 	public boolean isOn(int row){
 		return (getDelta(row)>0);		
 	}
 	/**
 	 * getIntervals
-	 * @param row the reading to earliest from
-	 * @return How many ticks to the next reading
+	 * @param row 	the reading to start calculating time from
+	 * @return 		How many ticks (of size grain) to the next reading
 	 */
-	public int getIntervals(int row){
+	private int getIntervals(int row){
 		int interval; 
 		Timestamp ts = new Timestamp(0);
 		if (row < 0 || row >= (readings.size()-1)) return 0;
 		
 		ts.setTime(readings.get(row+1).timestamp().getTime() - readings.get(row).timestamp().getTime());
-		interval = (int)  (ts.getTime() / (Metric.GRAIN_INTERVALS[grain.ordinal()]));
+		interval = (int)  (ts.getTime() / grain.getGrainInterval());
 		//SmartPower.getMain().getFrame().displayLog(interval+" Interval\n\r");
 		
 		return interval;
 	}
 	/**
 	 * removeRecord
-	 * @param row the index of record to remove
-	 * @return true if successful
+	 * @param row 	the index of record to remove
+	 * @return 		true if successful
 	 */
-	public boolean removeRecord(int row){
+	private boolean removeRecord(int row){
 		if (row<1 || row>= readings.size()){
 			SmartPower.getMain().getFrame().displayLog("removeRecord range check failed row["+row+"]\n\r");
 			return false;
@@ -546,7 +537,7 @@ public class Metric	implements	Serializable,
     //
     // output a record to the log
     //
-    public void traceRecord(String s,int row){
+	private void traceRecord(String s, int row){
 		SmartPower.getMain().getFrame().displayLog(
 				s+" Row ["+row+
 				"] Timestamp "+this.getRecord(row).timestampString()+
@@ -604,9 +595,6 @@ public class Metric	implements	Serializable,
 		return grain;
 	}
 	public static long getSerialVersionUID() {return serialVersionUID;}
-	public static int[] getGrainIntervals() {
-		return GRAIN_INTERVALS;
-	}
 	public String getName() {
 		return name;
 	}
