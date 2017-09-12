@@ -3,8 +3,6 @@ package org.ladbury.userInterfacePkg;
 import org.ladbury.chartingPkg.PieChart;
 import org.ladbury.chartingPkg.ScatterChart;
 import org.ladbury.chartingPkg.TimeHistogram;
-import org.ladbury.dataServicePkg.DataServiceMeter;
-import org.ladbury.dataServicePkg.DataServiceMetric;
 import org.ladbury.meterPkg.Meter;
 import org.ladbury.smartpowerPkg.SmartPower;
 
@@ -201,7 +199,7 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataMeters_actionPerformed(ActionEvent actionEvent)
     {
-        Collection<String> meters = SmartPower.getMain().getDataService().getAvailableMeterNames();
+        Collection<String> meters = SmartPower.getMain().getDataService().getMeterNames();
         UiListBox meterBox = new UiListBox("Meters");
         for (String meter : meters) meterBox.add(meter);
         meterBox.pack();
@@ -213,7 +211,7 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataMetrics_actionPerformed(ActionEvent actionEvent)
     {
-        Collection<String> metrics = SmartPower.getMain().getDataService().getAvailableMetricNames();
+        Collection<String> metrics = SmartPower.getMain().getDataService().getMetricNames();
         UiListBox metricBox = new UiListBox("Metrics");
         for (String metric : metrics) metricBox.add(metric);
         metricBox.pack();

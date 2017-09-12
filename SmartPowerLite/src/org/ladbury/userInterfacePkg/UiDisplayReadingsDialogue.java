@@ -7,7 +7,6 @@ import org.ladbury.smartpowerPkg.SmartPower;
 
 import javax.swing.*;
 import java.awt.*;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
@@ -26,8 +25,8 @@ class UiDisplayReadingsDialogue extends JDialog
 
     UiDisplayReadingsDialogue(String title )
     {
-        Collection<DataServiceMeter> meters = SmartPower.getMain().getDataService().getAvailableMeters();
-        Collection<DataServiceMetric> metrics = SmartPower.getMain().getDataService().getAvailableMetrics();
+        Collection<DataServiceMeter> meters = SmartPower.getMain().getDataService().refreshMetersFromDB();
+        Collection<DataServiceMetric> metrics = SmartPower.getMain().getDataService().refreshMetricsFromDB();
 
 
                 //record the initially selected values in case they are not changed
@@ -96,8 +95,7 @@ class UiDisplayReadingsDialogue extends JDialog
     }
     private void processReadings()
     {
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        final Collection<TimestampedDouble> results = SmartPower.getMain().getDataService().getDBResourceForPeriod(
+        final Collection<TimestampedDouble> results = SmartPower.getMain().getDataService().refreshMetricForPeriodFromDB(
                 DataServiceMeter,dataServiceMetric,earliestTime.toInstant(),latestTime.toInstant());
         Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10,DataServiceMeter.getDisplayName());
         MetricType metricType = MetricType.getMetricTypeFromTag(dataServiceMetric.getTag());
