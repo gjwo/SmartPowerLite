@@ -27,6 +27,10 @@ public class DataService // copied from DBRestAPI in MQTTListener
     private Collection<DataServiceMeter> meters;
     private Collection<DataServiceMetric> metrics;
     private Collection<TimestampedDouble> readings;
+    private DataServiceMeter currentMeter;
+    private DataServiceMetric currentMetric;
+    private Instant currentStartTime;
+    private Instant currentEndTime;
 
     public DataService(String apiUrl)
     {
@@ -35,6 +39,10 @@ public class DataService // copied from DBRestAPI in MQTTListener
         meters = new ArrayList<>();
         metrics = new ArrayList<>();
         restClient = Client.create();
+        currentMeter = new DataServiceMeter("Undefined","","");
+        currentMetric = new DataServiceMetric("Undefined","","", "");
+        currentStartTime = Instant.ofEpochSecond(0);
+        currentEndTime = Instant.now();
         lastRestError = REST_REQUEST_SUCCESSFUL;
         if ((apiUrl == null) || (apiUrl.isEmpty()))
             this.apiUrl =  DEFAULT_API_URL;
@@ -149,6 +157,10 @@ public class DataService // copied from DBRestAPI in MQTTListener
         }
         else
         {
+            currentStartTime = start;
+            currentEndTime = end;
+            currentMeter = meter;
+            currentMetric = metric;
             JSONObject response = new JSONObject(clientResponse.getEntity(String.class));
             JSONArray resultArray = response.getJSONArray("data");
             readings = new ArrayList<>();
@@ -191,6 +203,8 @@ public class DataService // copied from DBRestAPI in MQTTListener
         }
         else
         {
+            currentMeter = meter;
+            currentMetric = metric;
             JSONObject response = new JSONObject(clientResponse.getEntity(String.class));
             JSONArray resultArray = response.getJSONArray("data");
             readings = new ArrayList<>();
@@ -214,5 +228,33 @@ public class DataService // copied from DBRestAPI in MQTTListener
                     + clientResponse.getStatus() + " "
                     + clientResponse.getEntity(String.class));
         }
+    }
+    public Collection<DataServiceMeter> getMeters()
+    {
+        return meters;
+    }
+    public Collection<DataServiceMetric> getMetrics()
+    {
+        return metrics;
+    }
+    public Collection<TimestampedDouble> getReadings()
+    {
+        return readings;
+    }
+    public DataServiceMeter getCurrentMeter()
+    {
+        return currentMeter;
+    }
+    public DataServiceMetric getCurrentMetric()
+    {
+        return currentMetric;
+    }
+    public Instant getCurrentStartTime()
+    {
+        return currentStartTime;
+    }
+    public Instant getCurrentEndTime()
+    {
+        return currentEndTime;
     }
 }
