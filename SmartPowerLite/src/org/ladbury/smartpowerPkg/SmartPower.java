@@ -17,7 +17,6 @@ import org.ladbury.meterPkg.TimedRecord;
 import org.ladbury.persistentData.PersistentData;
 import org.ladbury.userInterfacePkg.UiFrame;
 
-import static org.ladbury.dataServicePkg.DataService.DEFAULT_API_URL;
 
 /**
  * SmartPower.java:	Applet
@@ -161,7 +160,7 @@ public class SmartPower extends Applet implements Runnable {
         currentMetricType = MetricType.UNDEFINED;
         currentMeter = null;
         frame = new UiFrame("Graham's power analysis program");
-        dataService = new DataService(DEFAULT_API_URL);
+        dataService = new DataService();
         // create persistent objects, data loaded in init()
         data = new PersistentData(); // set up entity manager etc
         frame.validate();

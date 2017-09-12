@@ -40,6 +40,16 @@ public class TimestampedDouble
         this.value = value;
         this.timestamp = timestamp;
     }
+    /**
+     * TimestampedDouble constructor set both values
+     * @param value         The value to be stored
+     * @param epochMilli    The time in epochMilli
+     */
+    public TimestampedDouble(double value, long epochMilli)
+    {
+        this.value = value;
+        this.timestamp = Instant.ofEpochMilli(epochMilli);
+    }
 
     /**
      * TimestampedDouble constructor set both values
@@ -86,4 +96,9 @@ public class TimestampedDouble
     {
         this.value = value;
     }
+    public long toEpochMilli()
+    {
+        return timestamp.toEpochMilli();
+    }
+
 }

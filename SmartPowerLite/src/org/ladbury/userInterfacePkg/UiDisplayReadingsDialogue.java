@@ -98,7 +98,7 @@ class UiDisplayReadingsDialogue extends JDialog
     {
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         final Collection<TimestampedDouble> results = SmartPower.getMain().getDataService().getDBResourceForPeriod(
-                DataServiceMeter.getTag()+"/"+ dataServiceMetric.getTag(),sdf.format(earliestTime),sdf.format(latestTime));
+                DataServiceMeter,dataServiceMetric,earliestTime.toInstant(),latestTime.toInstant());
         Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10,DataServiceMeter.getDisplayName());
         MetricType metricType = MetricType.getMetricTypeFromTag(dataServiceMetric.getTag());
         if (metricType == null) return; //problem
