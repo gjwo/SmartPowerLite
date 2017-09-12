@@ -2,6 +2,7 @@ package org.ladbury.userInterfacePkg;
 
 import org.ladbury.dataServicePkg.DataServiceMeter;
 import org.ladbury.dataServicePkg.DataServiceMetric;
+import org.ladbury.dataServicePkg.DataServiceReadings;
 import org.ladbury.meterPkg.*;
 import org.ladbury.smartpowerPkg.SmartPower;
 
@@ -95,17 +96,16 @@ class UiDisplayReadingsDialogue extends JDialog
     }
     private void processReadings()
     {
-        final Collection<TimestampedDouble> results = SmartPower.getMain().getDataService().refreshMetricForPeriodFromDB(
+        final DataServiceReadings readings = SmartPower.getMain().getDataService().refreshMetricForPeriodFromDB(
                 DataServiceMeter,dataServiceMetric,earliestTime.toInstant(),latestTime.toInstant());
         Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10,DataServiceMeter.getDisplayName());
         MetricType metricType = MetricType.getMetricTypeFromTag(dataServiceMetric.getTag());
         if (metricType == null) return; //problem
         SmartPower.getMain().setCurrentMetricType(metricType);
         SmartPower.getMain().setCurrentMeter(meter);
-        for (TimestampedDouble reading : results)
+        for (TimestampedDouble reading : readings.getReadings())
         {
             meter.getMetric(metricType).appendRecord(new TimedRecord(reading));
-            //TODO might want to sort metric by timestamp?
         }
      }
 }

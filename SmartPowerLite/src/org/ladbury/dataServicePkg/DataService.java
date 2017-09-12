@@ -26,11 +26,7 @@ public class DataService // copied from DBRestAPI in MQTTListener
     private final String apiUrl;
     private Collection<DataServiceMeter> meters;
     private Collection<DataServiceMetric> metrics;
-    private Collection<TimestampedDouble> readings;
-    private DataServiceMeter currentMeter;
-    private DataServiceMetric currentMetric;
-    private Instant currentStartTime;
-    private Instant currentEndTime;
+    private DataServiceReadings readings;
 
     public DataService(String apiUrl)
     {
@@ -39,10 +35,6 @@ public class DataService // copied from DBRestAPI in MQTTListener
         meters = new ArrayList<>();
         metrics = new ArrayList<>();
         restClient = Client.create();
-        currentMeter = new DataServiceMeter("Undefined","","");
-        currentMetric = new DataServiceMetric("Undefined","","", "");
-        currentStartTime = Instant.ofEpochSecond(0);
-        currentEndTime = Instant.now();
         lastRestError = REST_REQUEST_SUCCESSFUL;
         if ((apiUrl == null) || (apiUrl.isEmpty()))
             this.apiUrl =  DEFAULT_API_URL;
@@ -134,17 +126,18 @@ public class DataService // copied from DBRestAPI in MQTTListener
         return results;
     }
 
-    public Instant getEarliestMetric(String meterName, String metricName)
+    public Instant getEarliestReading()
     {
-        return Instant.now(); //TODO wait for API
+        return readings.getStartTime();
     }
-    public Instant getLatestMetric(String meterName, String metricName)
+    public Instant getLatestReading()
     {
-        return Instant.now(); //TODO wait fort API
+        return readings.getEndTime();
     }
 
-    public Collection<TimestampedDouble> refreshMetricForPeriodFromDB(DataServiceMeter meter, DataServiceMetric metric, Instant start, Instant end)
+    public DataServiceReadings refreshMetricForPeriodFromDB(DataServiceMeter meter, DataServiceMetric metric, Instant start, Instant end)
     {
+        readings = new DataServiceReadings();
         clientResponse = getResource(DEVICE+meter.getTag()+"/"+metric.getTag()+"/")
                 .queryParam("start", ((Long) start.toEpochMilli()).toString())
                 .queryParam("end", ((Long) end.toEpochMilli()).toString())
@@ -153,17 +146,16 @@ public class DataService // copied from DBRestAPI in MQTTListener
         if (lastRestError != REST_REQUEST_SUCCESSFUL)
         {
             printLastError();
-            return new ArrayList<>();
+            return readings;
         }
         else
         {
-            currentStartTime = start;
-            currentEndTime = end;
-            currentMeter = meter;
-            currentMetric = metric;
+            readings.setStartTime(start);
+            readings.setEndTime(end);
+            readings.setMeter(meter);
+            readings.setMetric(metric);
             JSONObject response = new JSONObject(clientResponse.getEntity(String.class));
             JSONArray resultArray = response.getJSONArray("data");
-            readings = new ArrayList<>();
             for (int i = 0; i < resultArray.length(); i++)
             {
                 readings.add(new TimestampedDouble(resultArray.getJSONObject(i).getDouble("reading"),
@@ -173,45 +165,31 @@ public class DataService // copied from DBRestAPI in MQTTListener
         }
     }
 
-    public void printMetricForPeriod()
+    public DataServiceReadings refreshMetricFromDB(DataServiceMeter meter, DataServiceMetric metric)
     {
-        for(TimestampedDouble reading: readings)
-        {
-            System.out.println(reading);
-        }
-    }
-
-    public Collection<String> getMetricForPeriodAsStrings()
-    {
-        List <String> results = new ArrayList<>();
-        for(TimestampedDouble reading: readings)
-        {
-            results.add(reading.toString());
-        }
-        return results;
-    }
-
-    public Collection<TimestampedDouble> refreshMetricFromDB(DataServiceMeter meter, DataServiceMetric metric)
-    {
+        readings = new DataServiceReadings();
         clientResponse = getResource(DEVICE+meter.getTag()+"/"+metric.getTag()+"/")
                 .get(ClientResponse.class);
         lastRestError = clientResponse.getStatus();
         if (lastRestError != REST_REQUEST_SUCCESSFUL)
         {
             printLastError();
-            return new ArrayList<>();
+            return readings;
         }
         else
         {
-            currentMeter = meter;
-            currentMetric = metric;
+            readings.setMeter(meter);
+            readings.setMetric(metric);
             JSONObject response = new JSONObject(clientResponse.getEntity(String.class));
             JSONArray resultArray = response.getJSONArray("data");
-            readings = new ArrayList<>();
+            TimestampedDouble reading;
             for (int i = 0; i < resultArray.length(); i++)
             {
-                readings.add(new TimestampedDouble(resultArray.getJSONObject(i).getDouble("reading"),
-                        resultArray.getJSONObject(i).getLong("timestamp")));
+                reading = new TimestampedDouble(resultArray.getJSONObject(i).getDouble("reading"),
+                        resultArray.getJSONObject(i).getLong("timestamp"));
+                readings.add(reading);
+                if (i==0) readings.setStartTime(reading.getTimestamp());
+                readings.setEndTime(reading.getTimestamp());
             }
             return readings;
         }
@@ -236,25 +214,5 @@ public class DataService // copied from DBRestAPI in MQTTListener
     public Collection<DataServiceMetric> getMetrics()
     {
         return metrics;
-    }
-    public Collection<TimestampedDouble> getReadings()
-    {
-        return readings;
-    }
-    public DataServiceMeter getCurrentMeter()
-    {
-        return currentMeter;
-    }
-    public DataServiceMetric getCurrentMetric()
-    {
-        return currentMetric;
-    }
-    public Instant getCurrentStartTime()
-    {
-        return currentStartTime;
-    }
-    public Instant getCurrentEndTime()
-    {
-        return currentEndTime;
     }
 }

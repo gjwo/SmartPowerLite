@@ -199,6 +199,7 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataMeters_actionPerformed(ActionEvent actionEvent)
     {
+        SmartPower.getMain().getDataService().refreshMetersFromDB();
         Collection<String> meters = SmartPower.getMain().getDataService().getMeterNames();
         UiListBox meterBox = new UiListBox("Meters");
         for (String meter : meters) meterBox.add(meter);
@@ -211,6 +212,7 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataMetrics_actionPerformed(ActionEvent actionEvent)
     {
+        SmartPower.getMain().getDataService().refreshMetricsFromDB();
         Collection<String> metrics = SmartPower.getMain().getDataService().getMetricNames();
         UiListBox metricBox = new UiListBox("Metrics");
         for (String metric : metrics) metricBox.add(metric);
