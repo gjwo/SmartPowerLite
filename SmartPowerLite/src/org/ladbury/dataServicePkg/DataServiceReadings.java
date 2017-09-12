@@ -1,5 +1,6 @@
 package org.ladbury.dataServicePkg;
 
+import org.ladbury.meterPkg.MetricType;
 import org.ladbury.meterPkg.TimestampedDouble;
 
 import java.time.Instant;
@@ -14,11 +15,13 @@ public class DataServiceReadings
     private DataServiceMetric metric;
     private Instant startTime;
     private Instant endTime;
+    private MetricType metricType;
 
     DataServiceReadings()
     {
         meter = new DataServiceMeter("Undefined","",""); //The data service meter that generated this metric
         metric = new DataServiceMetric("Undefined","","", "");
+        metricType = MetricType.UNDEFINED;
         startTime = Instant.ofEpochSecond(0);
         endTime = Instant.now();
         readings = new ArrayList<>();
@@ -73,6 +76,7 @@ public class DataServiceReadings
     public void setMetric(DataServiceMetric metric)
     {
         this.metric = metric;
+        this.metricType = MetricType.getMetricTypeFromTag(metric.getTag());
     }
     public void setStartTime(Instant startTime)
     {
@@ -81,5 +85,9 @@ public class DataServiceReadings
     public void setEndTime(Instant endTime)
     {
         this.endTime = endTime;
+    }
+    public MetricType getMetricType()
+    {
+        return metricType;
     }
 }
