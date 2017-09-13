@@ -23,7 +23,7 @@ import org.ladbury.smartpowerPkg.Timestamped;
 import org.ladbury.userInterfacePkg.UiStyle;
 
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("ALL")
 public class Metric	implements	Serializable,
 								Persistable <Metric>,
 								Comparable<Metric>,
@@ -351,7 +351,8 @@ public class Metric	implements	Serializable,
 	 * @param r the record to be recorded
 	 * @return true if successful
 	 */
-	public boolean appendRecord(TimedRecord r){
+	@SuppressWarnings("UnusedReturnValue")
+    public boolean appendRecord(TimedRecord r){
 		if (this.latest.after(r.timestamp())) return false; // This timestamp is before data already stored
 		this.latest = r.timestamp();
 		if (this.size()==0) this.earliest =  r.timestamp();

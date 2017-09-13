@@ -40,7 +40,7 @@ public class TimedRecord implements 	Serializable,
         timestamp = d;
         value = 0;
     }
-    protected TimedRecord(Timestamp d, int r) {
+    TimedRecord(Timestamp d, int r) {
         timestamp = d;
         value = r;
     }

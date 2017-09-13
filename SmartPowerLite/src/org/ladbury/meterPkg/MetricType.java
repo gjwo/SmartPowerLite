@@ -24,6 +24,7 @@ MetricType(String tag, String name, String units)
     this.name = name;
     this.units = units;
 }
+@SuppressWarnings("WeakerAccess")
 public String getTag(){return this.tag;}
 public String getName(){return this.name;}
 public String getUnits(){return this.units;}

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DataServiceReadings
 {
-    private Collection<TimestampedDouble> readings;
+    private final Collection<TimestampedDouble> readings;
     private DataServiceMeter meter;
     private DataServiceMetric metric;
     private Instant startTime;

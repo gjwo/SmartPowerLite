@@ -2,6 +2,7 @@ package org.ladbury.meterPkg;
 
 import org.ladbury.smartpowerPkg.Timestamped;
 
+@SuppressWarnings("unused")
 public enum Granularity
 {
     UNDEFINED (0),

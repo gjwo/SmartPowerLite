@@ -35,7 +35,8 @@ public class PersistentData {
 	}
 	
 	
-	public void loadPersistentData(){
+	@SuppressWarnings("EmptyMethod")
+    public void loadPersistentData(){
 	}
 	
 	//

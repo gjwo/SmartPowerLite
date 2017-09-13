@@ -24,6 +24,7 @@ class UiDisplayReadingsDialogue extends JDialog
     private Date earliestTime;
     private Date latestTime;
 
+    @SuppressWarnings("SameParameterValue")
     UiDisplayReadingsDialogue(String title )
     {
         Collection<DataServiceMeter> meters = SmartPower.getMain().getDataService().refreshMetersFromDB();

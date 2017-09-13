@@ -2,10 +2,10 @@ package org.ladbury.userInterfacePkg;
 import javax.swing.*;
 import java.awt.*;
 
-public class UiListBox extends JDialog
+class UiListBox extends JDialog
 {
 
-    private DefaultListModel<String> listModel;
+    private final DefaultListModel<String> listModel;
 
     UiListBox(String title)
     {

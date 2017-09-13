@@ -12,6 +12,7 @@ import org.ladbury.smartpowerPkg.Timestamped;
 
 import java.util.Comparator;
 
+@SuppressWarnings("ALL")
 public class DeviceActivity implements 	Serializable,
 										Comparator<DeviceActivity>,
 										Comparable<DeviceActivity>,

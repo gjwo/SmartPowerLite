@@ -119,7 +119,8 @@ public class Meter	implements	Serializable,
 	 * @param metricType - the type of Metric
 	 * @return True if a metric of the specified type was successfully removed
 	 */
-	public boolean removeMetric(MetricType metricType){
+	@SuppressWarnings("UnusedReturnValue")
+    public boolean removeMetric(MetricType metricType){
 		for(int i=0; i<this.metrics.size();i++){
 			if (metrics.get(i).getType() == metricType)
 				return (metrics.remove(i)!=null);
@@ -131,6 +132,7 @@ public class Meter	implements	Serializable,
 	 * @param metricType	The metric type to be added
 	 * @return	true if added succesfully
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean addMetric(MetricType metricType){
 		return metrics.add(new Metric(this,metricType));
 	}
@@ -140,6 +142,7 @@ public class Meter	implements	Serializable,
 	 * @param metric	Metric value
 	 * @return True if the metric was successfully replaced
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean setMetric(MetricType metricType, Metric metric)
 	{
 		int index = getMetricIndex(metricType); // find the first metric of this type

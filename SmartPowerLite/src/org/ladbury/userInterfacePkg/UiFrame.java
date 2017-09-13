@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+@SuppressWarnings("unused")
 public class UiFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 

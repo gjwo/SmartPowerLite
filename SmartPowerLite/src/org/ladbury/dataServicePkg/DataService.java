@@ -15,7 +15,7 @@ public class DataService // copied from DBRestAPI in MQTTListener
 {
     private static final String DEFAULT_API_URL = "http://192.168.1.127:8080/";
     private static final String DEVICES = "devices/"; //for list of devices
-    private static final String DEVICE = "device/"; //for specfic device commands
+    private static final String DEVICE = "device/"; //for specific device commands
     private static final String DATA_TYPES = "datatypes/"; //for list of dataTypes
     private static final int    REST_REQUEST_SUCCESSFUL = 200;
 
@@ -28,6 +28,7 @@ public class DataService // copied from DBRestAPI in MQTTListener
     private Collection<DataServiceMetric> metrics;
     private DataServiceReadings readings;
 
+    @SuppressWarnings("WeakerAccess")
     public DataService(String apiUrl)
     {
         resources = new HashMap<>();
@@ -195,7 +196,7 @@ public class DataService // copied from DBRestAPI in MQTTListener
         }
     }
 
-    public void printLastError()
+    private void printLastError()
     {
         if (lastRestError == REST_REQUEST_SUCCESSFUL)
         {

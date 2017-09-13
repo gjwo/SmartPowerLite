@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("UnusedReturnValue")
 public class PersistentList<E extends Persistable<E> & Comparable<? super E> > extends ArrayList <E>{
 	/**
 	 * This implements a list and keeps the list in sync with the persistent copy
@@ -13,9 +14,9 @@ public class PersistentList<E extends Persistable<E> & Comparable<? super E> > e
 	 * change the sort order (if they do the list should be resorted manually)
 	 * the class shouldn't throw exceptions, but will return a size of 0
 	 * 
-	 * @author GJWood
-	 * @version 1.0 2012/11/29
-	 * @param <E> The element type to be stored in the list, which must implement Comparable and Persistable
+	 * author GJWood
+	 * version 1.0 2012/11/29
+	 * param <E> The element type to be stored in the list, which must implement Comparable and Persistable
 	 */
 	private static final long serialVersionUID = -1749169063106062657L;
 
@@ -80,7 +81,7 @@ public class PersistentList<E extends Persistable<E> & Comparable<? super E> > e
 			System.out.println(p.toCSV());
 		}
 	}
-	public boolean rangeCheck(int row){
+	private boolean rangeCheck(int row){
 		return (row >=0) && (row<super.size());
 	}
 	public int findID(long id){

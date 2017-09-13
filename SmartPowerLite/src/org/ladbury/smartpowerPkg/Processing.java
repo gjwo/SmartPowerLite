@@ -115,7 +115,7 @@ public class Processing {
 	 * @param i2 second number
 	 * @return True if the numbers match
 	 */
-	public static boolean matchesPercent(int  i1, int i2){ 
+	private static boolean matchesPercent(int i1, int i2){
 		double percentage;
 		percentage = (double)(Math.abs(Math.abs(i1)-Math.abs(i2)))/(double)Math.max(i1, i2)*100.0;
 		return Math.rint(percentage) <= MatchingPercentageTolerance; 
