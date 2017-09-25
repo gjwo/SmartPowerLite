@@ -1,8 +1,11 @@
 package org.ladbury.userInterfacePkg;
 
-import org.ladbury.dataServicePkg.DataServiceMeter;
-import org.ladbury.dataServicePkg.DataServiceMetric;
-import org.ladbury.dataServicePkg.DataServiceReadings;
+import me.mawood.data_api_client.accessors.DataTypeAccessor;
+import me.mawood.data_api_client.accessors.DeviceAccessor;
+import me.mawood.data_api_client.accessors.ReadingAccessor;
+import me.mawood.data_api_client.objects.DataType;
+import me.mawood.data_api_client.objects.Device;
+import me.mawood.data_api_client.objects.Reading;
 import org.ladbury.meterPkg.*;
 import org.ladbury.smartpowerPkg.SmartPower;
 
@@ -13,36 +16,39 @@ import java.util.Date;
 
 class UiDisplayReadingsDialogue extends JDialog
 {
+    private static final String API_URL = "http://192.168.1.127/api/";
     private static final JLabel lblMeter    =   new JLabel("  Meter:");
     private static final JLabel lblMetric    =   new JLabel("  Metric:");
     private static final JLabel lblEarliest    =   new JLabel("  Start time:");
     private static final JLabel lblLatest    =   new JLabel("  End Time:");
-    private final JComboBox<DataServiceMeter> comboMeter;
-    private final JComboBox<DataServiceMetric> comboMetric;
-    private DataServiceMeter DataServiceMeter;
-    private DataServiceMetric dataServiceMetric;
+    private final JComboBox<Device> comboMeter;
+    private final JComboBox<DataType> comboMetric;
+    private Device device;
+    private DataType dataType;
     private Date earliestTime;
     private Date latestTime;
 
     @SuppressWarnings("SameParameterValue")
     UiDisplayReadingsDialogue(String title )
     {
-        Collection<DataServiceMeter> meters = SmartPower.getMain().getDataService().refreshMetersFromDB();
-        Collection<DataServiceMetric> metrics = SmartPower.getMain().getDataService().refreshMetricsFromDB();
+        DeviceAccessor deviceAccessor = new DeviceAccessor(API_URL);
+        Collection<Device> devices = deviceAccessor.getDevices();
+        DataTypeAccessor dataTypeAccessor = new DataTypeAccessor(API_URL);
+        Collection<DataType> dataTypes = dataTypeAccessor.getDataTypes();
 
 
                 //record the initially selected values in case they are not changed
 
-        if( meters.iterator().hasNext()) DataServiceMeter = meters.iterator().next();
-        if( metrics.iterator().hasNext()) dataServiceMetric = metrics.iterator().next();
+        if( devices.iterator().hasNext()) device = devices.iterator().next();
+        if( dataTypes.iterator().hasNext()) dataType = dataTypes.iterator().next();
 
         //Set up combo boxes and add a listener for changes
-        comboMeter  =   new JComboBox<>(meters.toArray(new DataServiceMeter[meters.size()]));
-        comboMeter.addActionListener(event -> DataServiceMeter = (DataServiceMeter)comboMeter.getSelectedItem());
+        comboMeter  =   new JComboBox<>(devices.toArray(new Device[devices.size()]));
+        comboMeter.addActionListener(event -> device = (Device)comboMeter.getSelectedItem());
         //comboMeter.addItemListener(comboListener);
 
-        comboMetric =   new JComboBox<>(metrics.toArray(new DataServiceMetric[metrics.size()]));
-        comboMetric.addActionListener(event -> dataServiceMetric = (DataServiceMetric)comboMetric.getSelectedItem());
+        comboMetric =   new JComboBox<>(dataTypes.toArray(new DataType[dataTypes.size()]));
+        comboMetric.addActionListener(event -> dataType = (DataType)comboMetric.getSelectedItem());
         //comboMetric.addItemListener(comboListener);
 
         JPanel panel1 = new JPanel(new GridLayout(2,4));
@@ -97,16 +103,19 @@ class UiDisplayReadingsDialogue extends JDialog
     }
     private void processReadings()
     {
-        final DataServiceReadings readings = SmartPower.getMain().getDataService().refreshMetricForPeriodFromDB(
-                DataServiceMeter,dataServiceMetric,earliestTime.toInstant(),latestTime.toInstant());
-        Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10,DataServiceMeter.getDisplayName());
-        MetricType metricType = MetricType.getMetricTypeFromTag(dataServiceMetric.getTag());
+        final ReadingAccessor readingAccessor = new ReadingAccessor(API_URL);
+        final Collection <Reading> readings = readingAccessor.getReadingsFor(device.getName(),
+                                                                dataType.getName(),
+                                                                earliestTime.toInstant().toEpochMilli(),
+                                                                latestTime.toInstant().toEpochMilli());
+        Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10, device.getName());
+        MetricType metricType = MetricType.getMetricTypeFromTag(dataType.getTag());
         if (metricType == null) return; //problem
         SmartPower.getMain().setCurrentMetricType(metricType);
         SmartPower.getMain().setCurrentMeter(meter);
-        for (TimestampedDouble reading : readings.getReadings())
+        for (Reading reading : readings)
         {
-            meter.getMetric(metricType).appendRecord(new TimedRecord(reading));
+            meter.getMetric(metricType).appendRecord(new TimedRecord(new TimestampedDouble(reading.getReading(), reading.getTimestamp())));
         }
      }
 }

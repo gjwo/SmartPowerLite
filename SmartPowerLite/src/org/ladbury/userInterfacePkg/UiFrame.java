@@ -1,5 +1,9 @@
 package org.ladbury.userInterfacePkg;
 
+import me.mawood.data_api_client.accessors.DataTypeAccessor;
+import me.mawood.data_api_client.accessors.DeviceAccessor;
+import me.mawood.data_api_client.objects.DataType;
+import me.mawood.data_api_client.objects.Device;
 import org.ladbury.chartingPkg.PieChart;
 import org.ladbury.chartingPkg.ScatterChart;
 import org.ladbury.chartingPkg.TimeHistogram;
@@ -200,10 +204,10 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataMeters_actionPerformed(ActionEvent actionEvent)
     {
-        SmartPower.getMain().getDataService().refreshMetersFromDB();
-        Collection<String> meters = SmartPower.getMain().getDataService().getMeterNames();
+        DeviceAccessor deviceAccessor = new DeviceAccessor("http://192.168.1.127/api/");
+        Collection<Device> devices = deviceAccessor.getDevices();
         UiListBox meterBox = new UiListBox("Meters");
-        for (String meter : meters) meterBox.add(meter);
+        for (Device d:devices) meterBox.add(d.getName());
         meterBox.pack();
         meterBox.setVisible(true);
     }
@@ -213,10 +217,10 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataMetrics_actionPerformed(ActionEvent actionEvent)
     {
-        SmartPower.getMain().getDataService().refreshMetricsFromDB();
-        Collection<String> metrics = SmartPower.getMain().getDataService().getMetricNames();
+        DataTypeAccessor dataTypeAccessor = new DataTypeAccessor("http://192.168.1.127/api/");
+        Collection<DataType> dataTypes = dataTypeAccessor.getDataTypes();
         UiListBox metricBox = new UiListBox("Metrics");
-        for (String metric : metrics) metricBox.add(metric);
+        for (DataType d:dataTypes) metricBox.add(d.getName());
         metricBox.pack();
         metricBox.setVisible(true);
     }

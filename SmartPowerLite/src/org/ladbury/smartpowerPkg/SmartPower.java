@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.swing.UIManager;
 
-import org.ladbury.dataServicePkg.DataService;
+//import org.ladbury.dataServicePkg.DataService;
 import org.ladbury.meterPkg.Meter;
 import org.ladbury.meterPkg.Meter.MeterType;
 import org.ladbury.meterPkg.Metric;
@@ -53,7 +53,7 @@ public class SmartPower extends Applet implements Runnable {
     private static	SmartPower	spMain = null; //This is the root access point for all data in the package, the only static.
     private final   UiFrame 			frame;
     private final   FileAccess 			file;
-    private         DataService         dataService;
+//    private         DataService         dataService;
     private volatile MetricType	currentMetricType;
     private volatile Meter      currentMeter;
 
@@ -160,7 +160,7 @@ public class SmartPower extends Applet implements Runnable {
         currentMetricType = MetricType.UNDEFINED;
         currentMeter = null;
         frame = new UiFrame("Graham's power analysis program");
-        dataService = new DataService();
+//        dataService = new DataService();
         // create persistent objects, data loaded in init()
         data = new PersistentData(); // set up entity manager etc
         frame.validate();
@@ -219,7 +219,7 @@ public class SmartPower extends Applet implements Runnable {
         data.loadPersistentData(); // load the data using entity manager
         currentMetricType = MetricType.UNDEFINED;
         currentMeter = null;
-        dataService = new DataService();
+//        dataService = new DataService();
     }
 
     /*
@@ -511,7 +511,8 @@ public class SmartPower extends Applet implements Runnable {
     public void setCurrentMetricType(MetricType metricType) {
         this.currentMetricType = metricType;
     }
-    public DataService getDataService()
+    /*
+ //   public DataService getDataService()
     {
         return dataService;
     }
@@ -519,6 +520,7 @@ public class SmartPower extends Applet implements Runnable {
     {
         this.dataService = dataService;
     }
+    */
     public void setCurrentMeter(Meter meter){currentMeter = meter;}
     //
     // Access method for persistent data repository
