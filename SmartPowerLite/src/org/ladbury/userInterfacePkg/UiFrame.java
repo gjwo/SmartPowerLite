@@ -22,6 +22,8 @@ import java.util.Collections;
 public class UiFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
+	public static final String API_URL = "http://192.168.1.127/api/";
+
     private final BorderLayout borderLayout1 = new BorderLayout();
     private final JMenuBar jMenuBar1 = new JMenuBar();
 
@@ -217,7 +219,7 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataMetrics_actionPerformed(ActionEvent actionEvent)
     {
-        DataTypeAccessor dataTypeAccessor = new DataTypeAccessor("http://192.168.1.127/api/");
+        DataTypeAccessor dataTypeAccessor = new DataTypeAccessor(API_URL);
         Collection<DataType> dataTypes = dataTypeAccessor.getDataTypes();
         UiListBox metricBox = new UiListBox("Metrics");
         for (DataType d:dataTypes) metricBox.add(d.getName());
@@ -230,7 +232,7 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataDisplay_actionPerformed(ActionEvent actionEvent)
     {
-       UiDisplayReadingsDialogue readingsDialogue = new UiDisplayReadingsDialogue("Readings" );
+       UiLoadReadingsDialogue readingsDialogue = new UiLoadReadingsDialogue("Readings" );
         readingsDialogue.pack();
         readingsDialogue.setVisible(true);
     }

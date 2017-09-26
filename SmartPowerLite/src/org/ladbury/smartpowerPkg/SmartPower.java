@@ -16,6 +16,7 @@ import org.ladbury.meterPkg.MetricType;
 import org.ladbury.meterPkg.TimedRecord;
 import org.ladbury.persistentData.PersistentData;
 import org.ladbury.userInterfacePkg.UiFrame;
+import org.ladbury.userInterfacePkg.UiListBox;
 
 
 /**
@@ -39,7 +40,7 @@ public class SmartPower extends Applet implements Runnable {
 
     private static final long serialVersionUID = 1L;
     public enum RunState {
-        IDLE, OPEN_FILE, PROCESS_FILE, PROCESS_READINGS, SAVE_FILE, PROCESS_EDGES, PROCESS_EVENTS, STOP
+        IDLE, OPEN_FILE, PROCESS_FILE, PROCESS_API_DATA, PROCESS_READINGS, SAVE_FILE, PROCESS_EDGES, PROCESS_EVENTS, STOP
     }
 
     private static final String PARAM_MEASUREMENT_FILE = "measurement file";
@@ -335,6 +336,16 @@ public class SmartPower extends Applet implements Runnable {
                             this.change_state(RunState.IDLE);
                         }
                         break;
+                    case PROCESS_API_DATA:
+                        this.frame.displayLog("Run: Processing API Data\n\r");
+                        repaint();
+                        displayCurrentReadings();
+                        this.frame.displayLog("Run: Completed displaying API readings\n\r");
+                        repaint();
+                        this.change_state(RunState.IDLE);
+                        //System.gc(); // kick off the garbage collector
+                        break;
+
                     case PROCESS_READINGS:
                         this.frame.displayLog("Run: Processing readings\n\r");
                         repaint();
@@ -471,16 +482,16 @@ public class SmartPower extends Applet implements Runnable {
     /**
      * displayCurrentReadings   puts the set of readings for the current metric on the log window
      */
-    public void displayCurrentReadings()
+    private void displayCurrentReadings()
     {
-        frame.displayLog("Meter: "+ currentMeter.getType()+ " "+ currentMeter.name()+"\n");
-        frame.displayLog("Metric: "+ currentMetricType+"\n");
-        Metric metric = currentMeter.getMetric(currentMetricType);
-        List<TimedRecord> readings = metric.getReadings();
+        UiListBox readingsBox = new UiListBox(currentMeter.getType()+ " "+ currentMeter.name()+ currentMetricType);
+        List<TimedRecord> readings = currentMeter.getMetric(currentMetricType).getReadings();
         for (TimedRecord timedRecord:readings)
         {
-            frame.displayLog(timedRecord.toCSV()+"\n");
+            readingsBox.add(timedRecord.toCSV());
         }
+        readingsBox.pack();
+        readingsBox.setVisible(true);
     }
 
     public void display(String s) {

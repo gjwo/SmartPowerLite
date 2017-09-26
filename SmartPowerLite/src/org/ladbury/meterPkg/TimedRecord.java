@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Comparator;
 import java.sql.Timestamp;
 
@@ -33,13 +34,11 @@ public class TimedRecord implements 	Serializable,
     // Constructors
     //
     protected TimedRecord() {
-       timestamp = null;
-       value = 0;
-    }
+       this(Instant.now(),0d);
+     }
     protected TimedRecord(Timestamp d) {
-        timestamp = d;
-        value = 0;
-    }
+        this(d,0)
+;    }
     TimedRecord(Timestamp d, int r) {
         timestamp = d;
         value = r;
@@ -48,7 +47,12 @@ public class TimedRecord implements 	Serializable,
     	value = (int)td.getValue();
     	timestamp = Timestamp.from(td.getTimestamp());
 	}
-	
+
+	public TimedRecord(Instant instant, double value)
+	{
+		this.value = (int) value;
+		timestamp = Timestamp.from(instant);
+	}
 	public TimedRecord(String[] dataArray) throws ParseException,ArrayIndexOutOfBoundsException{
 		DateFormat df = new SimpleDateFormat(Meter.ONZODATEFORMAT); 
 		

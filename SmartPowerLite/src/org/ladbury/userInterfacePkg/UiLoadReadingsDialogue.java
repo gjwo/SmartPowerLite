@@ -14,13 +14,14 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.Date;
 
-class UiDisplayReadingsDialogue extends JDialog
+import static org.ladbury.userInterfacePkg.UiFrame.API_URL;
+
+class UiLoadReadingsDialogue extends JDialog
 {
-    private static final String API_URL = "http://192.168.1.127/api/";
-    private static final JLabel lblMeter    =   new JLabel("  Meter:");
-    private static final JLabel lblMetric    =   new JLabel("  Metric:");
-    private static final JLabel lblEarliest    =   new JLabel("  Start time:");
-    private static final JLabel lblLatest    =   new JLabel("  End Time:");
+   private static final JLabel lblMeter    = new JLabel("  Meter:");
+    private static final JLabel lblMetric   = new JLabel("  Metric:");
+    private static final JLabel lblEarliest = new JLabel("  Start time:");
+    private static final JLabel lblLatest   = new JLabel("  End Time:");
     private final JComboBox<Device> comboMeter;
     private final JComboBox<DataType> comboMetric;
     private Device device;
@@ -29,7 +30,7 @@ class UiDisplayReadingsDialogue extends JDialog
     private Date latestTime;
 
     @SuppressWarnings("SameParameterValue")
-    UiDisplayReadingsDialogue(String title )
+    UiLoadReadingsDialogue(String title )
     {
         DeviceAccessor deviceAccessor = new DeviceAccessor(API_URL);
         Collection<Device> devices = deviceAccessor.getDevices();
@@ -90,9 +91,8 @@ class UiDisplayReadingsDialogue extends JDialog
         JButton btnOK = new JButton("OK");
         btnOK.addActionListener(event ->
         {
-            //System.out.println("Button Pressed");
-            processReadings();
-            SmartPower.getMain().displayCurrentReadings();
+            loadAPIData();
+            SmartPower.getMain().change_state(SmartPower.RunState.PROCESS_API_DATA); //trigger processing in main loop
             this.dispose();
         });
 
@@ -101,7 +101,7 @@ class UiDisplayReadingsDialogue extends JDialog
         pack();
         setVisible(true);
     }
-    private void processReadings()
+    private void loadAPIData()
     {
         final ReadingAccessor readingAccessor = new ReadingAccessor(API_URL);
         final Collection <Reading> readings = readingAccessor.getReadingsFor(device.getName(),
