@@ -2,12 +2,17 @@ package org.ladbury.userInterfacePkg;
 
 import me.mawood.data_api_client.accessors.DataTypeAccessor;
 import me.mawood.data_api_client.accessors.DeviceAccessor;
+import me.mawood.data_api_client.accessors.ReadingAccessor;
 import me.mawood.data_api_client.objects.DataType;
 import me.mawood.data_api_client.objects.Device;
+import me.mawood.data_api_client.objects.Reading;
 import org.ladbury.chartingPkg.PieChart;
 import org.ladbury.chartingPkg.ScatterChart;
 import org.ladbury.chartingPkg.TimeHistogram;
 import org.ladbury.meterPkg.Meter;
+import org.ladbury.meterPkg.MetricType;
+import org.ladbury.meterPkg.TimedRecord;
+import org.ladbury.meterPkg.TimestampedDouble;
 import org.ladbury.smartpowerPkg.SmartPower;
 
 import javax.swing.*;
@@ -22,7 +27,7 @@ import java.util.Collections;
 public class UiFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	public static final String API_URL = "http://192.168.1.127/api/";
+	static final String API_URL = "http://192.168.1.127/api/";
 
     private final BorderLayout borderLayout1 = new BorderLayout();
     private final JMenuBar jMenuBar1 = new JMenuBar();
@@ -35,7 +40,8 @@ public class UiFrame extends JFrame {
     private final JMenu jMenuData = new JMenu("Data");
     private final JMenuItem jMenuDataMeters = new JMenuItem("Meter options");
     private final JMenuItem jMenuDataMetrics = new JMenuItem("Metric options");
-    private final JMenuItem jMenuDataDisplayMetrics = new JMenuItem(("Display metrics"));
+    private final JMenuItem jMenuDataDisplayMetrics = new JMenuItem("Display metrics");
+    private final JMenuItem jMenuDataArchiveMetrics = new JMenuItem("Archive Metrics");
 
     private final JMenu jMenuProcess = new JMenu("Process");
     private final JMenuItem jMenuProcessRecords = new JMenuItem("Process Edges");
@@ -123,6 +129,8 @@ public class UiFrame extends JFrame {
         jMenuDataMetrics.addActionListener(this::jMenuDataMetrics_actionPerformed);
         jMenuData.add(jMenuDataDisplayMetrics);
         jMenuDataDisplayMetrics.addActionListener(this::jMenuDataDisplay_actionPerformed);
+        jMenuData.add(jMenuDataArchiveMetrics);
+        jMenuDataArchiveMetrics.addActionListener(this::jMenuDataArchive_actionPerformed);
         // add the menu to the menu bar
         jMenuBar1.add(jMenuData);
     }
@@ -228,15 +236,62 @@ public class UiFrame extends JFrame {
     }
 
     //
-    //Data | Metrics display action performed
+    //Data | Metrics Display action performed
     //
     private void jMenuDataDisplay_actionPerformed(ActionEvent actionEvent)
     {
-       UiLoadReadingsDialogue readingsDialogue = new UiLoadReadingsDialogue("Readings" );
+        UiReadingsSelectionDialogue readingsDialogue = new UiReadingsSelectionDialogue("Readings", UiReadingsSelectionDialogue.RequestType.LOAD_API_DATA);
         readingsDialogue.pack();
         readingsDialogue.setVisible(true);
     }
 
+    void handleReadingsDialogueResultsForDisplay(ReadingsRange readingsRange)
+    {
+        final ReadingAccessor readingAccessor = new ReadingAccessor(API_URL);
+        final Collection <Reading> readings = readingAccessor.getReadingsFor(
+                readingsRange.getDevice().getName(),
+                readingsRange.getDataType().getName(),
+                readingsRange.getEarliestTime().toInstant().toEpochMilli(),
+                readingsRange.getLatestTime().toInstant().toEpochMilli());
+        Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10, readingsRange.getDevice().getName());
+        MetricType metricType = MetricType.getMetricTypeFromTag(readingsRange.getDataType().getTag());
+        if (metricType == null) return; //problem
+        SmartPower.getMain().setCurrentMetricType(metricType);
+        SmartPower.getMain().setCurrentMeter(meter);
+        for (Reading reading : readings)
+        {
+            meter.getMetric(metricType).appendRecord(new TimedRecord(new TimestampedDouble(reading.getReading(), reading.getTimestamp())));
+        }
+    }
+
+    //
+    //Data | Metrics Archive action performed
+    //
+    private void jMenuDataArchive_actionPerformed(ActionEvent actionEvent)
+    {
+        UiReadingsSelectionDialogue readingsDialogue = new UiReadingsSelectionDialogue("Readings", UiReadingsSelectionDialogue.RequestType.ARCHIVE_API_DATA);
+        readingsDialogue.pack();
+        readingsDialogue.setVisible(true);
+
+    }
+    void handleReadingsDialogueResultsForArchive(ReadingsRange readingsRange)
+    {
+        final ReadingAccessor readingAccessor = new ReadingAccessor(API_URL);
+        final Collection <Reading> readings = readingAccessor.getReadingsFor(
+                readingsRange.getDevice().getName(),
+                readingsRange.getDataType().getName(),
+                readingsRange.getEarliestTime().toInstant().toEpochMilli(),
+                readingsRange.getLatestTime().toInstant().toEpochMilli());
+        Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10, readingsRange.getDevice().getName());
+        MetricType metricType = MetricType.getMetricTypeFromTag(readingsRange.getDataType().getTag());
+        if (metricType == null) return; //problem
+        SmartPower.getMain().setCurrentMetricType(metricType);
+        SmartPower.getMain().setCurrentMeter(meter);
+        for (Reading reading : readings)
+        {
+            meter.getMetric(metricType).appendRecord(new TimedRecord(new TimestampedDouble(reading.getReading(), reading.getTimestamp())));
+        }
+    }
     //
     //Chart Pie action performed
     //

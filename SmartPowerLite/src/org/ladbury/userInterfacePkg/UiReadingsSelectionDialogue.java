@@ -2,11 +2,8 @@ package org.ladbury.userInterfacePkg;
 
 import me.mawood.data_api_client.accessors.DataTypeAccessor;
 import me.mawood.data_api_client.accessors.DeviceAccessor;
-import me.mawood.data_api_client.accessors.ReadingAccessor;
 import me.mawood.data_api_client.objects.DataType;
 import me.mawood.data_api_client.objects.Device;
-import me.mawood.data_api_client.objects.Reading;
-import org.ladbury.meterPkg.*;
 import org.ladbury.smartpowerPkg.SmartPower;
 
 import javax.swing.*;
@@ -16,22 +13,19 @@ import java.util.Date;
 
 import static org.ladbury.userInterfacePkg.UiFrame.API_URL;
 
-class UiLoadReadingsDialogue extends JDialog
+class UiReadingsSelectionDialogue extends JDialog
 {
-   private static final JLabel lblMeter    = new JLabel("  Meter:");
+    private static final JLabel lblMeter    = new JLabel("  Meter:");
     private static final JLabel lblMetric   = new JLabel("  Metric:");
     private static final JLabel lblEarliest = new JLabel("  Start time:");
     private static final JLabel lblLatest   = new JLabel("  End Time:");
     private final JComboBox<Device> comboMeter;
     private final JComboBox<DataType> comboMetric;
-    private Device device;
-    private DataType dataType;
-    private Date earliestTime;
-    private Date latestTime;
-
-    @SuppressWarnings("SameParameterValue")
-    UiLoadReadingsDialogue(String title )
+    private ReadingsRange readingsRange;
+    enum RequestType{LOAD_API_DATA,ARCHIVE_API_DATA}
+    UiReadingsSelectionDialogue(String title, RequestType requestType)
     {
+        readingsRange = new ReadingsRange();
         DeviceAccessor deviceAccessor = new DeviceAccessor(API_URL);
         Collection<Device> devices = deviceAccessor.getDevices();
         DataTypeAccessor dataTypeAccessor = new DataTypeAccessor(API_URL);
@@ -40,16 +34,16 @@ class UiLoadReadingsDialogue extends JDialog
 
                 //record the initially selected values in case they are not changed
 
-        if( devices.iterator().hasNext()) device = devices.iterator().next();
-        if( dataTypes.iterator().hasNext()) dataType = dataTypes.iterator().next();
+        if( devices.iterator().hasNext()) readingsRange.setDevice(devices.iterator().next());
+        if( dataTypes.iterator().hasNext()) readingsRange.setDataType(dataTypes.iterator().next());
 
         //Set up combo boxes and add a listener for changes
         comboMeter  =   new JComboBox<>(devices.toArray(new Device[devices.size()]));
-        comboMeter.addActionListener(event -> device = (Device)comboMeter.getSelectedItem());
+        comboMeter.addActionListener(event -> readingsRange.setDevice((Device)comboMeter.getSelectedItem()));
         //comboMeter.addItemListener(comboListener);
 
         comboMetric =   new JComboBox<>(dataTypes.toArray(new DataType[dataTypes.size()]));
-        comboMetric.addActionListener(event -> dataType = (DataType)comboMetric.getSelectedItem());
+        comboMetric.addActionListener(event -> readingsRange.setDataType((DataType)comboMetric.getSelectedItem()));
         //comboMetric.addItemListener(comboListener);
 
         JPanel panel1 = new JPanel(new GridLayout(2,4));
@@ -62,16 +56,13 @@ class UiLoadReadingsDialogue extends JDialog
         JSpinner.DateEditor earliestTimeEditor = new JSpinner.DateEditor(earliestTimeSpinner, "d MMM yyyy HH:mm:ss");
         earliestTimeSpinner.setEditor(earliestTimeEditor);
         earliestTimeSpinner.setValue(new Date()); // will only show the current time
-        earliestTimeSpinner.addChangeListener(e -> earliestTime = (Date)earliestTimeSpinner.getValue());
+        earliestTimeSpinner.addChangeListener(e -> readingsRange.setEarliestTime((Date)earliestTimeSpinner.getValue()));
 
         JSpinner latestTimeSpinner = new JSpinner( new SpinnerDateModel() );
         JSpinner.DateEditor latestTimeEditor = new JSpinner.DateEditor(latestTimeSpinner, "d MMM yyyy HH:mm:ss");
         latestTimeSpinner.setEditor(latestTimeEditor);
         latestTimeSpinner.setValue(new Date()); // will only show the current time
-        latestTimeSpinner.addChangeListener(e -> latestTime = (Date)latestTimeSpinner.getValue());
-
-        earliestTime = new Date();
-        latestTime = new Date();
+        latestTimeSpinner.addChangeListener(e -> readingsRange.setLatestTime((Date)latestTimeSpinner.getValue()));
 
         panel1.add(lblEarliest);
         panel1.add(earliestTimeSpinner);
@@ -91,8 +82,17 @@ class UiLoadReadingsDialogue extends JDialog
         JButton btnOK = new JButton("OK");
         btnOK.addActionListener(event ->
         {
-            loadAPIData();
-            SmartPower.getMain().change_state(SmartPower.RunState.PROCESS_API_DATA); //trigger processing in main loop
+            switch( requestType)
+            {
+                case LOAD_API_DATA:
+                    SmartPower.getMain().getFrame().handleReadingsDialogueResultsForDisplay(readingsRange);
+                    SmartPower.getMain().change_state(SmartPower.RunState.DISPLAY_API_DATA); //trigger processing in main loop
+                    break;
+                case ARCHIVE_API_DATA:
+                    SmartPower.getMain().getFrame().handleReadingsDialogueResultsForArchive(readingsRange);
+                    SmartPower.getMain().change_state(SmartPower.RunState.ARCHIVE_API_DATA); //trigger processing in main loop
+                    break;
+            }
             this.dispose();
         });
 
@@ -101,21 +101,4 @@ class UiLoadReadingsDialogue extends JDialog
         pack();
         setVisible(true);
     }
-    private void loadAPIData()
-    {
-        final ReadingAccessor readingAccessor = new ReadingAccessor(API_URL);
-        final Collection <Reading> readings = readingAccessor.getReadingsFor(device.getName(),
-                                                                dataType.getName(),
-                                                                earliestTime.toInstant().toEpochMilli(),
-                                                                latestTime.toInstant().toEpochMilli());
-        Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10, device.getName());
-        MetricType metricType = MetricType.getMetricTypeFromTag(dataType.getTag());
-        if (metricType == null) return; //problem
-        SmartPower.getMain().setCurrentMetricType(metricType);
-        SmartPower.getMain().setCurrentMeter(meter);
-        for (Reading reading : readings)
-        {
-            meter.getMetric(metricType).appendRecord(new TimedRecord(new TimestampedDouble(reading.getReading(), reading.getTimestamp())));
-        }
-     }
 }

@@ -40,7 +40,7 @@ public class SmartPower extends Applet implements Runnable {
 
     private static final long serialVersionUID = 1L;
     public enum RunState {
-        IDLE, OPEN_FILE, PROCESS_FILE, PROCESS_API_DATA, PROCESS_READINGS, SAVE_FILE, PROCESS_EDGES, PROCESS_EVENTS, STOP
+        IDLE, OPEN_FILE, PROCESS_FILE, DISPLAY_API_DATA, ARCHIVE_API_DATA, PROCESS_READINGS, SAVE_FILE, PROCESS_EDGES, PROCESS_EVENTS, STOP
     }
 
     private static final String PARAM_MEASUREMENT_FILE = "measurement file";
@@ -286,6 +286,7 @@ public class SmartPower extends Applet implements Runnable {
                         repaint();
                         Thread.sleep(5000);
                         break;
+
                     case OPEN_FILE: //this state triggered by the user opening a file
                         this.frame.displayLog("\n\rRun: Opening file\n\r");
                         repaint();
@@ -301,6 +302,7 @@ public class SmartPower extends Applet implements Runnable {
                             this.change_state(RunState.IDLE);
                         }
                         break;
+
                     case PROCESS_FILE:
                         this.frame.displayLog("Run: Processing file\n\r");
                         repaint();
@@ -336,11 +338,22 @@ public class SmartPower extends Applet implements Runnable {
                             this.change_state(RunState.IDLE);
                         }
                         break;
-                    case PROCESS_API_DATA:
+
+                    case DISPLAY_API_DATA:
                         this.frame.displayLog("Run: Processing API Data\n\r");
                         repaint();
                         displayCurrentReadings();
                         this.frame.displayLog("Run: Completed displaying API readings\n\r");
+                        repaint();
+                        this.change_state(RunState.IDLE);
+                        //System.gc(); // kick off the garbage collector
+                        break;
+
+                    case ARCHIVE_API_DATA:
+                        this.frame.displayLog("Run: Archiving API Data\n\r");
+                        repaint();
+                        //TODO Archive API data
+                        this.frame.displayLog("Run: Completed archiving API readings\n\r");
                         repaint();
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
@@ -366,6 +379,7 @@ public class SmartPower extends Applet implements Runnable {
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
+
                     case PROCESS_EDGES:
                         this.frame.displayLog("Run: Processing edges\n\r");
                         switch(currentMeter.getType()){
@@ -391,6 +405,7 @@ public class SmartPower extends Applet implements Runnable {
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
+
                     case PROCESS_EVENTS:
                         this.frame.displayLog("Run: Processing Events\n\r");
                         repaint();
@@ -409,6 +424,7 @@ public class SmartPower extends Applet implements Runnable {
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
+
                     case SAVE_FILE: //this state triggered by user selecting save file
                         this.frame.displayLog("\n\rRun: Saving files\n\r");
                         repaint();
