@@ -27,7 +27,7 @@ import java.util.Collections;
 public class UiFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	static final String API_URL = "http://192.168.1.127/api/";
+	static final String API_URL = "http://192.168.1.164/api/";
 
     private final BorderLayout borderLayout1 = new BorderLayout();
     private final JMenuBar jMenuBar1 = new JMenuBar();
@@ -214,7 +214,7 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataMeters_actionPerformed(ActionEvent actionEvent)
     {
-        DeviceAccessor deviceAccessor = new DeviceAccessor("http://192.168.1.127/api/");
+        DeviceAccessor deviceAccessor = new DeviceAccessor(API_URL);
         Collection<Device> devices = deviceAccessor.getDevices();
         UiListBox meterBox = new UiListBox("Meters");
         for (Device d:devices) meterBox.add(d.getName());
@@ -249,8 +249,8 @@ public class UiFrame extends JFrame {
     {
         final ReadingAccessor readingAccessor = new ReadingAccessor(API_URL);
         final Collection <Reading> readings = readingAccessor.getReadingsFor(
-                readingsRange.getDevice().getName(),
-                readingsRange.getDataType().getName(),
+                readingsRange.getDevice().getTag(),
+                readingsRange.getDataType().getTag(),
                 readingsRange.getEarliestTime().toInstant().toEpochMilli(),
                 readingsRange.getLatestTime().toInstant().toEpochMilli());
         Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10, readingsRange.getDevice().getName());
