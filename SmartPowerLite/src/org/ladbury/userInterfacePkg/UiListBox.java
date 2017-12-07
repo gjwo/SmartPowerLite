@@ -1,41 +1,36 @@
 package org.ladbury.userInterfacePkg;
         import javax.swing.*;
         import java.awt.*;
+        import java.util.ArrayList;
 
-public class UiListBox extends JDialog
-{
+public class UiListBox extends JFrame {
+    private final ArrayList<String> data;
+    private final JList<Object> list;
 
-    private final DefaultListModel<String> model;
-    private final JList<String> list;
-    private final JPanel panel;
-    private final JScrollPane pane;
+    public UiListBox(String title) throws HeadlessException {
+        //super();
 
-    public UiListBox(String title)
-    {
-        model = new DefaultListModel<>();
-        list = new JList<>(model);
-        pane = new JScrollPane();
-        panel = new JPanel();
+        Dimension size = new Dimension(300, 250);
+        data = new ArrayList<>();
+        list = new JList<>(data.toArray());
 
-        // Add the list to the scroll frame
-        pane.setMaximumSize(new Dimension( 200,1000));
-        pane.setAutoscrolls(true);
-        pane.setLayout(new ScrollPaneLayout());
-        pane.add(list);
+        this.setTitle(title);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        this.setSize(size);
+        this.setPreferredSize(size);
+        this.setLocationRelativeTo(null);
+        this.setLayout(new BorderLayout());
 
-        //Add the scroll frame to the panel
-        panel.setLayout(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        panel.setMaximumSize(new Dimension(250,300));
-        panel.add(pane);
+        JScrollPane pane = new JScrollPane(list);
+        this.add(pane, BorderLayout.CENTER);
 
-        //Set up this dialog
-        setTitle(title);
-        setLayout(new BorderLayout());
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.add(panel, BorderLayout.NORTH);
+        this.setVisible(true);
     }
-    public void add(String s){
-        model.addElement(s);}
+
+    public void add(String data) {
+        this.data.add(data);
+        list.setListData(this.data.toArray());
+        this.repaint();
+    }
+
 }

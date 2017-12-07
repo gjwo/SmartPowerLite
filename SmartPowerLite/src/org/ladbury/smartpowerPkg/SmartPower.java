@@ -490,8 +490,8 @@ public class SmartPower implements Runnable {
             readingsBox.add(timedRecord.toCSV());
         }
         readingsBox.pack();
-        readingsBox.repaint();
         readingsBox.setVisible(true);
+        readingsBox.repaint();
     }
 
     public void display(String s) {
