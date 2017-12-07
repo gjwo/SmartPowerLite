@@ -66,4 +66,14 @@ public class ReadingsRange
     {
         this.latestTime = latestTime;
     }
+
+    @Override
+    public String toString() {
+        return "ReadingsRange{" +
+                "device=" + device.getTag() +
+                ", dataType=" + dataType.getTag() +
+                ", earliestTime=" + earliestTime.toInstant().toEpochMilli() +
+                ", latestTime=" + latestTime.toInstant().toEpochMilli() +
+                '}';
+    }
 }

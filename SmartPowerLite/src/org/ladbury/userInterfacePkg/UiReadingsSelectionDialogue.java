@@ -97,7 +97,7 @@ class UiReadingsSelectionDialogue extends JDialog
         });
 
         this.add(btnOK, BorderLayout.SOUTH);
-        //setLocationRelativeTo(null);
+        setLocationRelativeTo(null);
         pack();
         setVisible(true);
     }

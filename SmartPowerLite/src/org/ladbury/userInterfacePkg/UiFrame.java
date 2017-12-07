@@ -29,7 +29,6 @@ public class UiFrame extends JFrame {
 
 	static final String API_URL = "http://192.168.1.164/api/";
 
-    private final BorderLayout borderLayout1 = new BorderLayout();
     private final JMenuBar jMenuBar1 = new JMenuBar();
 
     private final JMenu jMenuFile = new JMenu("File");
@@ -62,49 +61,40 @@ public class UiFrame extends JFrame {
     //
     // Construct the frame
     //
-    public UiFrame(String str) {
-        super(str);
+    public UiFrame(String windowTitle) {
+        super(windowTitle);
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         try {
-            windowTitle = str;
-            jbInit();
+            // Create a content pane
+            JPanel contentPane = (JPanel) this.getContentPane();
+            contentPane.setLayout(new BorderLayout());
+            this.setSize(new Dimension(800, 600));
+            this.setTitle(windowTitle);
+
+            // add a menu bar
+            this.setJMenuBar(jMenuBar1);
+
+            // initialise the menus
+            createFileMenu();
+            createDataMenu();
+            createProcessMenu();
+            createChartMenu();
+            createHelpMenu();
+
+            // add log text area
+            textArea1.setBackground(Color.pink);
+            textArea1.setColumns(80);
+            textArea1.setCursor(null);
+            textArea1.setEditable(false);
+            textArea1.setFont(UiStyle.NORMAL_FONT);
+            textArea1.setRows(20);
+            textArea1.setText("Smart Power System Messages\n");
+
+            contentPane.add(textArea1, BorderLayout.CENTER);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    //
-    // Component initialisation
-    //
-    private void jbInit()
-    {
-        // Create a content pane
-        JPanel contentPane = (JPanel) this.getContentPane();
-        contentPane.setLayout(borderLayout1);
-        this.setSize(new Dimension(800, 600));
-        this.setTitle(windowTitle);
-        // add a menu bar
-        this.setJMenuBar(jMenuBar1);
-        
-  
-        // initialise the menus
-        createFileMenu();
-        createDataMenu();
-        createProcessMenu();
-        createChartMenu();
-        createHelpMenu();
- 
-        // add log text area
-        textArea1.setBackground(Color.pink);
-        textArea1.setColumns(80);
-        textArea1.setCursor(null);
-        textArea1.setEditable(false);
-        textArea1.setFont(UiStyle.NORMAL_FONT);
-        textArea1.setRows(20);
-        textArea1.setText("Smart Power System Messages\n");
-
-        contentPane.add(textArea1, BorderLayout.CENTER);
     }
 
     private void createFileMenu(){
@@ -248,11 +238,13 @@ public class UiFrame extends JFrame {
     void handleReadingsDialogueResultsForDisplay(ReadingsRange readingsRange)
     {
         final ReadingAccessor readingAccessor = new ReadingAccessor(API_URL);
+        System.out.println(readingsRange);
         final Collection <Reading> readings = readingAccessor.getReadingsFor(
                 readingsRange.getDevice().getTag(),
                 readingsRange.getDataType().getTag(),
                 readingsRange.getEarliestTime().toInstant().toEpochMilli(),
                 readingsRange.getLatestTime().toInstant().toEpochMilli());
+        System.out.println(readings);
         Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10, readingsRange.getDevice().getName());
         MetricType metricType = MetricType.getMetricTypeFromTag(readingsRange.getDataType().getTag());
         if (metricType == null) return; //problem

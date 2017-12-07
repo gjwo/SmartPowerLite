@@ -5,32 +5,37 @@ package org.ladbury.userInterfacePkg;
 public class UiListBox extends JDialog
 {
 
-    private final DefaultListModel<String> listModel;
+    private final DefaultListModel<String> model;
+    private final JList<String> list;
+    private final JPanel panel;
+    private final JScrollPane pane;
 
     public UiListBox(String title)
     {
-        listModel = new DefaultListModel<>();
-        JList<String> elementList = new JList<>(listModel);
-        JPanel panel1 = new JPanel(new BorderLayout());
+        model = new DefaultListModel<>();
+        list = new JList<>(model);
+        pane = new JScrollPane();
+        panel = new JPanel();
 
-        // Set up the panel
-        panel1.setMaximumSize(new Dimension( 200,1000));
-        panel1.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        panel1.add(elementList);
+        // Add the list to the scroll frame
+        pane.setMaximumSize(new Dimension( 200,1000));
+        pane.setAutoscrolls(true);
+        pane.setLayout(new ScrollPaneLayout());
+        pane.add(list);
 
-        //Add the panel to the scroll frame
-        JScrollPane scrollFrame = new JScrollPane(panel1);
-        panel1.setAutoscrolls(true);
-        scrollFrame.setMaximumSize(new Dimension(400,300));
-        scrollFrame.setLayout(new ScrollPaneLayout());
+        //Add the scroll frame to the panel
+        panel.setLayout(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        panel.setMaximumSize(new Dimension(250,300));
+        panel.add(pane);
 
-        //Set up the dialog
+        //Set up this dialog
         setTitle(title);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.add(scrollFrame);
+        setLayout(new BorderLayout());
         setLocationRelativeTo(null);
-        pack();
-        setVisible(true);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.add(panel, BorderLayout.NORTH);
     }
-    public void add(String s){listModel.addElement(s);}
+    public void add(String s){
+        model.addElement(s);}
 }

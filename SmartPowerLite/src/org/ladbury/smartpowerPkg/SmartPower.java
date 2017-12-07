@@ -22,7 +22,7 @@ import org.ladbury.userInterfacePkg.UiListBox;
 /**
  * SmartPower.java:	Applet
  *
- * This Applet processes readings from a domestic energy monitor in order to better
+ * This Aplication processes readings from a domestic energy monitor in order to better
  * understand domestic power consumption by turning raw readings into a more understandable form.
  * Ultimately the readings are associated with devices defined by the user so that the behaviour
  * that causes power consumption in the home can be understood and modified if desired.
@@ -35,8 +35,9 @@ import org.ladbury.userInterfacePkg.UiListBox;
  * @version 1.1 2012/11/29 Incorporating handling of Owl meter
  * @version 1.2 2013/11/19 Incorporating handling of Onzo meter
  * @version 1.3 2017/09/10 Incorporating handling of PMon10 meter
+ * @version 1.4 2017/12/07 Removal of applet code
  */
-public class SmartPower extends Applet implements Runnable {
+public class SmartPower implements Runnable {
 
     private static final long serialVersionUID = 1L;
     public enum RunState {
@@ -46,7 +47,7 @@ public class SmartPower extends Applet implements Runnable {
     private static final String PARAM_MEASUREMENT_FILE = "measurement file";
 
     private boolean 	fStandAlone = true;    //	fStandAlone will be set to true if applet is run stand alone
-    private	String 		displayString = null;
+    private	String 		displayString;
     private Thread 		threadSmartPower = null; //Thread object for the applet
     private RunState	state = RunState.IDLE;
 
@@ -70,11 +71,6 @@ public class SmartPower extends Applet implements Runnable {
     //---------------------------------------------------------------------------
     @SuppressWarnings("SameParameterValue")
     private String GetParameter(String strName, String args[]) {
-        if (args == null) {
-            // Running within an HTML page, so call original getParameter().
-            //-------------------------------------------------------------------
-            return getParameter(strName);
-        }
 
         // Running as stand alone application, so parameter values are obtained from
         // the command line. The user specifies them as follows:
@@ -178,16 +174,6 @@ public class SmartPower extends Applet implements Runnable {
 
     }
 
-    // APPLET INFO SUPPORT:
-    //		The getAppletInfo() method returns a string describing the applet's
-    // author, copyright date, or miscellaneous information.
-    //--------------------------------------------------------------------------
-    public String getAppletInfo() {
-        return "Name: SmartPower\r\n" +
-                "Author: G.J.Wood Copyright 2012,2013\r\n" +
-                "Created with Eclipse Indigo & Juno, & IntelliJ Idea";
-    }
-
     // PARAMETER SUPPORT
     //		The getParameterInfo() method returns an array of strings describing
     // the parameters understood by this applet.
@@ -214,9 +200,6 @@ public class SmartPower extends Applet implements Runnable {
      * components.
      */
     public void init() {
-        if (!fStandAlone) {
-            GetParameters(null);
-        }
         data.loadPersistentData(); // load the data using entity manager
         currentMetricType = MetricType.UNDEFINED;
         currentMeter = null;
@@ -283,13 +266,13 @@ public class SmartPower extends Applet implements Runnable {
                         this.frame.displayLog(".");
                         j++;
                         if (j == 79){ this.frame.displayLog("\n\r"); j=0;}
-                        repaint();
+                        this.frame.repaint();
                         Thread.sleep(5000);
                         break;
 
                     case OPEN_FILE: //this state triggered by the user opening a file
                         this.frame.displayLog("\n\rRun: Opening file\n\r");
-                        repaint();
+                        this.frame.repaint();
                         this.file.setInputFilename(this.frame.getFileDialog().getFile());
                         this.file.setInputPathname(this.frame.getFileDialog().getDirectory());
                         if ( !((this.file.inputFilename() == null) | (this.file.inputPathname() == null)))
@@ -305,7 +288,7 @@ public class SmartPower extends Applet implements Runnable {
 
                     case PROCESS_FILE:
                         this.frame.displayLog("Run: Processing file\n\r");
-                        repaint();
+                        this.frame.repaint();
                         //The file name defines the type of metric to be processed
                         this.currentMetricType = this.file.identifyTypeFromFilename( this.file.inputFilename());
                         //Metric types are unique to a meter type, therefor identify the meter and its name(cludge)
@@ -341,27 +324,27 @@ public class SmartPower extends Applet implements Runnable {
 
                     case DISPLAY_API_DATA:
                         this.frame.displayLog("Run: Processing API Data\n\r");
-                        repaint();
+                        this.frame.repaint();
                         displayCurrentReadings();
                         this.frame.displayLog("Run: Completed displaying API readings\n\r");
-                        repaint();
+                        this.frame.repaint();
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
 
                     case ARCHIVE_API_DATA:
                         this.frame.displayLog("Run: Archiving API Data\n\r");
-                        repaint();
+                        this.frame.repaint();
                         //TODO Archive API data
                         this.frame.displayLog("Run: Completed archiving API readings\n\r");
-                        repaint();
+                        this.frame.repaint();
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
 
                     case PROCESS_READINGS:
                         this.frame.displayLog("Run: Processing readings\n\r");
-                        repaint();
+                        this.frame.repaint();
                         switch(currentMeter.getType()){
                             case OWLCM160:
                                 break;
@@ -375,7 +358,7 @@ public class SmartPower extends Applet implements Runnable {
                                 break;
                         }
                         this.frame.displayLog("Run: Completed processing readings\n\r");
-                        repaint();
+                        this.frame.repaint();
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
@@ -408,7 +391,7 @@ public class SmartPower extends Applet implements Runnable {
 
                     case PROCESS_EVENTS:
                         this.frame.displayLog("Run: Processing Events\n\r");
-                        repaint();
+                        this.frame.repaint();
                         switch(currentMeter.getType()){
                             case OWLCM160:
                                 break;
@@ -427,7 +410,7 @@ public class SmartPower extends Applet implements Runnable {
 
                     case SAVE_FILE: //this state triggered by user selecting save file
                         this.frame.displayLog("\n\rRun: Saving files\n\r");
-                        repaint();
+                        this.frame.repaint();
                         switch(currentMeter.getType()){
                             case OWLCM160:
                                 //this.file.OutputCSVFiles();
@@ -452,7 +435,7 @@ public class SmartPower extends Applet implements Runnable {
                         break;
                     case STOP: break; //do nothing the loop will exit
                     default:
-                        repaint();
+                        this.frame.repaint();
                         Thread.sleep(1000);
                 }
             }
@@ -500,20 +483,21 @@ public class SmartPower extends Applet implements Runnable {
      */
     private void displayCurrentReadings()
     {
-        UiListBox readingsBox = new UiListBox(currentMeter.getType()+ " "+ currentMeter.name()+ currentMetricType);
+        UiListBox readingsBox = new UiListBox(currentMeter.getType()+ " "+ currentMeter.name()+" "+ currentMetricType);
         List<TimedRecord> readings = currentMeter.getMetric(currentMetricType).getReadings();
         for (TimedRecord timedRecord:readings)
         {
             readingsBox.add(timedRecord.toCSV());
         }
         readingsBox.pack();
+        readingsBox.repaint();
         readingsBox.setVisible(true);
     }
 
     public void display(String s) {
         this.displayString = s;
         System.out.println(this.displayString);
-        repaint();
+        this.frame.repaint();
     }
 
     //
