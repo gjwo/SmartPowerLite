@@ -10,7 +10,7 @@ public class UiListBox extends JFrame {
     public UiListBox(String title) throws HeadlessException {
         //super();
 
-        Dimension size = new Dimension(300, 250);
+        Dimension size = new Dimension(500, 250);
         data = new ArrayList<>();
         list = new JList<>(data.toArray());
 

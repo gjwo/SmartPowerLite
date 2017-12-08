@@ -1,14 +1,11 @@
 package org.ladbury.smartpowerPkg;
 
-import java.applet.Applet;
-import java.awt.Dimension;
-import java.awt.Graphics;
+ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.List;
 
 import javax.swing.UIManager;
 
-//import org.ladbury.dataServicePkg.DataService;
 import org.ladbury.meterPkg.Meter;
 import org.ladbury.meterPkg.Meter.MeterType;
 import org.ladbury.meterPkg.Metric;
@@ -46,8 +43,6 @@ public class SmartPower implements Runnable {
 
     private static final String PARAM_MEASUREMENT_FILE = "measurement file";
 
-    private boolean 	fStandAlone = true;    //	fStandAlone will be set to true if applet is run stand alone
-    private	String 		displayString;
     private Thread 		threadSmartPower = null; //Thread object for the applet
     private RunState	state = RunState.IDLE;
 
@@ -145,7 +140,6 @@ public class SmartPower implements Runnable {
             e.printStackTrace();
         }
         SmartPower.spMain = new SmartPower();
-        SmartPower.spMain.fStandAlone = true;
         SmartPower.spMain.GetParameters(args);
         SmartPower.spMain.init();
         SmartPower.spMain.start();
@@ -168,28 +162,8 @@ public class SmartPower implements Runnable {
         frame.setLocation( (screenSize.width - frameSize.width) / 2,
                 (screenSize.height - frameSize.height) / 2);
         frame.setVisible(true);
-
-        displayString = "no line";
         file = new FileAccess();
 
-    }
-
-    // PARAMETER SUPPORT
-    //		The getParameterInfo() method returns an array of strings describing
-    // the parameters understood by this applet.
-    //
-    // SmartPower Parameter Information:
-    //  { "Name", "Type", "Description" },
-    //--------------------------------------------------------------------------
-    @SuppressWarnings("SpellCheckingInspection")
-    public String[][] getParameterInfo() {
-        String paramReadingsFile = "readingsfile";
-        return new String[][]{
-                {
-                        paramReadingsFile, "String",
-                        "The name of the input file of meter readings"}
-                ,
-        };
     }
 
     /**
@@ -199,38 +173,18 @@ public class SmartPower implements Runnable {
      * fonts, creating frame windows, setting the layout manager, or adding UI
      * components.
      */
-    public void init() {
+    private void init() {
         data.loadPersistentData(); // load the data using entity manager
         currentMetricType = MetricType.UNDEFINED;
         currentMeter = null;
 //        dataService = new DataService();
     }
-
-    /*
-     * Place additional applet clean up code here.  destroy() is called when
-     * when you applet is terminating and being unloaded.
-     */
-    public void destroy() {
-        // Place applet cleanup code here
-    }
-
-    // SmartPower Paint Handler
-    //--------------------------------------------------------------------------
-    public void paint(Graphics g) {
-        // Place applet paint code here
-        g.drawString("Running: " + Math.random(), 10, 20);
-        g.drawString("Filename: " + this.file.inputFilename(), 10, 40);
-        g.drawString("Directory name: " +this.file.inputPathname(), 10, 60);
-        g.drawString("File State: " + this.file.state(), 10, 80);
-        g.drawString(displayString, 10, 90);
-    }
-
     /**
      * The start() method is called when the page containing the applet
      * first appears on the screen. The AppletWizard's initial implementation
      * of this method starts execution of the applet's thread.
      */
-    public void start() {
+    private void start() {
         if (this.threadSmartPower == null) {
             this.threadSmartPower = new Thread(this);
             this.threadSmartPower.start();
@@ -266,13 +220,11 @@ public class SmartPower implements Runnable {
                         this.frame.displayLog(".");
                         j++;
                         if (j == 79){ this.frame.displayLog("\n\r"); j=0;}
-                        this.frame.repaint();
                         Thread.sleep(5000);
                         break;
 
                     case OPEN_FILE: //this state triggered by the user opening a file
                         this.frame.displayLog("\n\rRun: Opening file\n\r");
-                        this.frame.repaint();
                         this.file.setInputFilename(this.frame.getFileDialog().getFile());
                         this.file.setInputPathname(this.frame.getFileDialog().getDirectory());
                         if ( !((this.file.inputFilename() == null) | (this.file.inputPathname() == null)))
@@ -288,7 +240,6 @@ public class SmartPower implements Runnable {
 
                     case PROCESS_FILE:
                         this.frame.displayLog("Run: Processing file\n\r");
-                        this.frame.repaint();
                         //The file name defines the type of metric to be processed
                         this.currentMetricType = this.file.identifyTypeFromFilename( this.file.inputFilename());
                         //Metric types are unique to a meter type, therefor identify the meter and its name(cludge)
@@ -324,27 +275,22 @@ public class SmartPower implements Runnable {
 
                     case DISPLAY_API_DATA:
                         this.frame.displayLog("Run: Processing API Data\n\r");
-                        this.frame.repaint();
                         displayCurrentReadings();
                         this.frame.displayLog("Run: Completed displaying API readings\n\r");
-                        this.frame.repaint();
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
 
                     case ARCHIVE_API_DATA:
                         this.frame.displayLog("Run: Archiving API Data\n\r");
-                        this.frame.repaint();
                         //TODO Archive API data
                         this.frame.displayLog("Run: Completed archiving API readings\n\r");
-                        this.frame.repaint();
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
 
                     case PROCESS_READINGS:
                         this.frame.displayLog("Run: Processing readings\n\r");
-                        this.frame.repaint();
                         switch(currentMeter.getType()){
                             case OWLCM160:
                                 break;
@@ -358,7 +304,6 @@ public class SmartPower implements Runnable {
                                 break;
                         }
                         this.frame.displayLog("Run: Completed processing readings\n\r");
-                        this.frame.repaint();
                         this.change_state(RunState.IDLE);
                         //System.gc(); // kick off the garbage collector
                         break;
@@ -391,7 +336,6 @@ public class SmartPower implements Runnable {
 
                     case PROCESS_EVENTS:
                         this.frame.displayLog("Run: Processing Events\n\r");
-                        this.frame.repaint();
                         switch(currentMeter.getType()){
                             case OWLCM160:
                                 break;
@@ -410,7 +354,6 @@ public class SmartPower implements Runnable {
 
                     case SAVE_FILE: //this state triggered by user selecting save file
                         this.frame.displayLog("\n\rRun: Saving files\n\r");
-                        this.frame.repaint();
                         switch(currentMeter.getType()){
                             case OWLCM160:
                                 //this.file.OutputCSVFiles();
@@ -494,12 +437,6 @@ public class SmartPower implements Runnable {
         readingsBox.repaint();
     }
 
-    public void display(String s) {
-        this.displayString = s;
-        System.out.println(this.displayString);
-        this.frame.repaint();
-    }
-
     //
     // Access Methods
     //
@@ -516,22 +453,11 @@ public class SmartPower implements Runnable {
     public  UiFrame getFrame() {
         return this.frame;
     }
-    protected  FileAccess getFile() {
-        return this.file;
-    }
+    //protected  FileAccess getFile() { return this.file;}
     public void setCurrentMetricType(MetricType metricType) {
         this.currentMetricType = metricType;
     }
-    /*
- //   public DataService getDataService()
-    {
-        return dataService;
-    }
-    public void setDataService(DataService dataService)
-    {
-        this.dataService = dataService;
-    }
-    */
+
     public void setCurrentMeter(Meter meter){currentMeter = meter;}
     //
     // Access method for persistent data repository
