@@ -1,23 +1,22 @@
 package org.ladbury.smartpowerPkg;
 
- import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.util.List;
+    import java.awt.Dimension;
+    import java.awt.Toolkit;
+    import java.util.List;
+    import javax.swing.UIManager;
 
-import javax.swing.UIManager;
-
-import org.ladbury.meterPkg.Meter;
-import org.ladbury.meterPkg.Meter.MeterType;
-import org.ladbury.meterPkg.Metric;
-import org.ladbury.meterPkg.MetricType;
-import org.ladbury.meterPkg.TimedRecord;
-import org.ladbury.persistentData.PersistentData;
-import org.ladbury.userInterfacePkg.UiFrame;
-import org.ladbury.userInterfacePkg.UiListBox;
+    import org.ladbury.meterPkg.Meter;
+    import org.ladbury.meterPkg.Meter.MeterType;
+    import org.ladbury.meterPkg.Metric;
+    import org.ladbury.meterPkg.MetricType;
+    import org.ladbury.meterPkg.TimedRecord;
+    import org.ladbury.persistentData.PersistentData;
+    import org.ladbury.userInterfacePkg.UiFrame;
+    import org.ladbury.userInterfacePkg.UiListBox;
 
 
 /**
- * SmartPower.java:	Applet
+ * SmartPower   -   Power data display and analysis
  *
  * This Aplication processes readings from a domestic energy monitor in order to better
  * understand domestic power consumption by turning raw readings into a more understandable form.
@@ -36,7 +35,6 @@ import org.ladbury.userInterfacePkg.UiListBox;
  */
 public class SmartPower implements Runnable {
 
-    private static final long serialVersionUID = 1L;
     public enum RunState {
         IDLE, OPEN_FILE, PROCESS_FILE, DISPLAY_API_DATA, ARCHIVE_API_DATA, PROCESS_READINGS, SAVE_FILE, PROCESS_EDGES, PROCESS_EVENTS, STOP
     }
@@ -151,7 +149,6 @@ public class SmartPower implements Runnable {
         currentMetricType = MetricType.UNDEFINED;
         currentMeter = null;
         frame = new UiFrame("Graham's power analysis program");
-//        dataService = new DataService();
         // create persistent objects, data loaded in init()
         data = new PersistentData(); // set up entity manager etc
         frame.validate();
@@ -189,7 +186,6 @@ public class SmartPower implements Runnable {
             this.threadSmartPower = new Thread(this);
             this.threadSmartPower.start();
         }
-        //Place additional applet start code here
     }
 
     /**
@@ -200,7 +196,6 @@ public class SmartPower implements Runnable {
     public void stop() {
         if (this.threadSmartPower != null) {
             this.change_state(RunState.STOP);
-            //this.threadSmartPower = null;
         }
     }
 
@@ -384,13 +379,9 @@ public class SmartPower implements Runnable {
             }
         }
         catch (InterruptedException e) {
-            // Place exception-handling code here in case an
-            //       InterruptedException is thrown by Thread.sleep(),
-            //		 meaning that another thread has interrupted this one
             this.frame.displayLog("!");
             e.printStackTrace();
-            System.exit(1);
-            //System.out.println(e.toString());
+            System.exit(5);
         }
         System.exit(0);
     }
