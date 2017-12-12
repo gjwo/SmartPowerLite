@@ -250,7 +250,7 @@ public class Metric	implements	Serializable,
 			if(startTime.after(t2)) break;
 			endTime = readings.get(i+1).timestamp();
 			if (endTime.before(startTime))
-				SmartPower.getMain().getFrame().displayLog("Bad Timestamps "+startTime + " - " + endTime+"\n\r");
+				SmartPower.getInstance().getFrame().displayLog("Bad Timestamps "+startTime + " - " + endTime+"\n\r");
 			else results.add(new SimpleTimePeriod(startTime, endTime), readings.get(i).value());
 		}
 		results1.addSeries(results);
@@ -357,7 +357,7 @@ public class Metric	implements	Serializable,
 		this.latest = r.timestamp();
 		if (this.size()==0) this.earliest =  r.timestamp();
 		readings.add(r);
-		SmartPower.getMain().getData().getTimedRecords().add(r);
+		SmartPower.getInstance().getData().getTimedRecords().add(r);
 		return true;
 	}
 	
@@ -420,7 +420,7 @@ public class Metric	implements	Serializable,
     public  void squelchTransitions() {
     	
      	int intervalInMs = grain.getGrainInterval();
-		//SmartPower.getMain().getFrame().displayLog("interval = "+ interval+ "ms\n\r");
+		//SmartPower.getInstance().getFrame().displayLog("interval = "+ interval+ "ms\n\r");
      	for (int i = this.size()-2; i>0; i--){
 			//traceRecord("Loop",i);
     		if( this.getIntervals(i)<=Processing.getSquelchThreshold()){
@@ -443,7 +443,7 @@ public class Metric	implements	Serializable,
     				} //else by removing the record we will extend the time intervals of the previous record
     				
     				if( !this.removeRecord(i)){
-    					SmartPower.getMain().getFrame().displayLog("remove failed in squelch\n\r");
+    					SmartPower.getInstance().getFrame().displayLog("remove failed in squelch\n\r");
     					return; //bail out if remove failed;
     				}
     			}
@@ -458,7 +458,7 @@ public class Metric	implements	Serializable,
 		for(int i = this.size()-1; i>1; i--){
 			if(this.getRecord(i).value() == this.getRecord(i-1).value())
 				if( !this.removeRecord(i)){
-					SmartPower.getMain().getFrame().displayLog("remove failed ");
+					SmartPower.getInstance().getFrame().displayLog("remove failed ");
 					return; //bail out if remove failed;
 				}
 		}
@@ -499,7 +499,7 @@ public class Metric	implements	Serializable,
 		
 		ts.setTime(readings.get(row+1).timestamp().getTime() - readings.get(row).timestamp().getTime());
 		interval = (int)  (ts.getTime() / grain.getGrainInterval());
-		//SmartPower.getMain().getFrame().displayLog(interval+" Interval\n\r");
+		//SmartPower.getInstance().getFrame().displayLog(interval+" Interval\n\r");
 		
 		return interval;
 	}
@@ -510,19 +510,19 @@ public class Metric	implements	Serializable,
 	 */
 	private boolean removeRecord(int row){
 		if (row<1 || row>= readings.size()){
-			SmartPower.getMain().getFrame().displayLog("removeRecord range check failed row["+row+"]\n\r");
+			SmartPower.getInstance().getFrame().displayLog("removeRecord range check failed row["+row+"]\n\r");
 			return false;
 		}
 		if (readings.remove(row)==null){ //remove local copy
-			SmartPower.getMain().getFrame().displayLog("row["+row+"] remove failed\n\r");
+			SmartPower.getInstance().getFrame().displayLog("row["+row+"] remove failed\n\r");
 			return false;
 		}
-		//SmartPower.getMain().getFrame().displayLog("row["+row+"] local copy removed\n\r");
-		if (SmartPower.getMain().getData().getTimedRecords().remove(row)==null){ //remove persistent data
-			SmartPower.getMain().getFrame().displayLog("TimedRecords.remove failed row["+row+"]\n\r");
+		//SmartPower.getInstance().getFrame().displayLog("row["+row+"] local copy removed\n\r");
+		if (SmartPower.getInstance().getData().getTimedRecords().remove(row)==null){ //remove persistent data
+			SmartPower.getInstance().getFrame().displayLog("TimedRecords.remove failed row["+row+"]\n\r");
 			return false;
 		}
-		//SmartPower.getMain().getFrame().displayLog("row["+row+"] persistent copy removed\n\r");
+		//SmartPower.getInstance().getFrame().displayLog("row["+row+"] persistent copy removed\n\r");
 		return true;
 	}
 
@@ -541,7 +541,7 @@ public class Metric	implements	Serializable,
     //
 	@SuppressWarnings("SameParameterValue")
 	private void traceRecord(String s, int row){
-		SmartPower.getMain().getFrame().displayLog(
+		SmartPower.getInstance().getFrame().displayLog(
 				s+" Row ["+row+
 				"] Timestamp "+this.getRecord(row).timestampString()+
 				" Intervals["+this.getIntervals(row)+

@@ -164,8 +164,8 @@ public class Processing {
 	    		}
 	    		if (matchingEvt != null){
 	    			dAct = new DeviceActivity(rEvt.timestamp(), matchingEvt.timestamp(),m.getDelta(i),null);
-	    			SmartPower.getMain().getData().getActivity().add(dAct);
-					SmartPower.getMain().getFrame().displayLog("Device found "+dAct.toCSV()+"\n\r");
+	    			SmartPower.getInstance().getData().getActivity().add(dAct);
+					SmartPower.getInstance().getFrame().displayLog("Device found "+dAct.toCSV()+"\n\r");
 
 	    			// create TimePeriod / CalendarPeriod / Coincidence
 	    		}
@@ -191,6 +191,6 @@ public class Processing {
 	 * @see PersistentData
 	 */
 	private static PersistentData getData(){
-		return SmartPower.getMain().getData();
+		return SmartPower.getInstance().getData();
 	}
 }

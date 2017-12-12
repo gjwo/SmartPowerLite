@@ -45,7 +45,7 @@ public class SmartPower implements Runnable {
     private RunState	state = RunState.IDLE;
 
     // Application Specific data (not persistent)
-    private static	SmartPower	spMain = null; //This is the root access point for all data in the package, the only static.
+    private static	SmartPower smartPower = null; //This is the root access point for all data in the package, the only static.
     private final   UiFrame 			frame;
     private final   FileAccess 			file;
 //    private         DataService         dataService;
@@ -137,10 +137,10 @@ public class SmartPower implements Runnable {
         catch (Exception e) {
             e.printStackTrace();
         }
-        SmartPower.spMain = new SmartPower();
-        SmartPower.spMain.GetParameters(args);
-        SmartPower.spMain.init();
-        SmartPower.spMain.start();
+        SmartPower.smartPower = new SmartPower();
+        SmartPower.smartPower.GetParameters(args);
+        SmartPower.smartPower.init();
+        SmartPower.smartPower.start();
     }
 
     // SmartPower Class Constructor
@@ -148,7 +148,7 @@ public class SmartPower implements Runnable {
     private SmartPower() {
         currentMetricType = MetricType.UNDEFINED;
         currentMeter = null;
-        frame = new UiFrame("Graham's power analysis program");
+        frame = new UiFrame("Graham's power analysis program", this);
         // create persistent objects, data loaded in init()
         data = new PersistentData(); // set up entity manager etc
         frame.validate();
@@ -431,8 +431,8 @@ public class SmartPower implements Runnable {
     //
     // Access Methods
     //
-    public static SmartPower getMain() {
-        return SmartPower.spMain; //needed to access all other dynamic data without specific access methods
+    public static SmartPower getInstance() {
+        return SmartPower.smartPower; //needed to access all other dynamic data without specific access methods
     }
     public synchronized void change_state(RunState new_state) {
         this.state = new_state;

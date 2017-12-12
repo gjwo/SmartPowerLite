@@ -13,6 +13,8 @@ import java.sql.Timestamp;
 import org.ladbury.persistentData.Persistable;
 import org.ladbury.smartpowerPkg.Timestamped;
 
+import static java.lang.Integer.parseInt;
+
 //  TimedReading
 //  this class provides the basic data for a reading
 public class TimedRecord implements 	Serializable,
@@ -59,7 +61,7 @@ public class TimedRecord implements 	Serializable,
 		java.util.Date utilDate = df.parse(dataArray[0]);
 		timestamp = new Timestamp(utilDate.getTime());
 		
-		value = new Integer(dataArray[1]);  //watts
+		value = parseInt(dataArray[1]);  //watts
 	}
 
 	//

@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.ladbury.deviceActivityPkg.DeviceActivity;
 import org.ladbury.meterPkg.Meter;
@@ -67,7 +68,7 @@ class FileAccess
         }
         catch (IOException ioe) {
             ioe.printStackTrace();
-            SmartPower.getMain().getFrame().displayLog(ioe.toString());
+            SmartPower.getInstance().getFrame().displayLog(ioe.toString());
             //throw ioe;
         }
     }
@@ -91,7 +92,7 @@ class FileAccess
     //throws IOException
     {
         try {
-            SmartPower.getMain().getFrame().displayLog("Closing output file " + inputPathName +
+            SmartPower.getInstance().getFrame().displayLog("Closing output file " + inputPathName +
                     outputFileName + "\n\r");
             m_pw.close();
             outputFile = null;
@@ -105,7 +106,7 @@ class FileAccess
     private PrintWriter openOutput(String dirname, String filename)
     {
         try{
-            SmartPower.getMain().getFrame().displayLog("Opening output file " + dirname +
+            SmartPower.getInstance().getFrame().displayLog("Opening output file " + dirname +
                     filename + "\n\r");
             outputFile = null;
             outputFile = new File(dirname, filename);
@@ -182,9 +183,9 @@ class FileAccess
 
         outputFileName = mtc.readingsName() + "_DA.csv";
         m_pw = openOutput(outputPathName, outputFileName);
-        for (int i = 0; i < SmartPower.getMain().getData().getActivity().size(); i++)
+        for (int i = 0; i < SmartPower.getInstance().getData().getActivity().size(); i++)
         {
-            m_pw.println(SmartPower.getMain().getData().getActivity().get(i).toCSV());
+            m_pw.println(SmartPower.getInstance().getData().getActivity().get(i).toCSV());
         }
         closeOutput();
         //m_main.frame.displayLog("Run: back from events save\n");
@@ -200,7 +201,7 @@ class FileAccess
         outputFileName = activityName+"_DA.csv";
         m_pw = openOutput(outputPathName, outputFileName);
         for(int i=0; i<activity.size();i++){
-            m_pw.println(SmartPower.getMain().getData().getActivity().get(i).toCSV());
+            m_pw.println(SmartPower.getInstance().getData().getActivity().get(i).toCSV());
         }
         //m_main.frame.displayLog("Run: back from events save\n");
     }
@@ -219,7 +220,7 @@ class FileAccess
         File dir = new File(dirName);
         String filename;
         if(dir.listFiles() != null)
-            for (File file : dir.listFiles()) {
+            for (File file : Objects.requireNonNull(dir.listFiles())) {
                 filename = file.getName();
                 if (filename.toLowerCase().endsWith((".csv")) && filename.contains(df.format(t))) {
                     selectedFiles.add(filename);

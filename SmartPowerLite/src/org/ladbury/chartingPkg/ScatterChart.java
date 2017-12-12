@@ -39,8 +39,8 @@ public class ScatterChart extends JFrame {
     	final XYDataset data1 = Processing.getDeviceActivityScatterData();
 		DateFormat df = new SimpleDateFormat(Timestamped.DATE_AND_DAYFORMAT);
 		df.setTimeZone(java.util.TimeZone.getTimeZone("GMT")); // makes sure we don't get an extra hour!
-		if( SmartPower.getMain().getData().getActivity().size()>0){
-			t1 = SmartPower.getMain().getData().getActivity().get(0).start(); 
+		if( SmartPower.getInstance().getData().getActivity().size()>0){
+			t1 = SmartPower.getInstance().getData().getActivity().get(0).start();
 	        chartTitle = "Device Activity "+ df.format(t1);			
 		} else  chartTitle = "No Device Activity";
 

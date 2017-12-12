@@ -4,7 +4,6 @@ import me.mawood.data_api_client.accessors.DataTypeAccessor;
 import me.mawood.data_api_client.accessors.DeviceAccessor;
 import me.mawood.data_api_client.objects.DataType;
 import me.mawood.data_api_client.objects.Device;
-import org.ladbury.smartpowerPkg.SmartPower;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,9 +20,10 @@ class UiReadingsSelectionDialogue extends JDialog
     private static final JLabel lblLatest   = new JLabel("  End Time:");
     private final JComboBox<Device> comboMeter;
     private final JComboBox<DataType> comboMetric;
-    private ReadingsRange readingsRange;
-    enum RequestType{LOAD_API_DATA,ARCHIVE_API_DATA}
-    UiReadingsSelectionDialogue(String title, RequestType requestType)
+    private final ReadingsRange readingsRange;
+   enum RequestType{LOAD_API_DATA,ARCHIVE_API_DATA}
+
+    UiReadingsSelectionDialogue(String title, RequestType requestType, UiFrame owner)
     {
         readingsRange = new ReadingsRange();
         DeviceAccessor deviceAccessor = new DeviceAccessor(API_URL);
@@ -85,12 +85,10 @@ class UiReadingsSelectionDialogue extends JDialog
             switch( requestType)
             {
                 case LOAD_API_DATA:
-                    SmartPower.getMain().getFrame().handleReadingsDialogueResultsForDisplay(readingsRange);
-                    SmartPower.getMain().change_state(SmartPower.RunState.DISPLAY_API_DATA); //trigger processing in main loop
+                    owner.handleReadingsDialogueResultsForDisplay(readingsRange);
                     break;
                 case ARCHIVE_API_DATA:
-                    SmartPower.getMain().getFrame().handleReadingsDialogueResultsForArchive(readingsRange);
-                    SmartPower.getMain().change_state(SmartPower.RunState.ARCHIVE_API_DATA); //trigger processing in main loop
+                    owner.handleReadingsDialogueResultsForArchive(readingsRange);
                     break;
             }
             this.dispose();

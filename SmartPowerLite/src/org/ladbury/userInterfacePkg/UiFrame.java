@@ -57,13 +57,15 @@ public class UiFrame extends JFrame {
 
     private FileDialog fileDialogue = null;
 	private String 	windowTitle = null;
+	private final SmartPower owner;
 
     //
     // Construct the frame
     //
-    public UiFrame(String windowTitle) {
+    public UiFrame(String windowTitle, SmartPower owner) {
         super(windowTitle);
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+        this.owner = owner;
         try {
             // Create a content pane
             JPanel contentPane = (JPanel) this.getContentPane();
@@ -106,7 +108,7 @@ public class UiFrame extends JFrame {
         jMenuFileSave.addActionListener(this::jMenuFileSave_actionPerformed);
         jMenuFile.addSeparator();
         jMenuFile.add(jMenuFileExit);
-        jMenuFileExit.addActionListener(e -> SmartPower.getMain().stop());
+        jMenuFileExit.addActionListener(e -> owner.stop());
         // add the menu to the menu bar
         jMenuBar1.add(jMenuFile);
     }
@@ -127,9 +129,9 @@ public class UiFrame extends JFrame {
 
     private void createProcessMenu(){
         // add sub items and their actions      
-        jMenuProcessRecords.addActionListener(e -> SmartPower.getMain().change_state(SmartPower.RunState.PROCESS_EDGES));
+        jMenuProcessRecords.addActionListener(e -> owner.change_state(SmartPower.RunState.PROCESS_EDGES));
         jMenuProcess.add(jMenuProcessDevices);
-        jMenuProcessDevices.addActionListener(e -> SmartPower.getMain().change_state(SmartPower.RunState.PROCESS_EVENTS));
+        jMenuProcessDevices.addActionListener(e -> owner.change_state(SmartPower.RunState.PROCESS_EVENTS));
         jMenuProcess.add(jMenuProcessRecords);
         jMenuProcess.add(jMenuProcessDevices);
         // add the menu to the menu bar
@@ -161,7 +163,7 @@ public class UiFrame extends JFrame {
     public void processWindowEvent(WindowEvent e) {
         super.processWindowEvent(e);
         if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-            SmartPower.getMain().stop();
+            owner.stop();
         	//System.exit(0);
         }
     }
@@ -178,7 +180,7 @@ public class UiFrame extends JFrame {
         fileDialogue.setVisible(true);
         // File Dialogue is modal so won't return unless file or cancel
         if(fileDialogue.getFile() != null ){
-        	SmartPower.getMain().change_state(SmartPower.RunState.OPEN_FILE); //trigger processing in main loop
+        	owner.change_state(SmartPower.RunState.OPEN_FILE); //trigger processing in main loop
         }
         // else the user cancelled the dialog, do nothing
     }
@@ -195,7 +197,7 @@ public class UiFrame extends JFrame {
         fileDialogue.setVisible(true);
         // File Dialogue is modal so won't return unless file or cancel
         if(fileDialogue.getFile() != null ){
-        	SmartPower.getMain().change_state(SmartPower.RunState.SAVE_FILE);  //trigger processing in main loop
+        	owner.change_state(SmartPower.RunState.SAVE_FILE);  //trigger processing in main loop
         }
     }
 
@@ -230,7 +232,7 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataDisplay_actionPerformed(ActionEvent actionEvent)
     {
-        UiReadingsSelectionDialogue readingsDialogue = new UiReadingsSelectionDialogue("Readings", UiReadingsSelectionDialogue.RequestType.LOAD_API_DATA);
+        UiReadingsSelectionDialogue readingsDialogue = new UiReadingsSelectionDialogue("Readings", UiReadingsSelectionDialogue.RequestType.LOAD_API_DATA,this);
         readingsDialogue.pack();
         readingsDialogue.setVisible(true);
     }
@@ -245,15 +247,16 @@ public class UiFrame extends JFrame {
                 readingsRange.getEarliestTime().toInstant().toEpochMilli(),
                 readingsRange.getLatestTime().toInstant().toEpochMilli());
         System.out.println(readings);
-        Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10, readingsRange.getDevice().getName());
+        Meter meter = owner.getOrCreateMeter(Meter.MeterType.PMON10, readingsRange.getDevice().getName());
         MetricType metricType = MetricType.getMetricTypeFromTag(readingsRange.getDataType().getTag());
         if (metricType == null) return; //problem
-        SmartPower.getMain().setCurrentMetricType(metricType);
-        SmartPower.getMain().setCurrentMeter(meter);
+        owner.setCurrentMetricType(metricType);
+        owner.setCurrentMeter(meter);
         for (Reading reading : readings)
         {
             meter.getMetric(metricType).appendRecord(new TimedRecord(new TimestampedDouble(reading.getReading(), reading.getTimestamp())));
         }
+        owner.change_state(SmartPower.RunState.DISPLAY_API_DATA); //trigger processing in main loop
     }
 
     //
@@ -261,7 +264,7 @@ public class UiFrame extends JFrame {
     //
     private void jMenuDataArchive_actionPerformed(ActionEvent actionEvent)
     {
-        UiReadingsSelectionDialogue readingsDialogue = new UiReadingsSelectionDialogue("Readings", UiReadingsSelectionDialogue.RequestType.ARCHIVE_API_DATA);
+        UiReadingsSelectionDialogue readingsDialogue = new UiReadingsSelectionDialogue("Readings", UiReadingsSelectionDialogue.RequestType.ARCHIVE_API_DATA,this);
         readingsDialogue.pack();
         readingsDialogue.setVisible(true);
 
@@ -274,15 +277,16 @@ public class UiFrame extends JFrame {
                 readingsRange.getDataType().getName(),
                 readingsRange.getEarliestTime().toInstant().toEpochMilli(),
                 readingsRange.getLatestTime().toInstant().toEpochMilli());
-        Meter meter = SmartPower.getMain().getOrCreateMeter(Meter.MeterType.PMON10, readingsRange.getDevice().getName());
+        Meter meter = owner.getOrCreateMeter(Meter.MeterType.PMON10, readingsRange.getDevice().getName());
         MetricType metricType = MetricType.getMetricTypeFromTag(readingsRange.getDataType().getTag());
         if (metricType == null) return; //problem
-        SmartPower.getMain().setCurrentMetricType(metricType);
-        SmartPower.getMain().setCurrentMeter(meter);
+        owner.setCurrentMetricType(metricType);
+        owner.setCurrentMeter(meter);
         for (Reading reading : readings)
         {
             meter.getMetric(metricType).appendRecord(new TimedRecord(new TimestampedDouble(reading.getReading(), reading.getTimestamp())));
         }
+        owner.change_state(SmartPower.RunState.ARCHIVE_API_DATA); //trigger processing in main loop
     }
     //
     //Chart Pie action performed
@@ -297,7 +301,7 @@ public class UiFrame extends JFrame {
     //Histogram action performed
     //
     private void jMenuChartHistogram_actionPerformed(ActionEvent e) {
-     	for (Meter m: SmartPower.getMain().getData().getMeters())
+     	for (Meter m: owner.getData().getMeters())
         {
             ArrayList<TimeHistogram> histograms = new ArrayList<>(Collections.emptyList());
             for (int i = 0; i < m.getMetricCount(); i++)
@@ -328,10 +332,6 @@ public class UiFrame extends JFrame {
         plot.setVisible(true);
     }
     
-      public void displayLog(String str) {
-        textArea1.append(str);
-        repaint();
-    }
 
       //
       //Help About action performed
@@ -349,7 +349,14 @@ public class UiFrame extends JFrame {
       }
 
     //
-    // write an integer to the log area
+    // write a String to the log area
+    //
+    public void displayLog(String str) {
+        textArea1.append(str);
+        repaint();
+    }
+    //
+    // write an int to the log area
     //
     public void displayLog(int i) {
         Integer intWrapper = i;
