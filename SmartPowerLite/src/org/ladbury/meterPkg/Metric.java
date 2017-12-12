@@ -20,6 +20,7 @@ import org.ladbury.persistentData.Persistable;
 import org.ladbury.smartpowerPkg.Processing;
 import org.ladbury.smartpowerPkg.SmartPower;
 import org.ladbury.smartpowerPkg.Timestamped;
+import org.ladbury.userInterfacePkg.UiLogger;
 import org.ladbury.userInterfacePkg.UiStyle;
 
 
@@ -82,6 +83,7 @@ public class Metric	implements	Serializable,
 			this.setGrain(Granularity.MINUTE);
 			break;
 		case ENERGY_LOW_RES:
+			this.setGrain(Granularity.MINUTE);
 			this.setCumulative(true);
 			break;
 		case ENERGY_HIGH_RES: 
@@ -250,7 +252,7 @@ public class Metric	implements	Serializable,
 			if(startTime.after(t2)) break;
 			endTime = readings.get(i+1).timestamp();
 			if (endTime.before(startTime))
-				SmartPower.getInstance().getFrame().displayLog("Bad Timestamps "+startTime + " - " + endTime+"\n\r");
+				UiLogger.displayString("Bad Timestamps "+startTime + " - " + endTime+"\n\r");
 			else results.add(new SimpleTimePeriod(startTime, endTime), readings.get(i).value());
 		}
 		results1.addSeries(results);
@@ -420,7 +422,7 @@ public class Metric	implements	Serializable,
     public  void squelchTransitions() {
     	
      	int intervalInMs = grain.getGrainInterval();
-		//SmartPower.getInstance().getFrame().displayLog("interval = "+ interval+ "ms\n\r");
+		//UiLogger.displayString("interval = "+ interval+ "ms\n\r");
      	for (int i = this.size()-2; i>0; i--){
 			//traceRecord("Loop",i);
     		if( this.getIntervals(i)<=Processing.getSquelchThreshold()){
@@ -443,7 +445,7 @@ public class Metric	implements	Serializable,
     				} //else by removing the record we will extend the time intervals of the previous record
     				
     				if( !this.removeRecord(i)){
-    					SmartPower.getInstance().getFrame().displayLog("remove failed in squelch\n\r");
+    					UiLogger.displayString("remove failed in squelch\n\r");
     					return; //bail out if remove failed;
     				}
     			}
@@ -458,7 +460,7 @@ public class Metric	implements	Serializable,
 		for(int i = this.size()-1; i>1; i--){
 			if(this.getRecord(i).value() == this.getRecord(i-1).value())
 				if( !this.removeRecord(i)){
-					SmartPower.getInstance().getFrame().displayLog("remove failed ");
+					UiLogger.displayString("remove failed ");
 					return; //bail out if remove failed;
 				}
 		}
@@ -499,7 +501,7 @@ public class Metric	implements	Serializable,
 		
 		ts.setTime(readings.get(row+1).timestamp().getTime() - readings.get(row).timestamp().getTime());
 		interval = (int)  (ts.getTime() / grain.getGrainInterval());
-		//SmartPower.getInstance().getFrame().displayLog(interval+" Interval\n\r");
+		//UiLogger.displayString(interval+" Interval\n\r");
 		
 		return interval;
 	}
@@ -510,19 +512,19 @@ public class Metric	implements	Serializable,
 	 */
 	private boolean removeRecord(int row){
 		if (row<1 || row>= readings.size()){
-			SmartPower.getInstance().getFrame().displayLog("removeRecord range check failed row["+row+"]\n\r");
+			UiLogger.displayString("removeRecord range check failed row["+row+"]\n\r");
 			return false;
 		}
 		if (readings.remove(row)==null){ //remove local copy
-			SmartPower.getInstance().getFrame().displayLog("row["+row+"] remove failed\n\r");
+			UiLogger.displayString("row["+row+"] remove failed\n\r");
 			return false;
 		}
-		//SmartPower.getInstance().getFrame().displayLog("row["+row+"] local copy removed\n\r");
+		//UiLogger.displayString("row["+row+"] local copy removed\n\r");
 		if (SmartPower.getInstance().getData().getTimedRecords().remove(row)==null){ //remove persistent data
-			SmartPower.getInstance().getFrame().displayLog("TimedRecords.remove failed row["+row+"]\n\r");
+			UiLogger.displayString("TimedRecords.remove failed row["+row+"]\n\r");
 			return false;
 		}
-		//SmartPower.getInstance().getFrame().displayLog("row["+row+"] persistent copy removed\n\r");
+		//UiLogger.displayString("row["+row+"] persistent copy removed\n\r");
 		return true;
 	}
 
@@ -541,7 +543,7 @@ public class Metric	implements	Serializable,
     //
 	@SuppressWarnings("SameParameterValue")
 	private void traceRecord(String s, int row){
-		SmartPower.getInstance().getFrame().displayLog(
+		UiLogger.displayString(
 				s+" Row ["+row+
 				"] Timestamp "+this.getRecord(row).timestampString()+
 				" Intervals["+this.getIntervals(row)+

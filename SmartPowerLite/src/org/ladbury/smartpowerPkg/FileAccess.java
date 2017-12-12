@@ -21,6 +21,7 @@ import org.ladbury.meterPkg.Metric;
 import org.ladbury.meterPkg.MetricType;
 import org.ladbury.meterPkg.TimedRecord;
 import org.ladbury.persistentData.PersistentList;
+import org.ladbury.userInterfacePkg.UiLogger;
 
 
 //
@@ -68,7 +69,7 @@ class FileAccess
         }
         catch (IOException ioe) {
             ioe.printStackTrace();
-            SmartPower.getInstance().getFrame().displayLog(ioe.toString());
+            UiLogger.displayString(ioe.toString());
             //throw ioe;
         }
     }
@@ -92,7 +93,7 @@ class FileAccess
     //throws IOException
     {
         try {
-            SmartPower.getInstance().getFrame().displayLog("Closing output file " + inputPathName +
+            UiLogger.displayString("Closing output file " + inputPathName +
                     outputFileName + "\n\r");
             m_pw.close();
             outputFile = null;
@@ -106,7 +107,7 @@ class FileAccess
     private PrintWriter openOutput(String dirname, String filename)
     {
         try{
-            SmartPower.getInstance().getFrame().displayLog("Opening output file " + dirname +
+            UiLogger.displayString("Opening output file " + dirname +
                     filename + "\n\r");
             outputFile = null;
             outputFile = new File(dirname, filename);

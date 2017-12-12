@@ -8,6 +8,8 @@ import org.ladbury.deviceActivityPkg.DeviceActivity;
 import org.ladbury.meterPkg.Metric;
 import org.ladbury.meterPkg.TimedRecord;
 import org.ladbury.persistentData.PersistentData;
+import org.ladbury.userInterfacePkg.UiLogger;
+
 /**
  * This class provides methods for processing the data, essentially the application logic
  * these methods a typically called from the main processing loop in SmartPower
@@ -165,7 +167,7 @@ public class Processing {
 	    		if (matchingEvt != null){
 	    			dAct = new DeviceActivity(rEvt.timestamp(), matchingEvt.timestamp(),m.getDelta(i),null);
 	    			SmartPower.getInstance().getData().getActivity().add(dAct);
-					SmartPower.getInstance().getFrame().displayLog("Device found "+dAct.toCSV()+"\n\r");
+					UiLogger.displayString("Device found "+dAct.toCSV()+"\n\r");
 
 	    			// create TimePeriod / CalendarPeriod / Coincidence
 	    		}
