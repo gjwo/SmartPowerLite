@@ -8,6 +8,7 @@ import org.ladbury.deviceActivityPkg.DeviceActivity;
 import org.ladbury.meterPkg.Metric;
 import org.ladbury.meterPkg.TimedRecord;
 import org.ladbury.persistentData.PersistentData;
+import org.ladbury.persistentData.PersistentList;
 import org.ladbury.userInterfacePkg.UiLogger;
 
 /**
@@ -166,7 +167,7 @@ public class Processing {
 	    		}
 	    		if (matchingEvt != null){
 	    			dAct = new DeviceActivity(rEvt.timestamp(), matchingEvt.timestamp(),m.getDelta(i),null);
-	    			SmartPower.getInstance().getData().getActivity().add(dAct);
+	    			getActivity().add(dAct);
 					UiLogger.displayString("Device found "+dAct.toCSV()+"\n\r");
 
 	    			// create TimePeriod / CalendarPeriod / Coincidence
@@ -178,9 +179,9 @@ public class Processing {
 	public static XYDataset getDeviceActivityScatterData() {
         XYSeriesCollection result = new XYSeriesCollection();
         XYSeries series = new XYSeries("Device Activity");
-        for (int i = 0; i < getData().getActivity().size(); i++) {
-            double x = getData().getActivity().get(i).getDuration();
-            double y = getData().getActivity().get(i).getConsumption();
+        for (int i = 0; i < getActivity().size(); i++) {
+            double x = getActivity().get(i).getDuration();
+            double y = getActivity().get(i).getConsumption();
             series.add(x, y);
         }
         result.addSeries(series);
@@ -192,7 +193,7 @@ public class Processing {
 	 * @see SmartPower
 	 * @see PersistentData
 	 */
-	private static PersistentData getData(){
-		return SmartPower.getInstance().getData();
+	private static PersistentList<DeviceActivity> getActivity(){
+		return SmartPower.getInstance().getData().getActivity();
 	}
 }
