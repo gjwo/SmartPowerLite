@@ -6,9 +6,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 
-import org.ladbury.deviceActivityPkg.DeviceActivity;
 import org.ladbury.persistentData.Persistable;
-import org.ladbury.smartpowerPkg.Timestamped;
+import org.ladbury.meterPkg.Timestamped;
 
 import java.util.Comparator;
 

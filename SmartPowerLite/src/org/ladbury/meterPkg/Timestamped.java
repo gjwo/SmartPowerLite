@@ -1,4 +1,4 @@
-package org.ladbury.smartpowerPkg;
+package org.ladbury.meterPkg;
 
 import java.sql.Timestamp;
 

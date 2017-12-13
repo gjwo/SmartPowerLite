@@ -4,7 +4,7 @@ import java.awt.Font;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import org.ladbury.smartpowerPkg.Timestamped;
+import org.ladbury.meterPkg.Timestamped;
 /**
  * This class holds styling information applicable to the User Interface
  * 

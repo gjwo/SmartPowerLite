@@ -16,7 +16,7 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.ladbury.meterPkg.Metric;
-import org.ladbury.smartpowerPkg.Timestamped;
+import org.ladbury.meterPkg.Timestamped;
 
 public class TimeHistogram extends JFrame {
 

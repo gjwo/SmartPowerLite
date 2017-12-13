@@ -11,7 +11,6 @@ import java.sql.Timestamp;
 
 
 import org.ladbury.persistentData.Persistable;
-import org.ladbury.smartpowerPkg.Timestamped;
 
 import static java.lang.Integer.parseInt;
 

@@ -16,7 +16,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.ladbury.smartpowerPkg.Processing;
 import org.ladbury.smartpowerPkg.SmartPower;
-import org.ladbury.smartpowerPkg.Timestamped;
+import org.ladbury.meterPkg.Timestamped;
 
 public class ScatterChart extends JFrame {
 

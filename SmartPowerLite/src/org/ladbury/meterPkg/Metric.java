@@ -19,9 +19,7 @@ import org.jfree.data.xy.XYDataset;
 import org.ladbury.persistentData.Persistable;
 import org.ladbury.smartpowerPkg.Processing;
 import org.ladbury.smartpowerPkg.SmartPower;
-import org.ladbury.smartpowerPkg.Timestamped;
 import org.ladbury.userInterfacePkg.UiLogger;
-import org.ladbury.userInterfacePkg.UiStyle;
 
 
 @SuppressWarnings("ALL")
@@ -53,7 +51,7 @@ public class Metric	implements	Serializable,
 	//
 	
 	public Metric(){
-		this.name = UiStyle.UNNAMED;
+		this.name = "";
 		this.type = MetricType.UNDEFINED;
 		this.readings = new ArrayList<>(Collections.emptyList());
 		this.grain = Granularity.UNDEFINED;
@@ -66,7 +64,7 @@ public class Metric	implements	Serializable,
 		//Owl metrics POWER
 		//Onzo metrics ENERGY_LOW_RES, ENERGY_HIGH_RES, POWER_REAL_STANDARD, POWER_REAL_FINE, POWER_REACTIVE_STANDARD
 		
-		this.name = UiStyle.UNNAMED;
+		this.name = "";
 		this.readings = new ArrayList<>(Collections.emptyList());
 		this.type = t;
 		this.grain = Granularity.UNDEFINED;
